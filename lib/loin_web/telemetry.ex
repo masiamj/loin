@@ -1,4 +1,8 @@
 defmodule LoinWeb.Telemetry do
+  @moduledoc """
+  The Telemetry entrypoint for Phoenix-related metrics.
+  """
+
   use Supervisor
   import Telemetry.Metrics
 

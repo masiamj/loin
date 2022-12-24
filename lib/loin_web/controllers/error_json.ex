@@ -1,4 +1,8 @@
 defmodule LoinWeb.ErrorJSON do
+  @moduledoc """
+  The entrypoint to handle API errors.
+  """
+
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #

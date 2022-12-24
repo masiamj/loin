@@ -4,7 +4,6 @@ services:
     image: postgres:15.0
     restart: always
     environment:
-      - POSTGRES_DB=loin_dev
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
     ports:

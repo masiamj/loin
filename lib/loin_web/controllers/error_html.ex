@@ -1,4 +1,8 @@
 defmodule LoinWeb.ErrorHTML do
+  @moduledoc """
+  The entrypoint to handle HTML-request errors.
+  """
+
   use LoinWeb, :html
 
   # If you want to customize your error pages,
