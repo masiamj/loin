@@ -1,13 +1,17 @@
 name: Build, verify quality, and test
+
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    types: [edited, opened, ready_for_review, synchronize]
+
 env:
   MIX_ENV: test
+
 permissions:
   contents: read
+
 jobs:
   test:
     services:
@@ -25,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
-      fail-fast: false
       matrix:
         otp: ['25.0.4']
         elixir: ['1.14.1']
@@ -35,23 +38,23 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Cache deps and build
-          uses: actions/cache@v3
-          with:
-            path: |
-              deps
-              _build
-            key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
-            restore-keys: |
-              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
-              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
       - name: Fetch deps
-          run: mix deps.get
+        run: mix deps.get
       - name: Remove application build
         run: mix clean
       - name: Compile deps
         run: mix deps.compile
-      - name: Compile app
-        run: mix compile
       - name: Runs all quality checks
-        run: mix check
+        run: mix check --parallel

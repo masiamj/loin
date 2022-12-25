@@ -23,7 +23,7 @@
     # {:sobelow, "mix sobelow --exit --skip"},
 
     # Do not run Sobelow for now
-    {:sobelow, false}
+    {:sobelow, false},
 
     ## ...or reordered (e.g. to see output from dialyzer before others)
     # {:dialyzer, order: -1},
@@ -33,5 +33,10 @@
 
     ## custom new tools may be added (Mix tasks or arbitrary commands)
     # {:my_task, "mix my_task", env: %{"MIX_ENV" => "prod"}},
+
+    # Per the ex_check docs: https://github.com/karolsluszniak/ex_check#duplicate-builds
+    {:compiler, env: %{"MIX_ENV" => "test"}},
+    {:formatter, env: %{"MIX_ENV" => "test"}},
+    {:ex_doc, env: %{"MIX_ENV" => "test"}}
   ]
 ]
