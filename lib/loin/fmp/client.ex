@@ -1,6 +1,8 @@
 defmodule Loin.FMP.Client do
   @moduledoc """
   A SPOF that safely throttles requests to FMP.
+
+  THIS IS NOT CURRENTLY USED.
   """
   use ExternalService.Gateway,
     fuse: [
