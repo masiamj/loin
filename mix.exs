@@ -27,7 +27,7 @@ defmodule Loin.MixProject do
   def application do
     [
       mod: {Loin.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:ex_unit, :logger, :runtime_tools]
     ]
   end
 

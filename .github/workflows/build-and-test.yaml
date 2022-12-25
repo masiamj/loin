@@ -33,43 +33,28 @@ jobs:
         otp: ['25.0.4']
         elixir: ['1.14.1']
     steps:
-    - name: Set up Elixir
-      uses: erlef/setup-elixir@v1
-      with:
-        otp-version: ${{matrix.otp}}
-        elixir-version: ${{matrix.elixir}}
-
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Cache deps
-      id: cache-deps
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-elixir-deps
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-mix-${{ env.cache-name }}-
-
-    - name: Cache compiled build
-      id: cache-build
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-compiled-build
-      with:
-        path: _build
-        key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-mix-${{ env.cache-name }}-
-          ${{ runner.os }}-mix-
-          
-    - name: Install dependencies
-      run: mix deps.get
-
-    - name: Compiles without warnings
-      run: mix compile --warnings-as-errors
-
-    - name: Run all quality checks
-      run: mix check
+      - name: Set up Elixir
+        uses: erlef/setup-elixir@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - name: Cache deps and build
+          uses: actions/cache@v3
+          with:
+            path: |
+              deps
+              _build
+            key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+            restore-keys: |
+              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+      - name: Fetch deps
+          run: mix deps.get
+      - name: Remove application build
+        run: mix clean
+      - name: Compile deps
+        run: mix deps.compile
+      - name: Compile app
+        run: mix compile
+      - name: Runs all quality checks
+        run: mix check --parallel
