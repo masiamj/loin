@@ -1,9 +1,11 @@
 name: Build, verify quality, and test
 
 on:
+  push:
+    branches: ["master"]
   pull_request:
     types: [edited, opened, ready_for_review, synchronize]
-    
+
 env:
   MIX_ENV: test
 
@@ -37,17 +39,17 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - name: Cache deps and build
-          uses: actions/cache@v3
-          with:
-            path: |
-              deps
-              _build
-            key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
-            restore-keys: |
-              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
-              deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
       - name: Fetch deps
-          run: mix deps.get
+        run: mix deps.get
       - name: Remove application build
         run: mix clean
       - name: Compile deps
