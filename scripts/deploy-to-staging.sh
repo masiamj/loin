@@ -1,0 +1,1 @@
+flyctl deploy -a loin-staging -c ./fly.staging.toml

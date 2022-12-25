@@ -1,0 +1,96 @@
+name: QA and deploy
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    types: [edited, opened, ready_for_review, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  # Job that runs several quality checks like:
+  # compilation, linting, static analysis, and tests
+  code-quality:
+    env:
+      # Runs in the 
+      MIX_ENV: test
+    name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    runs-on: ubuntu-latest
+    services:
+      # Requires a DB for tests
+      db:
+        image: postgres:15.0
+        ports: ['5436:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      # Targets specific OTP and Elixir versions
+      matrix:
+        otp: ['25.0.4']
+        elixir: ['1.14.1']
+    steps:
+      - name: Set up Elixir
+        uses: erlef/setup-elixir@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache deps and build
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+            deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+      - name: Fetch deps
+        run: mix deps.get
+      - name: Remove application build
+        run: mix clean
+      - name: Compile deps
+        run: mix deps.compile
+      - name: Runs all quality checks
+        run: mix check --parallel
+  # Job to deploy to the production app on Fly.io (only if on master branch)
+  deploy-to-production:
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      MIX_ENV: prod
+    if: github.ref == 'refs/heads/master'
+    name: Deploy app to production environment
+    needs: code-quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy
+        run: ./scripts/deploy-to-production.sh
+  # Job to deploy to the staging app on Fly.io (only if on staging branch)
+  deploy-to-staging:
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      MIX_ENV: prod
+    if: github.ref == 'refs/heads/staging'
+    name: Deploy app to staging environment
+    needs: code-quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy
+        run: ./scripts/deploy-to-staging.sh

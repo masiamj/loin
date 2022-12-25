@@ -1,6 +1,6 @@
-# fly.toml file generated for loin-development on 2022-12-24T21:58:24-05:00
+# fly.toml file generated for loin on 2022-12-24T22:26:55-05:00
 
-app = "loin-development"
+app = "loin"
 kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
@@ -9,7 +9,7 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "loin-development.fly.dev"
+  PHX_HOST = "loin.fly.dev"
   PORT = "8080"
 
 [experimental]

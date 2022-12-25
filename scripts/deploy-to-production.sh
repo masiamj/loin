@@ -1,0 +1,1 @@
+flyctl deploy -a loin -c ./fly.production.toml
