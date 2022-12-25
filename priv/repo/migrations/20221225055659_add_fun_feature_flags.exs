@@ -17,10 +17,11 @@ defmodule Loin.Repo.Migrations.AddFunWithFlagsTogglesTable do
     end
 
     create index(
-      @table_name,
-      [:flag_name, :gate_type, :target],
-      [unique: true, name: "fwf_flag_name_gate_target_idx"]
-    )
+             @table_name,
+             [:flag_name, :gate_type, :target],
+             unique: true,
+             name: "fwf_flag_name_gate_target_idx"
+           )
   end
 
   def down do

@@ -21,8 +21,6 @@ defmodule Loin.Application do
       {Finch, name: Loin.Finch},
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint
-      # Start a worker by calling: Loin.Worker.start_link(arg)
-      # {Loin.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

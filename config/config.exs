@@ -61,8 +61,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Configuration for our feature flags library
-config :fun_with_flags, :cache,
-  enabled: false
+config :fun_with_flags, :cache, enabled: false
 
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,

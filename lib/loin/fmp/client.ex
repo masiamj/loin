@@ -1,63 +1,27 @@
 defmodule Loin.FMP.Client do
   @moduledoc """
-  This is the module for communicating with Financial Modeling Prep.
+  A SPOF that safely throttles requests to FMP.
   """
+  use ExternalService.Gateway,
+    fuse: [
+      # Tolerate 5 failures for every 1 second time window.
+      strategy: {:standard, 2, 1_000},
+      # Reset the fuse 5 seconds after it is blown.
+      refresh: 5_000
+    ],
+    # Limit to 600 calls per minute.
+    rate_limit: {600, :timer.seconds(60)},
+    retry: [
+      backoff: {:linear, 100, 1},
+      expiry: 5_000
+    ]
 
-  def all_profiles() do
-    {:ok, %{data: []}}
-  end
-
-  def all_securities() do
-    {:ok, %{data: []}}
-  end
-
-  def all_securities_peers() do
-    {:ok, %{data: []}}
-  end
-
-  def batch_historical_prices(symbols) when is_list(symbols) do
-    {:ok, %{
-      symbols: symbols,
-      data: []
-    }}
-  end
-
-  def dow_jones_companies() do
-    {:ok, %{data: []}}
-  end
-
-  def etf_exposure_by_stock(symbol) when is_binary(symbol) do
-    {:ok,
-     %{
-       symbol: symbol,
-       data: []
-     }}
-  end
-
-  def etf_holdings(symbol) when is_binary(symbol) do
-    {:ok,
-     %{
-       symbol: symbol,
-       data: []
-     }}
-  end
-
-  def etf_sector_weights(symbol) when is_binary(symbol) do
-    {:ok,
-     %{
-       symbol: symbol,
-       data: []
-     }}
-  end
-
-  def nasdaq_companies() do
-    {:ok, %{data: []}}
-  end
-
-  def sp500_companies() do
-    {:ok,
-     %{
-       data: []
-     }}
+  def call(executable_fn) do
+    external_call(fn ->
+      case executable_fn.() do
+        {:ok, result} -> {:ok, result}
+        {:error, reason} -> {:retry, reason}
+      end
+    end)
   end
 end
