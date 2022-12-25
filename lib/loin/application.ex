@@ -7,6 +7,9 @@ defmodule Loin.Application do
 
   @impl true
   def start(_type, _args) do
+    # Ensures proper validation
+    ensure_valid_environment!()
+
     children = [
       # Start the Telemetry supervisor
       LoinWeb.Telemetry,
@@ -34,5 +37,8 @@ defmodule Loin.Application do
   def config_change(changed, _new, removed) do
     LoinWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp ensure_valid_environment!() do
   end
 end

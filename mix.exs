@@ -50,6 +50,8 @@ defmodule Loin.MixProject do
       {:external_service, "~> 1.1"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
+      {:fun_with_flags, "~> 1.10"},
+      {:fun_with_flags_ui, "~> 0.8.1"},
       {:gettext, "~> 0.20"},
       {:heroicons, "~> 0.5"},
       {:jason, "~> 1.2"},
