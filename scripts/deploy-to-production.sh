@@ -1,1 +1,1 @@
-flyctl deploy -a loin -c ./fly.production.toml
+flyctl deploy -a loin -c ./fly.production.toml --remote-only

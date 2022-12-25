@@ -1,1 +1,1 @@
-flyctl deploy -a loin-staging -c ./fly.staging.toml
+flyctl deploy -a loin-staging -c ./fly.staging.toml --remote-only
