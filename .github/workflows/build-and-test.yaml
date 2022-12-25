@@ -1,11 +1,9 @@
 name: Build, verify quality, and test
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     types: [edited, opened, ready_for_review, synchronize]
-
+    
 env:
   MIX_ENV: test
 
