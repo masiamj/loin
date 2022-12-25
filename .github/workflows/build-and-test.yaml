@@ -38,6 +38,8 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Cache deps and build
         uses: actions/cache@v3
         with:
@@ -54,7 +56,5 @@ jobs:
         run: mix clean
       - name: Compile deps
         run: mix deps.compile
-      - name: Compile app
-        run: mix compile
       - name: Runs all quality checks
         run: mix check --parallel
