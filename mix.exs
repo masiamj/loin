@@ -9,7 +9,15 @@ defmodule Loin.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      preferred_cli_env: [
+        check: :test,
+        credo: :test,
+        dialyzer: :test,
+        doctor: :test,
+        sobelow: :test,
+        "deps.audit": :test
+      ]
     ]
   end
 
@@ -32,19 +40,19 @@ defmodule Loin.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:credo, ">= 0.0.0", only: [:dev], runtime: false},
-      {:dialyxir, ">= 0.0.0", only: [:dev], runtime: false},
-      {:doctor, ">= 0.0.0", only: [:dev], runtime: false},
+      {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:doctor, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
-      {:ex_check, "~> 0.14.0", only: [:dev], runtime: false},
-      {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false},
+      {:ex_check, "~> 0.14.0", only: [:dev, :test], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
       {:heroicons, "~> 0.5"},
       {:jason, "~> 1.2"},
-      {:mix_audit, ">= 0.0.0", only: [:dev], runtime: false},
+      {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
@@ -53,7 +61,7 @@ defmodule Loin.MixProject do
       {:phoenix, "~> 1.7.0-rc.0", override: true},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
-      {:sobelow, ">= 0.0.0", only: [:dev], runtime: false},
+      {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
