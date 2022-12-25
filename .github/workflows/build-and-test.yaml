@@ -1,5 +1,9 @@
 name: Build, verify quality, and test
-on: [pull_request, push]
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 env:
   MIX_ENV: test
 permissions:
