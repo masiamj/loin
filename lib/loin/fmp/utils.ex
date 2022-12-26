@@ -129,18 +129,10 @@ defmodule Loin.FMP.Utils do
   end
 
   defp calculate_trend_change(previous_trend, current_trend) do
-    case {previous_trend, current_trend} do
-      {nil, _} -> nil
-      {_, nil} -> nil
-      {:down, :down} -> nil
-      {:down, :neutral} -> :down_to_neutral
-      {:down, :up} -> :down_to_up
-      {:neutral, :down} -> :neutral_to_down
-      {:neutral, :neutral} -> nil
-      {:neutral, :up} -> :neutral_to_up
-      {:up, :down} -> :up_to_down
-      {:up, :neutral} -> :up_to_neutral
-      {:up, :up} -> nil
+    cond do
+      is_nil(previous_trend) or is_nil(current_trend) -> nil
+      previous_trend == current_trend -> nil
+      true -> Atom.to_string(previous_trend) <> "_to_" <> Atom.to_string(current_trend)
     end
   end
 

@@ -39,18 +39,12 @@ defmodule Loin.FMP.MajorIndexSymbolsCache do
 
   @impl true
   def init(_opts) do
-    [dow_jones_symbols, nasdaq_symbols, sp500_symbols] = [
-      Task.async(fn -> Service.dow_jones_companies_symbols() end),
-      Task.async(fn -> Service.nasdaq_companies_symbols() end),
-      Task.async(fn -> Service.sp500_companies_symbols() end)
-    ]
-    |> Task.await_many()
-
-    {:ok, %{
-      dow_jones_symbols: dow_jones_symbols,
-      nasdaq_symbols: nasdaq_symbols,
-      sp500_symbols: sp500_symbols
-    }}
+    {:ok,
+     %{
+       dow_jones_symbols: MapSet.new(),
+       nasdaq_symbols: MapSet.new(),
+       sp500_symbols: MapSet.new()
+     }, {:continue, :initialize}}
   end
 
   @impl true
@@ -66,5 +60,24 @@ defmodule Loin.FMP.MajorIndexSymbolsCache do
   @impl true
   def handle_call({:is_sp500, symbol}, _from, %{sp500_symbols: symbols} = state) do
     {:reply, MapSet.member?(symbols, symbol), state}
+  end
+
+  @impl true
+  def handle_continue(:initialize, _state) do
+    [dow_jones_symbols, nasdaq_symbols, sp500_symbols] =
+      [
+        Task.async(fn -> Service.dow_jones_companies_symbols() end),
+        Task.async(fn -> Service.nasdaq_companies_symbols() end),
+        Task.async(fn -> Service.sp500_companies_symbols() end)
+      ]
+      |> Task.await_many()
+
+    state = %{
+      dow_jones_symbols: dow_jones_symbols,
+      nasdaq_symbols: nasdaq_symbols,
+      sp500_symbols: sp500_symbols
+    }
+
+    {:noreply, state}
   end
 end

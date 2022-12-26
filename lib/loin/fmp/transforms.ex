@@ -82,6 +82,7 @@ defmodule Loin.FMP.Transforms do
       in_sp500: MajorIndexSymbolsCache.is_sp500(symbol),
       industry: Map.get(security, "industry"),
       is_etf: Map.get(security, "isEtf") == "TRUE",
+      market_cap: Map.get(security, "mktCap"),
       name: Map.get(security, "companyName"),
       sector: Map.get(security, "sector"),
       symbol: symbol,
