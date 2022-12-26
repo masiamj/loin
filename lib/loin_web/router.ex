@@ -24,6 +24,7 @@ defmodule LoinWeb.Router do
 
   # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
   scope path: "/feature-flags" do
+    pipe_through :mounted_apps
     forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
   end
 
@@ -31,6 +32,12 @@ defmodule LoinWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/fmp_securities", FMPSecurityLive.Index, :index
+    live "/fmp_securities/new", FMPSecurityLive.Index, :new
+    live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
+    live "/fmp_securities/:id", FMPSecurityLive.Show, :show
+    live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

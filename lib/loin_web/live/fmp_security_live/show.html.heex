@@ -1,0 +1,40 @@
+<.header>
+  Fmp security <%= @fmp_security.id %>
+  <:subtitle>This is a fmp_security record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/fmp_securities/#{@fmp_security}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit fmp_security</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description"><%= @fmp_security.description %></:item>
+  <:item title="Exchange"><%= @fmp_security.exchange %></:item>
+  <:item title="Exchange short name"><%= @fmp_security.exchange_short_name %></:item>
+  <:item title="Full time employees"><%= @fmp_security.full_time_employees %></:item>
+  <:item title="Image"><%= @fmp_security.image %></:item>
+  <:item title="In dow jones"><%= @fmp_security.in_dow_jones %></:item>
+  <:item title="In nasdaq"><%= @fmp_security.in_nasdaq %></:item>
+  <:item title="In sp500"><%= @fmp_security.in_sp500 %></:item>
+  <:item title="Industry"><%= @fmp_security.industry %></:item>
+  <:item title="Is etf"><%= @fmp_security.is_etf %></:item>
+  <:item title="Market cap"><%= @fmp_security.market_cap %></:item>
+  <:item title="Name"><%= @fmp_security.name %></:item>
+  <:item title="Sector"><%= @fmp_security.sector %></:item>
+  <:item title="Symbol"><%= @fmp_security.symbol %></:item>
+  <:item title="Website"><%= @fmp_security.website %></:item>
+</.list>
+
+<.back navigate={~p"/fmp_securities"}>Back to fmp_securities</.back>
+
+<.modal :if={@live_action == :edit} id="fmp_security-modal" show on_cancel={JS.patch(~p"/fmp_securities/#{@fmp_security}")}>
+  <.live_component
+    module={LoinWeb.FMPSecurityLive.FormComponent}
+    id={@fmp_security.id}
+    title={@page_title}
+    action={@live_action}
+    fmp_security={@fmp_security}
+    navigate={~p"/fmp_securities/#{@fmp_security}"}
+  />
+</.modal>
