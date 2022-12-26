@@ -7,6 +7,9 @@ defmodule Loin.Application do
 
   @impl true
   def start(_type, _args) do
+    # Ensures proper environment validation
+    Loin.Config.validate!()
+
     children = [
       # Start the Telemetry supervisor
       LoinWeb.Telemetry,
@@ -16,10 +19,10 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
+      # Caches symbols for major indices
+      {Loin.FMP.MajorIndexSymbolsCache, []},
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint
-      # Start a worker by calling: Loin.Worker.start_link(arg)
-      # {Loin.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

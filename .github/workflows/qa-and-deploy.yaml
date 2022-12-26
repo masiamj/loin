@@ -14,7 +14,7 @@ jobs:
   # compilation, linting, static analysis, and tests
   code-quality:
     env:
-      # Runs in the 
+      FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
       MIX_ENV: test
     name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest

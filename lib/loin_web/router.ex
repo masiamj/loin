@@ -1,5 +1,6 @@
 defmodule LoinWeb.Router do
   use LoinWeb, :router
+  import Plug.BasicAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,6 +13,18 @@ defmodule LoinWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  # Pipeline for mounted (attached) 3rd-party applications
+  pipeline :mounted_apps do
+    plug :accepts, ["html"]
+    plug :put_secure_browser_headers
+    plug :basic_auth, username: "loincloth", password: "trending"
+  end
+
+  # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
+  scope path: "/feature-flags" do
+    forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
   end
 
   scope "/", LoinWeb do
