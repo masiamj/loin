@@ -3,7 +3,6 @@ defmodule Loin.FMP.Transforms do
   Defines common data cleaners and transforms for raw FMP data.
   """
 
-
   @doc """
   Transforms a FMP ETF stock exposure to an application-level security.
   """
@@ -11,7 +10,7 @@ defmodule Loin.FMP.Transforms do
     %{
       asset_symbol: Map.get(security, "assetExposure"),
       etf_symbol: Map.get(security, "etfSymbol"),
-      etf_weight_percentage: Map.get(security, "weightPercentage"),
+      etf_weight_percentage: Map.get(security, "weightPercentage")
     }
   end
 
@@ -38,6 +37,54 @@ defmodule Loin.FMP.Transforms do
   end
 
   @doc """
+  Maps a historical price item into the proper application-level structure.
+  """
+  def historical_prices(%{"symbol" => symbol, "historical" => historical})
+      when is_list(historical) do
+    data =
+      historical
+      |> Enum.map(fn item ->
+        %{
+          close: Map.get(item, "adjClose"),
+          date: Map.get(item, "date"),
+          volume: Map.get(item, "volume")
+        }
+      end)
+      |> Enum.reverse()
+
+    %{data: data, symbol: symbol}
+  end
+
+  @doc """
+  Maps a raw peers entry to an application-level peers entry.
+  """
+  def peers(security) when is_map(security) do
+    %{
+      peers: Map.get(security, "peersList", []),
+      symbol: Map.get(security, "symbol")
+    }
+  end
+
+  @doc """
+  Maps a raw Profile to an application-level security.
+  """
+  def profile(security) when is_map(security) do
+    %{
+      description: Map.get(security, "description"),
+      exchange: Map.get(security, "exchange"),
+      exchange_short_name: Map.get(security, "exchangeShortName"),
+      full_time_employees: Map.get(security, "fullTimeEmployees"),
+      image: Map.get(security, "image"),
+      industry: Map.get(security, "industry"),
+      is_etf: Map.get(security, "isEtf") == "TRUE",
+      name: Map.get(security, "companyName"),
+      sector: Map.get(security, "sector"),
+      symbol: Map.get(security, "Symbol"),
+      website: Map.get(security, "website")
+    }
+  end
+
+  @doc """
   Transforms a FMP ETF constituent to an application-level security for the well-known
   indices (S&P 500, Nasdaq, Dow Jones).
   """
@@ -46,31 +93,7 @@ defmodule Loin.FMP.Transforms do
       name: Map.get(security, "name"),
       sector: Map.get(security, "sector"),
       sub_sector: Map.get(security, "subSector"),
-      symbol: Map.get(security, "symbol"),
-    }
-  end
-
-  @doc """
-  Maps a list of items with a transform in a concurrent way
-  """
-  def map(items, transform) when is_list(items) do
-    items
-    |> Flow.from_enumerable()
-    |> Flow.partition()
-    |> Flow.map(fn item -> transform.(item) end)
-    |> Enum.to_list()
-  end
-
-  @doc """
-  Transforms a FMP security to an application-level security.
-  """
-  def security(security) when is_map(security) do
-    %{
-      exchange: Map.get(security, "exchange"),
-      exchange_short_name: Map.get(security, "exchangeShortName"),
-      name: Map.get(security, "name"),
-      symbol: Map.get(security, "symbol"),
-      type: Map.get(security, "type")
+      symbol: Map.get(security, "symbol")
     }
   end
 end

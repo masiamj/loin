@@ -2,55 +2,55 @@ defmodule Loin.FMP.Service do
   @moduledoc """
   This is the module for communicating with Financial Modeling Prep.
   """
-  alias Loin.FMP.Transforms
+  alias Loin.FMP.{Transforms, Utils}
 
   @api_base_url "https://financialmodelingprep.com/api/v3/"
-
-  def all_profiles() do
-    {:ok, %{data: []}}
-  end
+  @bulk_api_base_url "https://financialmodelingprep.com/api/v4/"
 
   @doc """
-  Fetches all securities.
+  Fetches all the profiles for all securities (Stream).
   """
-  def all_securities() do
-    data =
-      "/stock/list"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Transforms.map(&Transforms.security/1)
-
-    {:ok, %{data: data}}
-  end
-
-  @doc """
-  Fetches all the peers for all securities.
-  """
-  def all_securities_peers() do
-    {:ok, %{data: []}}
+  def all_profiles_stream() do
+    (@bulk_api_base_url <> "/profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
+    |> RemoteFileStreamer.stream()
+    |> CSV.decode!(headers: true)
+    |> Stream.filter(&Utils.is_us_security/1)
+    |> Stream.map(&Transforms.profile/1)
   end
 
   @doc """
   Batch fetches historical prices for a list of securities.
   """
   def batch_historical_prices(symbols) when is_list(symbols) do
-    {:ok,
-     %{
-       symbols: symbols,
-       data: []
-     }}
+    symbols = Enum.join(symbols, ",")
+
+    data =
+      "/historical-price-full/#{symbols}"
+      |> create_request()
+      |> Req.get!()
+      |> handle_response()
+      |> then(fn response ->
+        case response do
+          %{"historicalStockList" => historical_stock_list} -> historical_stock_list
+          %{"symbol" => _symbol} = item -> [item]
+        end
+      end)
+      |> Utils.map(&Transforms.historical_prices/1)
+      |> Utils.map(&Utils.create_indicators/1)
+
+    {:ok, data}
   end
 
   @doc """
   Fetches all Dow Jones constituents.
   """
   def dow_jones_companies() do
-    data = "/dowjones_constituent"
+    data =
+      "/dowjones_constituent"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.well_defined_constituent/1)
+      |> Utils.map(&Transforms.well_defined_constituent/1)
 
     {:ok, %{data: data}}
   end
@@ -59,11 +59,12 @@ defmodule Loin.FMP.Service do
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
-    data = "/etf-stock-exposure/#{symbol}"
+    data =
+      "/etf-stock-exposure/#{symbol}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.etf_exposure/1)
+      |> Utils.map(&Transforms.etf_exposure/1)
 
     {:ok,
      %{
@@ -76,11 +77,12 @@ defmodule Loin.FMP.Service do
   Fetches the holdings of a specific ETF.
   """
   def etf_holdings(symbol) when is_binary(symbol) do
-    data = "/etf-holder/#{symbol}"
+    data =
+      "/etf-holder/#{symbol}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.etf_holding/1)
+      |> Utils.map(&Transforms.etf_holding/1)
 
     {:ok,
      %{
@@ -93,11 +95,12 @@ defmodule Loin.FMP.Service do
   Fetches the sector exposures of an ETF.
   """
   def etf_sector_weights(symbol) when is_binary(symbol) do
-    data = "/etf-sector-weightings/#{symbol}"
+    data =
+      "/etf-sector-weightings/#{symbol}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.etf_sector_weight/1)
+      |> Utils.map(&Transforms.etf_sector_weight/1)
 
     {:ok,
      %{
@@ -110,24 +113,44 @@ defmodule Loin.FMP.Service do
   Fetches a list of Nasdaq constituents.
   """
   def nasdaq_companies() do
-    data = "/nasdaq_constituent"
+    data =
+      "/nasdaq_constituent"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.well_defined_constituent/1)
+      |> Utils.map(&Transforms.well_defined_constituent/1)
 
     {:ok, %{data: data}}
+  end
+
+  @doc """
+  Fetches the peers of a stock.
+  """
+  def peers(symbol) when is_binary(symbol) do
+    %{peers: peers} =
+      "/stock_peers"
+      |> create_request_v4(%{symbol: symbol})
+      |> Req.get!()
+      |> handle_response()
+      |> Utils.map(&Transforms.peers/1)
+      |> List.first(%{})
+      |> then(fn item ->
+        %{peers: Map.get(item, :peers, []), symbol: Map.get(item, :symbol, symbol)}
+      end)
+
+    {:ok, %{data: peers, symbol: symbol}}
   end
 
   @doc """
   Fetches a list of S&P 500 constituents.
   """
   def sp500_companies() do
-    data = "/sp500_constituent"
+    data =
+      "/sp500_constituent"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> Transforms.map(&Transforms.well_defined_constituent/1)
+      |> Utils.map(&Transforms.well_defined_constituent/1)
 
     {:ok, %{data: data}}
   end
@@ -137,6 +160,11 @@ defmodule Loin.FMP.Service do
   defp create_request(path, params \\ %{}) do
     params = Map.put(params, "apikey", Loin.Config.fmp_api_key())
     Req.new(base_url: @api_base_url, url: path, params: params)
+  end
+
+  defp create_request_v4(path, params) do
+    params = Map.put(params, "apikey", Loin.Config.fmp_api_key())
+    Req.new(base_url: @bulk_api_base_url, url: path, params: params)
   end
 
   defp handle_response(%Req.Response{status: status, body: body}) do

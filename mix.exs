@@ -41,6 +41,7 @@ defmodule Loin.MixProject do
   defp deps do
     [
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:csv, "~> 3.0"},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:doctor, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
@@ -55,6 +56,7 @@ defmodule Loin.MixProject do
       {:fun_with_flags_ui, "~> 0.8.1"},
       {:gettext, "~> 0.20"},
       {:heroicons, "~> 0.5"},
+      {:indicado, "~> 0.0.4"},
       {:jason, "~> 1.2"},
       {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:oban, "~> 2.13"},
