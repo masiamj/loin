@@ -56,6 +56,15 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches symbols for all Dow Jones companies
+  """
+  def dow_jones_companies_symbols() do
+    with {:ok, %{data: data}} <- dow_jones_companies() do
+      create_set_of_symbols(data)
+    end
+  end
+
+  @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
@@ -124,6 +133,15 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches symbols for all Nasdaq companies
+  """
+  def nasdaq_companies_symbols() do
+    with {:ok, %{data: data}} <- nasdaq_companies() do
+      create_set_of_symbols(data)
+    end
+  end
+
+  @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
@@ -155,7 +173,22 @@ defmodule Loin.FMP.Service do
     {:ok, %{data: data}}
   end
 
+  @doc """
+  Fetches symbols for all S&P 500 companies
+  """
+  def sp500_companies_symbols() do
+    with {:ok, %{data: data}} <- sp500_companies() do
+      create_set_of_symbols(data)
+    end
+  end
+
   # Private helpers
+
+  defp create_set_of_symbols(companies) when is_list(companies) do
+    companies
+    |> Enum.map(&Map.get(&1, :symbol))
+    |> MapSet.new()
+  end
 
   defp create_request(path, params \\ %{}) do
     params = Map.put(params, "apikey", Loin.Config.fmp_api_key())

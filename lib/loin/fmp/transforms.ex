@@ -3,6 +3,8 @@ defmodule Loin.FMP.Transforms do
   Defines common data cleaners and transforms for raw FMP data.
   """
 
+  alias Loin.FMP.MajorIndexSymbolsCache
+
   @doc """
   Transforms a FMP ETF stock exposure to an application-level security.
   """
@@ -68,18 +70,21 @@ defmodule Loin.FMP.Transforms do
   @doc """
   Maps a raw Profile to an application-level security.
   """
-  def profile(security) when is_map(security) do
+  def profile(%{"Symbol" => symbol} = security) when is_map(security) do
     %{
       description: Map.get(security, "description"),
       exchange: Map.get(security, "exchange"),
       exchange_short_name: Map.get(security, "exchangeShortName"),
       full_time_employees: Map.get(security, "fullTimeEmployees"),
       image: Map.get(security, "image"),
+      in_dow_jones: MajorIndexSymbolsCache.is_dow_jones(symbol),
+      in_nasdaq: MajorIndexSymbolsCache.is_nasdaq(symbol),
+      in_sp500: MajorIndexSymbolsCache.is_sp500(symbol),
       industry: Map.get(security, "industry"),
       is_etf: Map.get(security, "isEtf") == "TRUE",
       name: Map.get(security, "companyName"),
       sector: Map.get(security, "sector"),
-      symbol: Map.get(security, "Symbol"),
+      symbol: symbol,
       website: Map.get(security, "website")
     }
   end

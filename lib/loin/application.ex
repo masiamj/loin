@@ -19,6 +19,8 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
+      # Caches symbols for major indices
+      {Loin.FMP.MajorIndexSymbolsCache, []},
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint
     ]
