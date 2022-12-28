@@ -1,4 +1,8 @@
 defmodule Loin.Accounts.UserToken do
+  @moduledoc """
+  Exposes functions for user tokens.
+  """
+
   use Ecto.Schema
   import Ecto.Query
   alias Loin.Accounts.UserToken

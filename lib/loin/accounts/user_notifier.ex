@@ -1,4 +1,8 @@
 defmodule Loin.Accounts.UserNotifier do
+  @moduledoc """
+  Utilities for sending notifications to a user.
+  """
+
   import Swoosh.Email
 
   alias Loin.Mailer

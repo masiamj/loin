@@ -1,4 +1,8 @@
 defmodule LoinWeb.UserAuth do
+  @moduledoc """
+  Adds utility functions and plugs for user authentication.
+  """
+
   use LoinWeb, :verified_routes
 
   import Plug.Conn
