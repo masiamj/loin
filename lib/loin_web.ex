@@ -27,6 +27,7 @@ defmodule LoinWeb do
       import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import Phoenix.Component
     end
   end
 
