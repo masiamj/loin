@@ -13,7 +13,7 @@ defmodule Loin.FMP.Service do
   def all_profiles_stream() do
     (@bulk_api_base_url <> "/profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
     |> RemoteFileStreamer.stream()
-    |> CSV.decode!(headers: true)
+    |> CSV.decode!(escape_max_lines: 25, headers: true)
     |> Stream.filter(&Utils.is_us_security/1)
     |> Stream.map(&Transforms.profile/1)
   end
