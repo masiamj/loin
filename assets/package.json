@@ -1,0 +1,7 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "dependencies": {
+    "lightweight-charts": "^3.8.0"
+  }
+}

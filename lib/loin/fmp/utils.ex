@@ -15,19 +15,19 @@ defmodule Loin.FMP.Utils do
       |> calculate_smas()
 
     # Calculate flags
-      [chronological_data, day_200_smas, day_50_smas]
-      |> Enum.zip_with(fn [%{close: close} = item, day_200_sma, day_50_sma] ->
-        Map.merge(
-          item,
-          calculate_flags(%{
-            close: close,
-            day_200_sma: day_200_sma,
-            day_50_sma: day_50_sma
-          })
-        )
-      end)
-      |> Enum.chunk_every(2, 1, :discard)
-      |> Enum.map(&append_previous_flags_to_current/1)
+    [chronological_data, day_200_smas, day_50_smas]
+    |> Enum.zip_with(fn [%{close: close} = item, day_200_sma, day_50_sma] ->
+      Map.merge(
+        item,
+        calculate_flags(%{
+          close: close,
+          day_200_sma: day_200_sma,
+          day_50_sma: day_50_sma
+        })
+      )
+    end)
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.map(&append_previous_flags_to_current/1)
   end
 
   @doc """

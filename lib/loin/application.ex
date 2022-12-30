@@ -22,7 +22,9 @@ defmodule Loin.Application do
       # Start cache for holdings of major indices
       {Loin.FMP.MajorIndexSymbolsCache, []},
       # Cache timeseries data
-      Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]}, id: :timeseries_data),
+      Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
+        id: :timeseries_data
+      ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint
     ]

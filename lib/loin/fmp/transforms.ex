@@ -44,14 +44,14 @@ defmodule Loin.FMP.Transforms do
   def historical_prices(%{"historical" => historical})
       when is_list(historical) do
     historical
-      |> Enum.map(fn item ->
-        %{
-          close: Map.get(item, "close"),
-          date: Map.get(item, "date"),
-          volume: Map.get(item, "volume")
-        }
-      end)
-      |> Enum.reverse()
+    |> Enum.map(fn item ->
+      %{
+        close: Map.get(item, "close"),
+        date: Map.get(item, "date"),
+        volume: Map.get(item, "volume")
+      }
+    end)
+    |> Enum.reverse()
   end
 
   @doc """

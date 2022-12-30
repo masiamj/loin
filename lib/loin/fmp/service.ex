@@ -24,7 +24,8 @@ defmodule Loin.FMP.Service do
   def batch_historical_prices(symbols) when is_list(symbols) do
     joined_symbols = Enum.join(symbols, ",")
 
-    data = "/historical-price-full/#{joined_symbols}"
+    data =
+      "/historical-price-full/#{joined_symbols}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
@@ -37,7 +38,9 @@ defmodule Loin.FMP.Service do
       |> Utils.map(&Transforms.historical_prices/1)
       |> Utils.map(&Utils.create_indicators/1)
 
-      Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc -> Map.merge(acc, %{symbol => data}) end)
+    Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc ->
+      Map.merge(acc, %{symbol => data})
+    end)
   end
 
   @doc """
@@ -45,10 +48,10 @@ defmodule Loin.FMP.Service do
   """
   def dow_jones_companies() do
     "/dowjones_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
@@ -64,10 +67,10 @@ defmodule Loin.FMP.Service do
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
     "/etf-stock-exposure/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_exposure/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_exposure/1)
   end
 
   @doc """
@@ -75,10 +78,10 @@ defmodule Loin.FMP.Service do
   """
   def etf_holdings(symbol) when is_binary(symbol) do
     "/etf-holder/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_holding/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_holding/1)
   end
 
   @doc """
@@ -86,10 +89,10 @@ defmodule Loin.FMP.Service do
   """
   def etf_sector_weights(symbol) when is_binary(symbol) do
     "/etf-sector-weightings/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_sector_weight/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_sector_weight/1)
   end
 
   @doc """
@@ -97,10 +100,10 @@ defmodule Loin.FMP.Service do
   """
   def nasdaq_companies() do
     "/nasdaq_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
@@ -116,11 +119,11 @@ defmodule Loin.FMP.Service do
   """
   def peers(symbol) when is_binary(symbol) do
     "/stock_peers"
-      |> create_request_v4(%{symbol: symbol})
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.peers/1)
-      |> List.flatten()
+    |> create_request_v4(%{symbol: symbol})
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.peers/1)
+    |> List.flatten()
   end
 
   @doc """
@@ -128,10 +131,10 @@ defmodule Loin.FMP.Service do
   """
   def sp500_companies() do
     "/sp500_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
