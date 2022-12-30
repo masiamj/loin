@@ -71,6 +71,8 @@ defmodule Loin.FMP.Utils do
     %{
       close_above_day_200_sma: false,
       close_above_day_50_sma: false,
+      day_200_sma: day_200_sma,
+      day_50_sma: day_50_sma,
       day_50_sma_above_day_200_sma: false,
       is_valid: false,
       trend: nil,
