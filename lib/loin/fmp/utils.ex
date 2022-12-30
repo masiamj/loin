@@ -6,7 +6,7 @@ defmodule Loin.FMP.Utils do
   @doc """
   Creates indicators.
   """
-  def create_indicators(%{symbol: symbol, data: chronological_data})
+  def create_indicators(chronological_data \\ [])
       when is_list(chronological_data) do
     # Extract prices to run indicator calculations
     [day_200_smas, day_50_smas] =
@@ -15,7 +15,6 @@ defmodule Loin.FMP.Utils do
       |> calculate_smas()
 
     # Calculate flags
-    data_with_indicators =
       [chronological_data, day_200_smas, day_50_smas]
       |> Enum.zip_with(fn [%{close: close} = item, day_200_sma, day_50_sma] ->
         Map.merge(
@@ -27,11 +26,8 @@ defmodule Loin.FMP.Utils do
           })
         )
       end)
-      |> Enum.reverse()
       |> Enum.chunk_every(2, 1, :discard)
       |> Enum.map(&append_previous_flags_to_current/1)
-
-    %{data: data_with_indicators, symbol: symbol}
   end
 
   @doc """
@@ -56,7 +52,6 @@ defmodule Loin.FMP.Utils do
   end
 
   # Private functions
-
   defp append_previous_flags_to_current([previous, current]) do
     Map.merge(current, %{
       previous_close: Map.get(previous, :close),

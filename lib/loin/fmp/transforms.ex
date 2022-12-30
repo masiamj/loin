@@ -11,7 +11,6 @@ defmodule Loin.FMP.Transforms do
   """
   def etf_exposure(security) when is_map(security) do
     %{
-      asset_symbol: Map.get(security, "assetExposure"),
       etf_symbol: Map.get(security, "etfSymbol"),
       etf_weight_percentage: Map.get(security, "weightPercentage")
     }
@@ -42,30 +41,24 @@ defmodule Loin.FMP.Transforms do
   @doc """
   Maps a historical price item into the proper application-level structure.
   """
-  def historical_prices(%{"symbol" => symbol, "historical" => historical})
+  def historical_prices(%{"historical" => historical})
       when is_list(historical) do
-    data =
-      historical
+    historical
       |> Enum.map(fn item ->
         %{
-          close: Map.get(item, "adjClose"),
+          close: Map.get(item, "close"),
           date: Map.get(item, "date"),
           volume: Map.get(item, "volume")
         }
       end)
       |> Enum.reverse()
-
-    %{data: data, symbol: symbol}
   end
 
   @doc """
   Maps a raw peers entry to an application-level peers entry.
   """
   def peers(security) when is_map(security) do
-    %{
-      peers: Map.get(security, "peersList", []),
-      symbol: Map.get(security, "symbol")
-    }
+    Map.get(security, "peersList", [])
   end
 
   @doc """
