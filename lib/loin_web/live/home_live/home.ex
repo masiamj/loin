@@ -1,5 +1,6 @@
 defmodule LoinWeb.HomeLive do
   use LoinWeb, :live_view
+  import LoinWeb.HeaderComponents
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,8 +11,7 @@ defmodule LoinWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <div>
-      <h1>On the page</h1>
-      <div class="w-124 h-48s" id="example-chart" phx-hook="ExampleChart"></div>
+      <.unauthenticated id="unauthenticated-header" />
     </div>
     """
   end
