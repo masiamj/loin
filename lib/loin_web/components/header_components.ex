@@ -3,6 +3,7 @@ defmodule LoinWeb.HeaderComponents do
   Provides the Header components.
   """
   use Phoenix.Component
+  use LoinWeb, :live_view
 
   alias Phoenix.LiveView.JS
 
@@ -27,22 +28,16 @@ defmodule LoinWeb.HeaderComponents do
       </.modal>
   """
   attr :id, :string, required: true
-  attr :is_open, :boolean, default: false
-  attr :on_close, JS, default: %JS{}
-  attr :on_open, JS, default: %JS{}
 
   def unauthenticated(assigns) do
     ~H"""
-    <div class="relative" id={@id}>
-      <div class="px-4 sm:px-6">
-        <div class="flex items-center justify-between py-6 md:justify-start md:space-x-10">
-          <div class="flex justify-start lg:w-0 lg:flex-1">
-            <a href="#">
-              <span class="font-bold text-xl">Trenderloin</span>
-              <%!-- <img class="h-8 w-auto sm:h-10" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt=""> --%>
-            </a>
-          </div>
-          <div class="-my-2 -mr-2 md:hidden">
+    <div class="relative bg-white" id={@id}>
+      <div class="px-4">
+        <div class="flex items-center justify-between py-4 lg:justify-start lg:space-x-10">
+          <a href="#" class="font-bold">
+            Trenderloin
+          </a>
+          <div class="-my-2 -mr-2 lg:hidden">
             <button
               type="button"
               class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -67,104 +62,49 @@ defmodule LoinWeb.HeaderComponents do
               </svg>
             </button>
           </div>
-          <nav class="hidden space-x-10 md:flex">
-            <div class="relative">
-              <button
-                type="button"
-                class="text-gray-500 group inline-flex items-center rounded-md bg-white text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                aria-expanded="false"
-              >
-                <span>More</span>
-                <svg
-                  class="text-gray-400 ml-2 h-5 w-5 group-hover:text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              <div class="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-2 sm:px-0">
-                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
-                    <a href="#" class="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50">
-                      <svg
-                        class="h-6 w-6 flex-shrink-0 text-indigo-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M16.712 4.33a9.027 9.027 0 011.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 00-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 010 9.424m-4.138-5.976a3.736 3.736 0 00-.88-1.388 3.737 3.737 0 00-1.388-.88m2.268 2.268a3.765 3.765 0 010 2.528m-2.268-4.796a3.765 3.765 0 00-2.528 0m4.796 4.796c-.181.506-.475.982-.88 1.388a3.736 3.736 0 01-1.388.88m2.268-2.268l4.138 3.448m0 0a9.027 9.027 0 01-1.306 1.652c-.51.51-1.064.944-1.652 1.306m0 0l-3.448-4.138m3.448 4.138a9.014 9.014 0 01-9.424 0m5.976-4.138a3.765 3.765 0 01-2.528 0m0 0a3.736 3.736 0 01-1.388-.88 3.737 3.737 0 01-.88-1.388m2.268 2.268L7.288 19.67m0 0a9.024 9.024 0 01-1.652-1.306 9.027 9.027 0 01-1.306-1.652m0 0l4.138-3.448M4.33 16.712a9.014 9.014 0 010-9.424m4.138 5.976a3.765 3.765 0 010-2.528m0 0c.181-.506.475-.982.88-1.388a3.736 3.736 0 011.388-.88m-2.268 2.268L4.33 7.288m6.406 1.18L7.288 4.33m0 0a9.024 9.024 0 00-1.652 1.306A9.025 9.025 0 004.33 7.288"
-                        />
-                      </svg>
-                      <div class="ml-4">
-                        <p class="text-base font-medium text-gray-900">Help Center</p>
-                        <p class="mt-1 text-sm text-gray-500">
-                          Get all of your questions answered in our forums or contact support.
-                        </p>
-                      </div>
-                    </a>
-
-                    <a href="#" class="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50">
-                      <svg
-                        class="h-6 w-6 flex-shrink-0 text-indigo-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
-                        />
-                      </svg>
-                      <div class="ml-4">
-                        <p class="text-base font-medium text-gray-900">Guides</p>
-                        <p class="mt-1 text-sm text-gray-500">
-                          Learn how to maximize our platform to get the most out of it.
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                </div>
+          <div class="hidden lg:flex lg:flex-1 justify-center">
+            <div class="relative w-3/5">
+              <input type="text" name="search" id="search" class="block w-full rounded-md border-gray-300 pr-12 shadow-sm focus:border-black focus:ring-black sm:text-sm" placeholder="Search by name or ticker">
+              <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                <kbd class="inline-flex items-center rounded border border-gray-200 px-2 font-sans text-sm font-medium text-gray-400">⌘K</kbd>
               </div>
             </div>
-          </nav>
-          <div class="hidden items-center justify-end md:flex md:flex-1 lg:w-0">
-            <a
-              href="#"
-              class="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
-            >
-              Sign in
-            </a>
-            <a
-              href="#"
-              class="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-            >
-              Sign up
-            </a>
+          </div>
+          <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
+            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              How it works
+            </.link>
+            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              Trend changes
+            </.link>
+            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              Watchlist
+            </.link>
+            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              Screener
+            </.link>
+            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              Charts
+            </.link>
+            <.link href={~p"/users/log_in"} class="relative group">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200"></div>
+              <button class="relative px-3 py-1 bg-white rounded-md">
+                Log in
+              </button>
+            </.link>
+            <.link href={~p"/users/register"} class="relative group">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt"></div>
+              <button class="relative px-3 py-1 bg-black rounded-md text-white">
+                Sign up
+              </button>
+            </.link>
           </div>
         </div>
       </div>
 
       <%!-- Mobile menu --%>
       <div
-        class="absolute inset-x-0 top-0 origin-top-right transform transition hidden md:hidden"
+        class="absolute inset-x-0 top-0 origin-top-right transform transition hidden lg:hidden"
         id="mobile-menu"
       >
         <div class="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">

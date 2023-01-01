@@ -11,7 +11,7 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body>
+  <body class="bg-gray-50">
     <%= @inner_content %>
     <ul>
       <%= if @current_user do %>
@@ -23,13 +23,6 @@
         </li>
         <li>
           <.link href={~p"/users/log_out"} method="delete">Log out</.link>
-        </li>
-      <% else %>
-        <li>
-          <.link href={~p"/users/register"}>Register</.link>
-        </li>
-        <li>
-          <.link href={~p"/users/log_in"}>Log in</.link>
         </li>
       <% end %>
     </ul>
