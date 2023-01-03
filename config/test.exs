@@ -15,7 +15,8 @@ config :loin, Loin.Repo,
   database: "loin_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10,
-  port: 5436
+  port: 5436,
+  migration_timestamps: [type: :timestamptz, autogenerate: {DateTime, :utc_now, []}]
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

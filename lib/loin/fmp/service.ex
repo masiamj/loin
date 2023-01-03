@@ -13,7 +13,7 @@ defmodule Loin.FMP.Service do
   def all_profiles_stream() do
     (@bulk_api_base_url <> "/profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
     |> RemoteFileStreamer.stream()
-    |> CSV.decode!(headers: true)
+    |> CSV.decode!(escape_max_lines: 25, headers: true)
     |> Stream.filter(&Utils.is_us_security/1)
     |> Stream.map(&Transforms.profile/1)
   end
@@ -22,10 +22,10 @@ defmodule Loin.FMP.Service do
   Batch fetches historical prices for a list of securities.
   """
   def batch_historical_prices(symbols) when is_list(symbols) do
-    symbols = Enum.join(symbols, ",")
+    joined_symbols = Enum.join(symbols, ",")
 
     data =
-      "/historical-price-full/#{symbols}"
+      "/historical-price-full/#{joined_symbols}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
@@ -38,148 +38,111 @@ defmodule Loin.FMP.Service do
       |> Utils.map(&Transforms.historical_prices/1)
       |> Utils.map(&Utils.create_indicators/1)
 
-    {:ok, data}
+    Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc ->
+      Map.merge(acc, %{symbol => data})
+    end)
   end
 
   @doc """
   Fetches all Dow Jones constituents.
   """
   def dow_jones_companies() do
-    data =
-      "/dowjones_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
-
-    {:ok, %{data: data}}
+    "/dowjones_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
   Fetches symbols for all Dow Jones companies
   """
   def dow_jones_companies_symbols() do
-    with {:ok, %{data: data}} <- dow_jones_companies() do
-      create_set_of_symbols(data)
-    end
+    dow_jones_companies()
+    |> create_set_of_symbols()
   end
 
   @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
-    data =
-      "/etf-stock-exposure/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_exposure/1)
-
-    {:ok,
-     %{
-       symbol: symbol,
-       data: data
-     }}
+    "/etf-stock-exposure/#{symbol}"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_exposure/1)
   end
 
   @doc """
   Fetches the holdings of a specific ETF.
   """
   def etf_holdings(symbol) when is_binary(symbol) do
-    data =
-      "/etf-holder/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_holding/1)
-
-    {:ok,
-     %{
-       symbol: symbol,
-       data: data
-     }}
+    "/etf-holder/#{symbol}"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_holding/1)
   end
 
   @doc """
   Fetches the sector exposures of an ETF.
   """
   def etf_sector_weights(symbol) when is_binary(symbol) do
-    data =
-      "/etf-sector-weightings/#{symbol}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.etf_sector_weight/1)
-
-    {:ok,
-     %{
-       symbol: symbol,
-       data: data
-     }}
+    "/etf-sector-weightings/#{symbol}"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.etf_sector_weight/1)
   end
 
   @doc """
   Fetches a list of Nasdaq constituents.
   """
   def nasdaq_companies() do
-    data =
-      "/nasdaq_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
-
-    {:ok, %{data: data}}
+    "/nasdaq_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
   Fetches symbols for all Nasdaq companies
   """
   def nasdaq_companies_symbols() do
-    with {:ok, %{data: data}} <- nasdaq_companies() do
-      create_set_of_symbols(data)
-    end
+    nasdaq_companies()
+    |> create_set_of_symbols()
   end
 
   @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
-    %{peers: peers} =
-      "/stock_peers"
-      |> create_request_v4(%{symbol: symbol})
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.peers/1)
-      |> List.first(%{})
-      |> then(fn item ->
-        %{peers: Map.get(item, :peers, []), symbol: Map.get(item, :symbol, symbol)}
-      end)
-
-    {:ok, %{data: peers, symbol: symbol}}
+    "/stock_peers"
+    |> create_request_v4(%{symbol: symbol})
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.peers/1)
+    |> List.flatten()
   end
 
   @doc """
   Fetches a list of S&P 500 constituents.
   """
   def sp500_companies() do
-    data =
-      "/sp500_constituent"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> Utils.map(&Transforms.well_defined_constituent/1)
-
-    {:ok, %{data: data}}
+    "/sp500_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
   Fetches symbols for all S&P 500 companies
   """
   def sp500_companies_symbols() do
-    with {:ok, %{data: data}} <- sp500_companies() do
-      create_set_of_symbols(data)
-    end
+    sp500_companies()
+    |> create_set_of_symbols()
   end
 
   # Private helpers

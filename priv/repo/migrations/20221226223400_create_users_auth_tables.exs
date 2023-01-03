@@ -9,7 +9,7 @@ defmodule Loin.Repo.Migrations.CreateUsersAuthTables do
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
-      timestamps()
+      timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz)
     end
 
     create unique_index(:users, [:email])
@@ -20,7 +20,7 @@ defmodule Loin.Repo.Migrations.CreateUsersAuthTables do
       add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string
-      timestamps(updated_at: false)
+      timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz, updated_at: false)
     end
 
     create index(:users_tokens, [:user_id])

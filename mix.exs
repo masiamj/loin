@@ -41,6 +41,7 @@ defmodule Loin.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
+      {:cachex, "~> 3.4"},
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:csv, "~> 3.0"},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},

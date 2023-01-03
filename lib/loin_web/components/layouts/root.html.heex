@@ -10,28 +10,25 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js">
+    </script>
   </head>
-  <body class="bg-white antialiased">
-    <ul>
-      <%= if @current_user do %>
-        <li>
-          <%= @current_user.email %>
-        </li>
-        <li>
-          <.link href={~p"/users/settings"}>Settings</.link>
-        </li>
-        <li>
-          <.link href={~p"/users/log_out"} method="delete">Log out</.link>
-        </li>
-      <% else %>
-        <li>
-          <.link href={~p"/users/register"}>Register</.link>
-        </li>
-        <li>
-          <.link href={~p"/users/log_in"}>Log in</.link>
-        </li>
-      <% end %>
-    </ul>
-    <%= @inner_content %>
+  <body class="bg-gray-100">
+    <%= if @current_user do %>
+      <li>
+        <%= @current_user.email %>
+      </li>
+      <li>
+        <.link href={~p"/users/settings"}>Settings</.link>
+      </li>
+      <li>
+        <.link href={~p"/users/log_out"} method="delete">Log out</.link>
+      </li>
+    <% else %>
+      <LoinWeb.HeaderComponents.unauthenticated id="unauthenticated-header" />
+    <% end %>
+    <div>
+      <%= @inner_content %>
+    </div>
   </body>
 </html>

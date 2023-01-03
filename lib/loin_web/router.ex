@@ -22,11 +22,11 @@ defmodule LoinWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", LoinWeb do
-    pipe_through :browser
+  # scope "/", LoinWeb do
+  #   pipe_through :browser
 
-    get "/", PageController, :home
-  end
+  #   get "/", PageController, :home
+  # end
 
   # Other scopes may use custom stacks.
   # scope "/api", LoinWeb do
@@ -93,5 +93,16 @@ defmodule LoinWeb.Router do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
+  end
+
+  scope "/", LoinWeb do
+    pipe_through [:browser]
+
+    live "/", HomeLive, :home
+    live "/fmp_securities", FMPSecurityLive.Index, :index
+    live "/fmp_securities/new", FMPSecurityLive.Index, :new
+    live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
+    live "/fmp_securities/:id", FMPSecurityLive.Show, :show
+    live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
   end
 end

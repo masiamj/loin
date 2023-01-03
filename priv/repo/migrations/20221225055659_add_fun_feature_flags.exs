@@ -14,6 +14,8 @@ defmodule Loin.Repo.Migrations.AddFunWithFlagsTogglesTable do
       add :gate_type, :string, null: false
       add :target, :string, null: false
       add :enabled, :boolean, null: false
+
+      timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz)
     end
 
     create index(
