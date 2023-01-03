@@ -24,7 +24,6 @@ defmodule Loin.Repo.Migrations.AddFunWithFlagsTogglesTable do
              unique: true,
              name: "fwf_flag_name_gate_target_idx"
            )
-
   end
 
   def down do
