@@ -113,7 +113,10 @@ defmodule Loin.FMP.Transforms do
   def maybe_string_to_integer(value) do
     try do
       cond do
-        is_nil(value) or value == "" ->
+        is_nil(value) ->
+          nil
+
+        value == "" ->
           nil
 
         true ->

@@ -1,4 +1,8 @@
 defmodule Loin.FMP.FMPSecurity do
+  @moduledoc """
+  Schema for the base security on the platform.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
