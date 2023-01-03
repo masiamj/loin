@@ -2,30 +2,21 @@ defmodule LoinWeb.HeaderComponents do
   @moduledoc """
   Provides the Header components.
   """
-  use Phoenix.Component
   use LoinWeb, :live_view
 
-  alias Phoenix.LiveView.JS
+  @doc """
+  Not sure why we need this, CoreComponents doesn't have it.
+
+  The compiler is complaining and I don't have time to deal with it, so tossing it here.
+  """
+  def render(assigns) do
+    ~H"""
+    THIS IS A COMPILER PLACERHOLDER. DO NOT USE ME.
+    """
+  end
 
   @doc """
-  Renders a modal.
-
-  ## Examples
-
-      <.modal id="confirm-modal">
-        Are you sure?
-        <:confirm>OK</:confirm>
-        <:cancel>Cancel</:cancel>
-      </.modal>
-
-  JS commands may be passed to the `:on_cancel` and `on_confirm` attributes
-  for the caller to react to each button press, for example:
-
-      <.modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/posts")}>
-        Are you sure you?
-        <:confirm>OK</:confirm>
-        <:cancel>Cancel</:cancel>
-      </.modal>
+  Renders an unauthenticated header.
   """
   attr :id, :string, required: true
 
