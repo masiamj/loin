@@ -17,6 +17,7 @@ defmodule Loin.Accounts.UserToken do
   @change_email_validity_in_days 7
   @session_validity_in_days 60
 
+  @timestamps_opts [type: :utc_datetime_usec]
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users_tokens" do

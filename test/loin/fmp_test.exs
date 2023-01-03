@@ -9,6 +9,8 @@ defmodule Loin.FMPTest do
     import Loin.FMPFixtures
 
     @invalid_attrs %{
+      country: nil,
+      currency: nil,
       description: nil,
       exchange: nil,
       exchange_short_name: nil,
@@ -38,6 +40,8 @@ defmodule Loin.FMPTest do
 
     test "create_fmp_security/1 with valid data creates a fmp_security" do
       valid_attrs = %{
+        country: "USD",
+        currency: "US",
         description: "some description",
         exchange: "some exchange",
         exchange_short_name: "some exchange_short_name",

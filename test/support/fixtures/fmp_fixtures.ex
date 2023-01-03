@@ -11,6 +11,8 @@ defmodule Loin.FMPFixtures do
     {:ok, fmp_security} =
       attrs
       |> Enum.into(%{
+        country: "US",
+        currency: "USD",
         description: "some description",
         exchange: "some exchange",
         exchange_short_name: "some exchange_short_name",

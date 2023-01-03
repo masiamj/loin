@@ -22,7 +22,7 @@ defmodule Loin.Repo.Migrations.CreateFmpSecurities do
       add :symbol, :string
       add :website, :string
 
-      timestamps()
+      timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz)
     end
 
     create unique_index(:fmp_securities, [:symbol])
