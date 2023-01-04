@@ -22,7 +22,7 @@ defmodule LoinWeb.SecurityLive do
       <div class="grid grid-cols-1">
         <LoinWeb.Cards.generic title={"#{String.upcase(@symbol)} trend"}>
           <div
-            class="h-96 w-full"
+            class="h-[80vh] w-full"
             data-timeseries={@timeseries_data}
             id="timeseries_chart"
             phx-hook="TimeseriesChart"

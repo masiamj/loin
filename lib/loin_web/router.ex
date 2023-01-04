@@ -99,6 +99,7 @@ defmodule LoinWeb.Router do
     pipe_through [:browser]
 
     live "/", HomeLive, :home
+    live "/example/realtime-update", RealtimeUpdateLive, :index
     live "/example/:symbol", SecurityLive, :show
     live "/fmp_securities", FMPSecurityLive.Index, :index
     live "/fmp_securities/new", FMPSecurityLive.Index, :new
