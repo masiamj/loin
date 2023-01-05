@@ -26,7 +26,9 @@ defmodule Loin.Application do
         id: :timeseries_data
       ),
       # Start the Endpoint (http/https)
-      LoinWeb.Endpoint
+      LoinWeb.Endpoint,
+      # Realtime Quotes cache
+      {Loin.RealtimeQuotesCache, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
