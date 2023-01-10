@@ -11,9 +11,6 @@ defmodule Loin.Repo.Migrations.CreateFmpSecurities do
       add :exchange_short_name, :string
       add :full_time_employees, :integer
       add :image, :string
-      add :in_dow_jones, :boolean, default: false, null: false
-      add :in_nasdaq, :boolean, default: false, null: false
-      add :in_sp500, :boolean, default: false, null: false
       add :industry, :string
       add :is_etf, :boolean, default: false, null: false
       add :market_cap, :bigint

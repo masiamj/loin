@@ -19,8 +19,6 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
-      # Start cache for holdings of major indices
-      {Loin.FMP.MajorIndexSymbolsCache, []},
       # Cache timeseries data
       Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
         id: :timeseries_data

@@ -37,6 +37,13 @@ defmodule Loin.FMP do
   """
   def get_fmp_security!(id), do: Repo.get!(FMPSecurity, id)
 
+  def get_fmp_securities_by_market_cap(limit_number \\ 50) when is_integer(limit_number) do
+    FMPSecurity
+    |> order_by([s], desc: :market_cap)
+    |> limit(^limit_number)
+    |> Repo.all()
+  end
+
   @doc """
   Creates a fmp_security.
 

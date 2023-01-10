@@ -2,9 +2,7 @@ defmodule Loin.FMP.Transforms do
   @moduledoc """
   Defines common data cleaners and transforms for raw FMP data.
   """
-
   require Logger
-  alias Loin.FMP.MajorIndexSymbolsCache
 
   @doc """
   Transforms a FMP ETF stock exposure to an application-level security.
@@ -73,9 +71,6 @@ defmodule Loin.FMP.Transforms do
       exchange_short_name: Map.get(security, "exchangeShortName"),
       full_time_employees: Map.get(security, "fullTimeEmployees") |> maybe_string_to_integer(),
       image: Map.get(security, "image"),
-      in_dow_jones: MajorIndexSymbolsCache.is_dow_jones(symbol),
-      in_nasdaq: MajorIndexSymbolsCache.is_nasdaq(symbol),
-      in_sp500: MajorIndexSymbolsCache.is_sp500(symbol),
       industry: Map.get(security, "industry"),
       is_etf: Map.get(security, "isEtf") == "TRUE",
       market_cap: Map.get(security, "MktCap") |> maybe_string_to_integer(),
