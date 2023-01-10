@@ -44,25 +44,6 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches all Dow Jones constituents.
-  """
-  def dow_jones_companies() do
-    "/dowjones_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Dow Jones companies
-  """
-  def dow_jones_companies_symbols() do
-    dow_jones_companies()
-    |> create_set_of_symbols()
-  end
-
-  @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
@@ -96,25 +77,6 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches a list of Nasdaq constituents.
-  """
-  def nasdaq_companies() do
-    "/nasdaq_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Nasdaq companies
-  """
-  def nasdaq_companies_symbols() do
-    nasdaq_companies()
-    |> create_set_of_symbols()
-  end
-
-  @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
@@ -124,33 +86,6 @@ defmodule Loin.FMP.Service do
     |> handle_response()
     |> Utils.map(&Transforms.peers/1)
     |> List.flatten()
-  end
-
-  @doc """
-  Fetches a list of S&P 500 constituents.
-  """
-  def sp500_companies() do
-    "/sp500_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all S&P 500 companies
-  """
-  def sp500_companies_symbols() do
-    sp500_companies()
-    |> create_set_of_symbols()
-  end
-
-  # Private helpers
-
-  defp create_set_of_symbols(companies) when is_list(companies) do
-    companies
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> MapSet.new()
   end
 
   defp create_request(path, params \\ %{}) do
