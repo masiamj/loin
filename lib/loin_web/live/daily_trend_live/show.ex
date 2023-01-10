@@ -1,4 +1,4 @@
-defmodule LoinWeb.FMPSecurityLive.Show do
+defmodule LoinWeb.DailyTrendLive.Show do
   use LoinWeb, :live_view
 
   alias Loin.FMP
@@ -13,9 +13,9 @@ defmodule LoinWeb.FMPSecurityLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:fmp_security, FMP.get_fmp_security!(id))}
+     |> assign(:daily_trend, FMP.get_daily_trend!(id))}
   end
 
-  defp page_title(:show), do: "Show FMP security"
-  defp page_title(:edit), do: "Edit FMP security"
+  defp page_title(:show), do: "Show Daily trend"
+  defp page_title(:edit), do: "Edit Daily trend"
 end

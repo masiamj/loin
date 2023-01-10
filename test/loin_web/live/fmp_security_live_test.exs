@@ -60,15 +60,15 @@ defmodule LoinWeb.FMPSecurityLiveTest do
     test "lists all fmp_securities", %{conn: conn, fmp_security: fmp_security} do
       {:ok, _index_live, html} = live(conn, ~p"/fmp_securities")
 
-      assert html =~ "Listing Fmp securities"
+      assert html =~ "Listing FMP securities"
       assert html =~ fmp_security.description
     end
 
     # test "saves new fmp_security", %{conn: conn} do
     #   {:ok, index_live, _html} = live(conn, ~p"/fmp_securities")
 
-    #   assert index_live |> element("a", "New Fmp security") |> render_click() =~
-    #            "New Fmp security"
+    #   assert index_live |> element("a", "New FMP security") |> render_click() =~
+    #            "New FMP security"
 
     #   assert_patch(index_live, ~p"/fmp_securities/new")
 
@@ -82,7 +82,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
     #     |> render_submit()
     #     |> follow_redirect(conn, ~p"/fmp_securities")
 
-    #   assert html =~ "Fmp security created successfully"
+    #   assert html =~ "FMP security created successfully"
     #   assert html =~ "some description"
     # end
 
@@ -92,7 +92,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
       assert index_live
              |> element("#fmp_securities-#{fmp_security.id} a", "Edit")
              |> render_click() =~
-               "Edit Fmp security"
+               "Edit FMP security"
 
       assert_patch(index_live, ~p"/fmp_securities/#{fmp_security}/edit")
 
@@ -106,7 +106,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
         |> render_submit()
         |> follow_redirect(conn, ~p"/fmp_securities")
 
-      assert html =~ "Fmp security updated successfully"
+      assert html =~ "FMP security updated successfully"
       assert html =~ "some updated description"
     end
 
@@ -127,7 +127,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
     test "displays fmp_security", %{conn: conn, fmp_security: fmp_security} do
       {:ok, _show_live, html} = live(conn, ~p"/fmp_securities/#{fmp_security}")
 
-      assert html =~ "Show Fmp security"
+      assert html =~ "Show FMP security"
       assert html =~ fmp_security.description
     end
 
@@ -135,7 +135,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/fmp_securities/#{fmp_security}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Fmp security"
+               "Edit FMP security"
 
       assert_patch(show_live, ~p"/fmp_securities/#{fmp_security}/show/edit")
 
@@ -149,7 +149,7 @@ defmodule LoinWeb.FMPSecurityLiveTest do
         |> render_submit()
         |> follow_redirect(conn, ~p"/fmp_securities/#{fmp_security}")
 
-      assert html =~ "Fmp security updated successfully"
+      assert html =~ "FMP security updated successfully"
       assert html =~ "some updated description"
     end
   end

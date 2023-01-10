@@ -16,19 +16,19 @@ defmodule LoinWeb.FMPSecurityLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Fmp security")
+    |> assign(:page_title, "Edit FMP security")
     |> assign(:fmp_security, FMP.get_fmp_security!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Fmp security")
+    |> assign(:page_title, "New FMP security")
     |> assign(:fmp_security, %FMPSecurity{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Fmp securities")
+    |> assign(:page_title, "Listing FMP securities")
     |> assign(:fmp_security, nil)
   end
 

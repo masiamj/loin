@@ -124,4 +124,162 @@ defmodule Loin.FMPTest do
       assert %Ecto.Changeset{} = FMP.change_fmp_security(fmp_security)
     end
   end
+
+  describe "daily_trends" do
+    alias Loin.FMP.DailyTrend
+
+    import Loin.FMPFixtures
+
+    @invalid_attrs %{
+      close: nil,
+      close_above_day_200_sma: nil,
+      close_above_day_50_sma: nil,
+      date: nil,
+      day_200_sma: nil,
+      day_50_sma: nil,
+      day_50_sma_above_day_200_sma: nil,
+      is_valid: nil,
+      previous_close: nil,
+      previous_close_above_day_200_sma: nil,
+      previous_close_above_day_50_sma: nil,
+      previous_day_200_sma: nil,
+      previous_day_50_sma: nil,
+      previous_day_50_sma_above_day_200_sma: nil,
+      previous_trend: nil,
+      previous_truthy_flags_count: nil,
+      trend: nil,
+      trend_change: nil,
+      truthy_flags_count: nil,
+      volume: nil
+    }
+
+    test "list_daily_trends/0 returns all daily_trends" do
+      daily_trend = daily_trend_fixture()
+      assert FMP.list_daily_trends() == [daily_trend]
+    end
+
+    test "get_daily_trend!/1 returns the daily_trend with given id" do
+      daily_trend = daily_trend_fixture()
+      assert FMP.get_daily_trend!(daily_trend.id) == daily_trend
+    end
+
+    test "create_daily_trend/1 with valid data creates a daily_trend" do
+      valid_attrs = %{
+        close: 120.5,
+        close_above_day_200_sma: true,
+        close_above_day_50_sma: true,
+        date: ~D[2023-01-09],
+        day_200_sma: 120.5,
+        day_50_sma: 120.5,
+        day_50_sma_above_day_200_sma: true,
+        is_valid: true,
+        previous_close: 120.5,
+        previous_close_above_day_200_sma: true,
+        previous_close_above_day_50_sma: true,
+        previous_day_200_sma: 120.5,
+        previous_day_50_sma: 120.5,
+        previous_day_50_sma_above_day_200_sma: true,
+        previous_trend: "some previous_trend",
+        previous_truthy_flags_count: 42,
+        trend: "some trend",
+        trend_change: "some trend_change",
+        truthy_flags_count: 42,
+        volume: 120.5
+      }
+
+      assert {:ok, %DailyTrend{} = daily_trend} = FMP.create_daily_trend(valid_attrs)
+      assert daily_trend.close == 120.5
+      assert daily_trend.close_above_day_200_sma == true
+      assert daily_trend.close_above_day_50_sma == true
+      assert daily_trend.date == ~D[2023-01-09]
+      assert daily_trend.day_200_sma == 120.5
+      assert daily_trend.day_50_sma == 120.5
+      assert daily_trend.day_50_sma_above_day_200_sma == true
+      assert daily_trend.is_valid == true
+      assert daily_trend.previous_close == 120.5
+      assert daily_trend.previous_close_above_day_200_sma == true
+      assert daily_trend.previous_close_above_day_50_sma == true
+      assert daily_trend.previous_day_200_sma == 120.5
+      assert daily_trend.previous_day_50_sma == 120.5
+      assert daily_trend.previous_day_50_sma_above_day_200_sma == true
+      assert daily_trend.previous_trend == "some previous_trend"
+      assert daily_trend.previous_truthy_flags_count == 42
+      assert daily_trend.trend == "some trend"
+      assert daily_trend.trend_change == "some trend_change"
+      assert daily_trend.truthy_flags_count == 42
+      assert daily_trend.volume == 120.5
+    end
+
+    test "create_daily_trend/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = FMP.create_daily_trend(@invalid_attrs)
+    end
+
+    test "update_daily_trend/2 with valid data updates the daily_trend" do
+      daily_trend = daily_trend_fixture()
+
+      update_attrs = %{
+        close: 456.7,
+        close_above_day_200_sma: false,
+        close_above_day_50_sma: false,
+        date: ~D[2023-01-10],
+        day_200_sma: 456.7,
+        day_50_sma: 456.7,
+        day_50_sma_above_day_200_sma: false,
+        is_valid: false,
+        previous_close: 456.7,
+        previous_close_above_day_200_sma: false,
+        previous_close_above_day_50_sma: false,
+        previous_day_200_sma: 456.7,
+        previous_day_50_sma: 456.7,
+        previous_day_50_sma_above_day_200_sma: false,
+        previous_trend: "some updated previous_trend",
+        previous_truthy_flags_count: 43,
+        trend: "some updated trend",
+        trend_change: "some updated trend_change",
+        truthy_flags_count: 43,
+        volume: 456.7
+      }
+
+      assert {:ok, %DailyTrend{} = daily_trend} =
+               FMP.update_daily_trend(daily_trend, update_attrs)
+
+      assert daily_trend.close == 456.7
+      assert daily_trend.close_above_day_200_sma == false
+      assert daily_trend.close_above_day_50_sma == false
+      assert daily_trend.date == ~D[2023-01-10]
+      assert daily_trend.day_200_sma == 456.7
+      assert daily_trend.day_50_sma == 456.7
+      assert daily_trend.day_50_sma_above_day_200_sma == false
+      assert daily_trend.is_valid == false
+      assert daily_trend.previous_close == 456.7
+      assert daily_trend.previous_close_above_day_200_sma == false
+      assert daily_trend.previous_close_above_day_50_sma == false
+      assert daily_trend.previous_day_200_sma == 456.7
+      assert daily_trend.previous_day_50_sma == 456.7
+      assert daily_trend.previous_day_50_sma_above_day_200_sma == false
+      assert daily_trend.previous_trend == "some updated previous_trend"
+      assert daily_trend.previous_truthy_flags_count == 43
+      assert daily_trend.trend == "some updated trend"
+      assert daily_trend.trend_change == "some updated trend_change"
+      assert daily_trend.truthy_flags_count == 43
+      assert daily_trend.volume == 456.7
+    end
+
+    test "update_daily_trend/2 with invalid data returns error changeset" do
+      daily_trend = daily_trend_fixture()
+      assert {:error, %Ecto.Changeset{}} = FMP.update_daily_trend(daily_trend, @invalid_attrs)
+      assert daily_trend == FMP.get_daily_trend!(daily_trend.id)
+    end
+
+    test "delete_daily_trend/1 deletes the daily_trend" do
+      daily_trend = daily_trend_fixture()
+      assert {:ok, %DailyTrend{}} = FMP.delete_daily_trend(daily_trend)
+      assert_raise Ecto.NoResultsError, fn -> FMP.get_daily_trend!(daily_trend.id) end
+    end
+
+    test "change_daily_trend/1 returns a daily_trend changeset" do
+      daily_trend = daily_trend_fixture()
+      assert %Ecto.Changeset{} = FMP.change_daily_trend(daily_trend)
+    end
+  end
 end

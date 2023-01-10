@@ -1,0 +1,80 @@
+<.header>
+  Listing Daily trends
+  <:actions>
+    <.link patch={~p"/daily_trends/new"}>
+      <.button>New Daily trend</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="daily_trends" rows={@daily_trends} row_click={&JS.navigate(~p"/daily_trends/#{&1}")}>
+  <:col :let={daily_trend} label="Close"><%= daily_trend.close %></:col>
+  <:col :let={daily_trend} label="Close above day 200 sma">
+    <%= daily_trend.close_above_day_200_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Close above day 50 sma">
+    <%= daily_trend.close_above_day_50_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Date"><%= daily_trend.date %></:col>
+  <:col :let={daily_trend} label="Day 200 sma"><%= daily_trend.day_200_sma %></:col>
+  <:col :let={daily_trend} label="Day 50 sma"><%= daily_trend.day_50_sma %></:col>
+  <:col :let={daily_trend} label="Day 50 sma above day 200 sma">
+    <%= daily_trend.day_50_sma_above_day_200_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Is valid"><%= daily_trend.is_valid %></:col>
+  <:col :let={daily_trend} label="Previous close"><%= daily_trend.previous_close %></:col>
+  <:col :let={daily_trend} label="Previous close above day 200 sma">
+    <%= daily_trend.previous_close_above_day_200_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Previous close above day 50 sma">
+    <%= daily_trend.previous_close_above_day_50_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Previous day 200 sma">
+    <%= daily_trend.previous_day_200_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Previous day 50 sma">
+    <%= daily_trend.previous_day_50_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Previous day 50 sma above day 200 sma">
+    <%= daily_trend.previous_day_50_sma_above_day_200_sma %>
+  </:col>
+  <:col :let={daily_trend} label="Previous trend"><%= daily_trend.previous_trend %></:col>
+  <:col :let={daily_trend} label="Previous truthy flags count">
+    <%= daily_trend.previous_truthy_flags_count %>
+  </:col>
+  <:col :let={daily_trend} label="Symbol"><%= daily_trend.symbol %></:col>
+  <:col :let={daily_trend} label="Trend"><%= daily_trend.trend %></:col>
+  <:col :let={daily_trend} label="Trend change"><%= daily_trend.trend_change %></:col>
+  <:col :let={daily_trend} label="Truthy flags count"><%= daily_trend.truthy_flags_count %></:col>
+  <:col :let={daily_trend} label="Volume"><%= daily_trend.volume %></:col>
+  <:action :let={daily_trend}>
+    <div class="sr-only">
+      <.link navigate={~p"/daily_trends/#{daily_trend}"}>Show</.link>
+    </div>
+    <.link patch={~p"/daily_trends/#{daily_trend}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={daily_trend}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: daily_trend.id})}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="daily_trend-modal"
+  show
+  on_cancel={JS.navigate(~p"/daily_trends")}
+>
+  <.live_component
+    module={LoinWeb.DailyTrendLive.FormComponent}
+    id={@daily_trend.id || :new}
+    title={@page_title}
+    action={@live_action}
+    daily_trend={@daily_trend}
+    navigate={~p"/daily_trends"}
+  />
+</.modal>

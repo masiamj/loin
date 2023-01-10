@@ -1,0 +1,61 @@
+<.header>
+  Daily trend <%= @daily_trend.id %>
+  <:subtitle>This is a daily_trend record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/daily_trends/#{@daily_trend}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit daily_trend</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Close"><%= @daily_trend.close %></:item>
+  <:item title="Close above day 200 sma"><%= @daily_trend.close_above_day_200_sma %></:item>
+  <:item title="Close above day 50 sma"><%= @daily_trend.close_above_day_50_sma %></:item>
+  <:item title="Date"><%= @daily_trend.date %></:item>
+  <:item title="Day 200 sma"><%= @daily_trend.day_200_sma %></:item>
+  <:item title="Day 50 sma"><%= @daily_trend.day_50_sma %></:item>
+  <:item title="Day 50 sma above day 200 sma">
+    <%= @daily_trend.day_50_sma_above_day_200_sma %>
+  </:item>
+  <:item title="Is valid"><%= @daily_trend.is_valid %></:item>
+  <:item title="Previous close"><%= @daily_trend.previous_close %></:item>
+  <:item title="Previous close above day 200 sma">
+    <%= @daily_trend.previous_close_above_day_200_sma %>
+  </:item>
+  <:item title="Previous close above day 50 sma">
+    <%= @daily_trend.previous_close_above_day_50_sma %>
+  </:item>
+  <:item title="Previous day 200 sma"><%= @daily_trend.previous_day_200_sma %></:item>
+  <:item title="Previous day 50 sma"><%= @daily_trend.previous_day_50_sma %></:item>
+  <:item title="Previous day 50 sma above day 200 sma">
+    <%= @daily_trend.previous_day_50_sma_above_day_200_sma %>
+  </:item>
+  <:item title="Previous trend"><%= @daily_trend.previous_trend %></:item>
+  <:item title="Previous truthy flags count">
+    <%= @daily_trend.previous_truthy_flags_count %>
+  </:item>
+  <:item title="Symbol"><%= @daily_trend.symbol %></:item>
+  <:item title="Trend"><%= @daily_trend.trend %></:item>
+  <:item title="Trend change"><%= @daily_trend.trend_change %></:item>
+  <:item title="Truthy flags count"><%= @daily_trend.truthy_flags_count %></:item>
+  <:item title="Volume"><%= @daily_trend.volume %></:item>
+</.list>
+
+<.back navigate={~p"/daily_trends"}>Back to daily_trends</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="daily_trend-modal"
+  show
+  on_cancel={JS.patch(~p"/daily_trends/#{@daily_trend}")}
+>
+  <.live_component
+    module={LoinWeb.DailyTrendLive.FormComponent}
+    id={@daily_trend.id}
+    title={@page_title}
+    action={@live_action}
+    daily_trend={@daily_trend}
+    navigate={~p"/daily_trends/#{@daily_trend}"}
+  />
+</.modal>
