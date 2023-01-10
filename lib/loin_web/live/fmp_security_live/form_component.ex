@@ -25,9 +25,6 @@ defmodule LoinWeb.FMPSecurityLive.FormComponent do
         <.input field={{f, :exchange_short_name}} type="text" label="exchange_short_name" />
         <.input field={{f, :full_time_employees}} type="number" label="full_time_employees" />
         <.input field={{f, :image}} type="text" label="image" />
-        <.input field={{f, :in_dow_jones}} type="checkbox" label="in_dow_jones" />
-        <.input field={{f, :in_nasdaq}} type="checkbox" label="in_nasdaq" />
-        <.input field={{f, :in_sp500}} type="checkbox" label="in_sp500" />
         <.input field={{f, :industry}} type="text" label="industry" />
         <.input field={{f, :is_etf}} type="checkbox" label="is_etf" />
         <.input field={{f, :market_cap}} type="number" label="market_cap" />

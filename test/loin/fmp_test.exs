@@ -16,9 +16,6 @@ defmodule Loin.FMPTest do
       exchange_short_name: nil,
       full_time_employees: nil,
       image: nil,
-      in_dow_jones: nil,
-      in_nasdaq: nil,
-      in_sp500: nil,
       industry: nil,
       is_etf: nil,
       market_cap: nil,
@@ -47,9 +44,6 @@ defmodule Loin.FMPTest do
         exchange_short_name: "some exchange_short_name",
         full_time_employees: 42,
         image: "some image",
-        in_dow_jones: true,
-        in_nasdaq: true,
-        in_sp500: true,
         industry: "some industry",
         is_etf: true,
         market_cap: 42,
@@ -65,9 +59,6 @@ defmodule Loin.FMPTest do
       assert fmp_security.exchange_short_name == "some exchange_short_name"
       assert fmp_security.full_time_employees == 42
       assert fmp_security.image == "some image"
-      assert fmp_security.in_dow_jones == true
-      assert fmp_security.in_nasdaq == true
-      assert fmp_security.in_sp500 == true
       assert fmp_security.industry == "some industry"
       assert fmp_security.is_etf == true
       assert fmp_security.market_cap == 42
@@ -90,9 +81,6 @@ defmodule Loin.FMPTest do
         exchange_short_name: "some updated exchange_short_name",
         full_time_employees: 43,
         image: "some updated image",
-        in_dow_jones: false,
-        in_nasdaq: false,
-        in_sp500: false,
         industry: "some updated industry",
         is_etf: false,
         market_cap: 43,
@@ -110,9 +98,6 @@ defmodule Loin.FMPTest do
       assert fmp_security.exchange_short_name == "some updated exchange_short_name"
       assert fmp_security.full_time_employees == 43
       assert fmp_security.image == "some updated image"
-      assert fmp_security.in_dow_jones == false
-      assert fmp_security.in_nasdaq == false
-      assert fmp_security.in_sp500 == false
       assert fmp_security.industry == "some updated industry"
       assert fmp_security.is_etf == false
       assert fmp_security.market_cap == 43

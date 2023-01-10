@@ -3,6 +3,15 @@ defmodule LoinWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    timeseries_data =
+      ["SPY", "QQQ"]
+      |> Loin.FMP.Timeseries.get_many()
+      |> Enum.into(%{}, fn {key, value} -> {key, Jason.encode!(value)} end)
+
+    socket =
+      socket
+      |> assign(:chart_data, timeseries_data)
+
     {:ok, socket}
   end
 
@@ -10,18 +19,29 @@ defmodule LoinWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <div class="px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <LoinWeb.Cards.generic title="S&P 500 trend">
-          <div class="h-64 w-full" id="sp500_chart" phx-hook="ExampleChart"></div>
+          <div
+            class="h-64 w-full"
+            id="sp500_chart"
+            data-timeseries={Map.get(@chart_data, "SPY", [])}
+            phx-hook="TimeseriesChart"
+            phx-update="ignore"
+          >
+          </div>
         </LoinWeb.Cards.generic>
         <LoinWeb.Cards.generic title="Nasdaq trend">
-          <div class="h-64 w-full" id="nasdaq_chart" phx-hook="ExampleChart"></div>
+          <div
+            class="h-64 w-full"
+            id="nasdaq_chart"
+            data-timeseries={Map.get(@chart_data, "QQQ", [])}
+            phx-hook="TimeseriesChart"
+            phx-update="ignore"
+          >
+          </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Dow Jones trend">
-          <div class="h-64 w-full" id="dow_jones_chart" phx-hook="ExampleChart"></div>
-        </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Russell 2k trend">
-          <div class="h-64 w-full" id="russell_2k" phx-hook="ExampleChart"></div>
+        <LoinWeb.Cards.generic title="Sector trends">
+          <div></div>
         </LoinWeb.Cards.generic>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
