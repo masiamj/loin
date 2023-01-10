@@ -66,11 +66,7 @@ defmodule LoinWeb.DailyTrendLive.FormComponent do
           type="number"
           label="previous_truthy_flags_count"
         />
-        <.input
-          field={{f, :symbol}}
-          type="text"
-          label="symbol"
-        />
+        <.input field={{f, :symbol}} type="text" label="symbol" />
         <.input field={{f, :trend}} type="text" label="trend" />
         <.input field={{f, :trend_change}} type="text" label="trend_change" />
         <.input field={{f, :truthy_flags_count}} type="number" label="truthy_flags_count" />

@@ -24,23 +24,14 @@ defmodule Loin.FMP.Service do
   def batch_historical_prices(symbols) when is_list(symbols) do
     joined_symbols = Enum.join(symbols, ",")
 
-    data =
-      "/historical-price-full/#{joined_symbols}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> then(fn response ->
-        case response do
-          %{"historicalStockList" => historical_stock_list} -> historical_stock_list
-          %{"symbol" => _symbol} = item -> [item]
-        end
-      end)
-      |> Utils.map(&Transforms.historical_prices/1)
-      |> Utils.map(&Utils.create_indicators/1)
-
-    Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc ->
-      Map.merge(acc, %{symbol => data})
-    end)
+    "/historical-price-full/#{joined_symbols}"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> handle_historical_data_response()
+    |> Utils.map(fn {symbol, data} -> {symbol, Transforms.historical_prices(data)} end)
+    |> Utils.map(fn {symbol, data} -> {symbol, Utils.create_indicators(data)} end)
+    |> Enum.into(%{})
   end
 
   @doc """
@@ -102,6 +93,20 @@ defmodule Loin.FMP.Service do
     cond do
       status in [200] -> body
       status in [400, 401, 403, 404, 500] -> {:error, Map.get(body, "error")}
+    end
+  end
+
+  defp handle_historical_data_response(response) do
+    case response do
+      %{"historical" => historical, "symbol" => symbol} ->
+        Map.put(%{}, symbol, historical)
+
+      %{"historicalStockList" => stock_list} ->
+        Enum.into(stock_list, %{}, fn %{"historical" => historical, "symbol" => symbol} ->
+          {symbol, historical}
+        end)
+
+      %{} -> %{}
     end
   end
 end

@@ -37,11 +37,11 @@ defmodule Loin.FMP.Transforms do
   end
 
   @doc """
-  Maps a historical price item into the proper application-level structure.
+  Maps a list of historical price items into the proper application-level structure.
   """
-  def historical_prices(%{"historical" => historical})
-      when is_list(historical) do
-    historical
+  def historical_prices(historical_items)
+      when is_list(historical_items) do
+    historical_items
     |> Enum.map(fn item ->
       %{
         close: Map.get(item, "close"),
@@ -83,19 +83,9 @@ defmodule Loin.FMP.Transforms do
   end
 
   @doc """
-  Transforms a FMP ETF constituent to an application-level security for the well-known
-  indices (S&P 500, Nasdaq, Dow Jones).
+  Adds timestamps on an object (normally used for batch insertion).
   """
-  def well_defined_constituent(security) when is_map(security) do
-    %{
-      name: Map.get(security, "name"),
-      sector: Map.get(security, "sector"),
-      sub_sector: Map.get(security, "subSector"),
-      symbol: Map.get(security, "symbol")
-    }
-  end
-
-  defp put_timestamps(item) when is_map(item) do
+  def put_timestamps(item) when is_map(item) do
     Map.merge(item, %{
       inserted_at: DateTime.utc_now(),
       updated_at: DateTime.utc_now()
