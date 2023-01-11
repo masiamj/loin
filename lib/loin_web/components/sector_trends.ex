@@ -4,6 +4,21 @@ defmodule LoinWeb.SectorTrends do
   """
   use Phoenix.Component
 
+  @titles_by_symbol %{
+    "XLB" => "Materials",
+    "XLC" => "Comms",
+    "XLE" => "Energy",
+    "XLF" => "Financials",
+    "XLI" => "Industrials",
+    "XLK" => "Tech",
+    "XLP" => "Cons. Staples",
+    "XLRE" => "Real Estate",
+    "XLU" => "Utilities",
+    "XLV" => "Healthcare",
+    "XLY" => "Cons. Disc.",
+    "GLD" => "Gold"
+  }
+
   @doc """
   Renders a simple form.
 
@@ -56,20 +71,5 @@ defmodule LoinWeb.SectorTrends do
     end
   end
 
-  defp title_for_symbol(%{symbol: symbol}) do
-    case symbol do
-      "XLB" -> "Materials"
-      "XLC" -> "Comms"
-      "XLE" -> "Energy"
-      "XLF" -> "Financials"
-      "XLI" -> "Industrials"
-      "XLK" -> "Tech"
-      "XLP" -> "Cons. Staples"
-      "XLRE" -> "Real Estate"
-      "XLU" -> "Utilities"
-      "XLV" -> "Healthcare"
-      "XLY" -> "Cons. Disc."
-      "GLD" -> "Gold"
-    end
-  end
+  defp title_for_symbol(%{symbol: symbol}), do: Map.get(@titles_by_symbol, symbol, "")
 end
