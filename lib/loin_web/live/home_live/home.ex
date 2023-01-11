@@ -15,7 +15,7 @@ defmodule LoinWeb.HomeLive do
       |> assign(:chart_data, timeseries_data)
       |> assign(:sector_trends, sector_trends)
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: [chart_data: %{}, sector_trends: []]}
   end
 
   @impl true
