@@ -1,4 +1,4 @@
-defmodule Loin.FMP.Timeseries do
+defmodule Loin.FMP.TimeseriesCache do
   @moduledoc """
   This module is an interface to fetching, caching, and retrieving timeseries data.
   """

@@ -54,6 +54,16 @@ defmodule Loin.FMP.Trends do
     )
   end
 
+  defp extract_latest_trend({_symbol, []}), do: nil
+
+  defp extract_latest_trend({symbol, data}) when is_list(data) do
+    data
+    |> List.last(%{})
+    |> Map.put(:symbol, symbol)
+    |> Map.update!(:date, &Date.from_iso8601!/1)
+    |> Transforms.put_timestamps()
+  end
+
   defp fetch_and_store(symbols) when is_list(symbols) do
     {:ok, _number_of_rows_affected} =
       symbols
@@ -75,15 +85,5 @@ defmodule Loin.FMP.Trends do
       )
 
     {:ok, num_affected}
-  end
-
-  defp extract_latest_trend({_symbol, []}), do: nil
-
-  defp extract_latest_trend({symbol, data}) when is_list(data) do
-    data
-    |> List.last(%{})
-    |> Map.put(:symbol, symbol)
-    |> Map.update!(:date, &Date.from_iso8601!/1)
-    |> Transforms.put_timestamps()
   end
 end

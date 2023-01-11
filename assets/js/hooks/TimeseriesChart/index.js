@@ -9,7 +9,7 @@ const getColorForItem = ({ trend } = {}) => {
     case 'down':
       return 'red'
     case 'neutral':
-      return 'yellow'
+      return 'gray'
   }
 }
 

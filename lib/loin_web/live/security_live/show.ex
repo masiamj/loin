@@ -4,7 +4,7 @@ defmodule LoinWeb.SecurityLive do
   @impl true
   def mount(%{"symbol" => symbol}, _session, socket) do
     serialized_data =
-      Loin.FMP.Timeseries.get(symbol)
+      Loin.FMP.TimeseriesCache.get(symbol)
       |> Jason.encode!()
 
     socket =

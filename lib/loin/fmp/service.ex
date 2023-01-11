@@ -106,7 +106,8 @@ defmodule Loin.FMP.Service do
           {symbol, historical}
         end)
 
-      %{} -> %{}
+      %{} ->
+        %{}
     end
   end
 end
