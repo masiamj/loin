@@ -5,12 +5,15 @@ defmodule LoinWeb.HomeLive do
   def mount(_params, _session, socket) do
     timeseries_data =
       ["SPY", "QQQ"]
-      |> Loin.FMP.Timeseries.get_many()
+      |> Loin.FMP.TimeseriesCache.get_many()
       |> Enum.into(%{}, fn {key, value} -> {key, Jason.encode!(value)} end)
+
+    sector_trends = Loin.FMP.SectorTrendsCache.all()
 
     socket =
       socket
       |> assign(:chart_data, timeseries_data)
+      |> assign(:sector_trends, sector_trends)
 
     {:ok, socket}
   end
@@ -41,7 +44,7 @@ defmodule LoinWeb.HomeLive do
           </div>
         </LoinWeb.Cards.generic>
         <LoinWeb.Cards.generic title="Sector trends">
-          <div></div>
+          <LoinWeb.SectorTrends.heatmap trends={@sector_trends} />
         </LoinWeb.Cards.generic>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">

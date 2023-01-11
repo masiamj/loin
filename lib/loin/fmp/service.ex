@@ -24,42 +24,14 @@ defmodule Loin.FMP.Service do
   def batch_historical_prices(symbols) when is_list(symbols) do
     joined_symbols = Enum.join(symbols, ",")
 
-    data =
-      "/historical-price-full/#{joined_symbols}"
-      |> create_request()
-      |> Req.get!()
-      |> handle_response()
-      |> then(fn response ->
-        case response do
-          %{"historicalStockList" => historical_stock_list} -> historical_stock_list
-          %{"symbol" => _symbol} = item -> [item]
-        end
-      end)
-      |> Utils.map(&Transforms.historical_prices/1)
-      |> Utils.map(&Utils.create_indicators/1)
-
-    Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc ->
-      Map.merge(acc, %{symbol => data})
-    end)
-  end
-
-  @doc """
-  Fetches all Dow Jones constituents.
-  """
-  def dow_jones_companies() do
-    "/dowjones_constituent"
+    "/historical-price-full/#{joined_symbols}"
     |> create_request()
     |> Req.get!()
     |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Dow Jones companies
-  """
-  def dow_jones_companies_symbols() do
-    dow_jones_companies()
-    |> create_set_of_symbols()
+    |> handle_historical_data_response()
+    |> Utils.map(fn {symbol, data} -> {symbol, Transforms.historical_prices(data)} end)
+    |> Utils.map(fn {symbol, data} -> {symbol, Utils.create_indicators(data)} end)
+    |> Enum.into(%{})
   end
 
   @doc """
@@ -96,25 +68,6 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches a list of Nasdaq constituents.
-  """
-  def nasdaq_companies() do
-    "/nasdaq_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Nasdaq companies
-  """
-  def nasdaq_companies_symbols() do
-    nasdaq_companies()
-    |> create_set_of_symbols()
-  end
-
-  @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
@@ -124,33 +77,6 @@ defmodule Loin.FMP.Service do
     |> handle_response()
     |> Utils.map(&Transforms.peers/1)
     |> List.flatten()
-  end
-
-  @doc """
-  Fetches a list of S&P 500 constituents.
-  """
-  def sp500_companies() do
-    "/sp500_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all S&P 500 companies
-  """
-  def sp500_companies_symbols() do
-    sp500_companies()
-    |> create_set_of_symbols()
-  end
-
-  # Private helpers
-
-  defp create_set_of_symbols(companies) when is_list(companies) do
-    companies
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> MapSet.new()
   end
 
   defp create_request(path, params \\ %{}) do
@@ -167,6 +93,21 @@ defmodule Loin.FMP.Service do
     cond do
       status in [200] -> body
       status in [400, 401, 403, 404, 500] -> {:error, Map.get(body, "error")}
+    end
+  end
+
+  defp handle_historical_data_response(response) do
+    case response do
+      %{"historical" => historical, "symbol" => symbol} ->
+        Map.put(%{}, symbol, historical)
+
+      %{"historicalStockList" => stock_list} ->
+        Enum.into(stock_list, %{}, fn %{"historical" => historical, "symbol" => symbol} ->
+          {symbol, historical}
+        end)
+
+      %{} ->
+        %{}
     end
   end
 end

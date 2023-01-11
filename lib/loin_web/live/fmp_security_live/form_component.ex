@@ -33,7 +33,7 @@ defmodule LoinWeb.FMPSecurityLive.FormComponent do
         <.input field={{f, :symbol}} type="text" label="symbol" />
         <.input field={{f, :website}} type="text" label="website" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Fmp security</.button>
+          <.button phx-disable-with="Saving...">Save FMP security</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -69,7 +69,7 @@ defmodule LoinWeb.FMPSecurityLive.FormComponent do
       {:ok, _fmp_security} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Fmp security updated successfully")
+         |> put_flash(:info, "FMP security updated successfully")
          |> push_navigate(to: socket.assigns.navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -82,7 +82,7 @@ defmodule LoinWeb.FMPSecurityLive.FormComponent do
       {:ok, _fmp_security} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Fmp security created successfully")
+         |> put_flash(:info, "FMP security created successfully")
          |> push_navigate(to: socket.assigns.navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
