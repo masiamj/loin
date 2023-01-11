@@ -21,7 +21,7 @@ defmodule Loin.FMP.Trends do
           fn items ->
             symbols = Enum.map(items, &Map.get(&1, :symbol))
             {:ok, processed_symbols} = fetch_and_store(symbols)
-            IO.inspect(processed_symbols, label: "Processed symbols")
+            processed_symbols
           end,
           max_concurrency: 2,
           ordered: true
@@ -43,7 +43,7 @@ defmodule Loin.FMP.Trends do
         |> Task.async_stream(
           fn items ->
             {:ok, processed_symbols} = fetch_and_store(items)
-            IO.inspect(processed_symbols, label: "Processed symbols")
+            processed_symbols
           end,
           max_concurrency: 2,
           ordered: true
@@ -68,9 +68,7 @@ defmodule Loin.FMP.Trends do
     {:ok, _number_of_rows_affected} =
       symbols
       |> Service.batch_historical_prices()
-      |> IO.inspect()
       |> Enum.map(&extract_latest_trend/1)
-      |> IO.inspect()
       |> Enum.filter(&is_map/1)
       |> insert_many_daily_trends()
 

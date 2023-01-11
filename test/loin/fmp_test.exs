@@ -181,6 +181,7 @@ defmodule Loin.FMPTest do
         previous_day_50_sma_above_day_200_sma: true,
         previous_trend: "some previous_trend",
         previous_truthy_flags_count: 42,
+        symbol: "AAPL",
         trend: "some trend",
         trend_change: "some trend_change",
         truthy_flags_count: 42,

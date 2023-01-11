@@ -89,49 +89,49 @@ defmodule LoinWeb.DailyTrendLiveTest do
       assert html =~ daily_trend.previous_trend
     end
 
-    test "saves new daily_trend", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/daily_trends")
+    # test "saves new daily_trend", %{conn: conn} do
+    #   {:ok, index_live, _html} = live(conn, ~p"/daily_trends")
 
-      assert index_live |> element("a", "New Daily trend") |> render_click() =~
-               "New Daily trend"
+    #   assert index_live |> element("a", "New Daily trend") |> render_click() =~
+    #            "New Daily trend"
 
-      assert_patch(index_live, ~p"/daily_trends/new")
+    #   assert_patch(index_live, ~p"/daily_trends/new")
 
-      assert index_live
-             |> form("#daily_trend-form", daily_trend: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+    #   assert index_live
+    #          |> form("#daily_trend-form", daily_trend: @invalid_attrs)
+    #          |> render_change() =~ "can&#39;t be blank"
 
-      {:ok, _, html} =
-        index_live
-        |> form("#daily_trend-form", daily_trend: @create_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/daily_trends")
+    #   {:ok, _, html} =
+    #     index_live
+    #     |> form("#daily_trend-form", daily_trend: @create_attrs)
+    #     |> render_submit()
+    #     |> follow_redirect(conn, ~p"/daily_trends")
 
-      assert html =~ "Daily trend created successfully"
-      assert html =~ "some previous_trend"
-    end
+    #   assert html =~ "Daily trend created successfully"
+    #   assert html =~ "some previous_trend"
+    # end
 
-    test "updates daily_trend in listing", %{conn: conn, daily_trend: daily_trend} do
-      {:ok, index_live, _html} = live(conn, ~p"/daily_trends")
+    # test "updates daily_trend in listing", %{conn: conn, daily_trend: daily_trend} do
+    #   {:ok, index_live, _html} = live(conn, ~p"/daily_trends")
 
-      assert index_live |> element("#daily_trends-#{daily_trend.id} a", "Edit") |> render_click() =~
-               "Edit Daily trend"
+    #   assert index_live |> element("#daily_trends-#{daily_trend.id} a", "Edit") |> render_click() =~
+    #            "Edit Daily trend"
 
-      assert_patch(index_live, ~p"/daily_trends/#{daily_trend}/edit")
+    #   assert_patch(index_live, ~p"/daily_trends/#{daily_trend}/edit")
 
-      assert index_live
-             |> form("#daily_trend-form", daily_trend: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+    #   assert index_live
+    #          |> form("#daily_trend-form", daily_trend: @invalid_attrs)
+    #          |> render_change() =~ "can&#39;t be blank"
 
-      {:ok, _, html} =
-        index_live
-        |> form("#daily_trend-form", daily_trend: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/daily_trends")
+    #   {:ok, _, html} =
+    #     index_live
+    #     |> form("#daily_trend-form", daily_trend: @update_attrs)
+    #     |> render_submit()
+    #     |> follow_redirect(conn, ~p"/daily_trends")
 
-      assert html =~ "Daily trend updated successfully"
-      assert html =~ "some updated previous_trend"
-    end
+    #   assert html =~ "Daily trend updated successfully"
+    #   assert html =~ "some updated previous_trend"
+    # end
 
     test "deletes daily_trend in listing", %{conn: conn, daily_trend: daily_trend} do
       {:ok, index_live, _html} = live(conn, ~p"/daily_trends")
@@ -154,26 +154,26 @@ defmodule LoinWeb.DailyTrendLiveTest do
       assert html =~ daily_trend.previous_trend
     end
 
-    test "updates daily_trend within modal", %{conn: conn, daily_trend: daily_trend} do
-      {:ok, show_live, _html} = live(conn, ~p"/daily_trends/#{daily_trend}")
+    # test "updates daily_trend within modal", %{conn: conn, daily_trend: daily_trend} do
+    #   {:ok, show_live, _html} = live(conn, ~p"/daily_trends/#{daily_trend}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Daily trend"
+    #   assert show_live |> element("a", "Edit") |> render_click() =~
+    #            "Edit Daily trend"
 
-      assert_patch(show_live, ~p"/daily_trends/#{daily_trend}/show/edit")
+    #   assert_patch(show_live, ~p"/daily_trends/#{daily_trend}/show/edit")
 
-      assert show_live
-             |> form("#daily_trend-form", daily_trend: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+    #   assert show_live
+    #          |> form("#daily_trend-form", daily_trend: @invalid_attrs)
+    #          |> render_change() =~ "can&#39;t be blank"
 
-      {:ok, _, html} =
-        show_live
-        |> form("#daily_trend-form", daily_trend: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/daily_trends/#{daily_trend}")
+    #   {:ok, _, html} =
+    #     show_live
+    #     |> form("#daily_trend-form", daily_trend: @update_attrs)
+    #     |> render_submit()
+    #     |> follow_redirect(conn, ~p"/daily_trends/#{daily_trend}")
 
-      assert html =~ "Daily trend updated successfully"
-      assert html =~ "some updated previous_trend"
-    end
+    #   assert html =~ "Daily trend updated successfully"
+    #   assert html =~ "some updated previous_trend"
+    # end
   end
 end

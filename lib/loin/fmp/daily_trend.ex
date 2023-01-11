@@ -1,4 +1,7 @@
 defmodule Loin.FMP.DailyTrend do
+  @moduledoc """
+  Schema for the initial implementation of a daily trend.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

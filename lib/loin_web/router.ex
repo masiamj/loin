@@ -106,11 +106,11 @@ defmodule LoinWeb.Router do
     live "/fmp_securities/:id", FMPSecurityLive.Show, :show
     live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
 
-    # live "/daily_trends", DailyTrendLive.Index, :index
-    # live "/daily_trends/new", DailyTrendLive.Index, :new
-    # live "/daily_trends/:id/edit", DailyTrendLive.Index, :edit
+    live "/daily_trends", DailyTrendLive.Index, :index
+    live "/daily_trends/new", DailyTrendLive.Index, :new
+    live "/daily_trends/:id/edit", DailyTrendLive.Index, :edit
 
-    # live "/daily_trends/:id", DailyTrendLive.Show, :show
-    # live "/daily_trends/:id/show/edit", DailyTrendLive.Show, :edit
+    live "/daily_trends/:id", DailyTrendLive.Show, :show
+    live "/daily_trends/:id/show/edit", DailyTrendLive.Show, :edit
   end
 end
