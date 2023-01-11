@@ -91,7 +91,7 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/loin ./
 
 USER nobody
 
-CMD ["/app/bin/migrate", "/app/bin/server"]
+CMD ["/app/bin/server"]
 
 # Appended by flyctl
 # ENV ECTO_IPV6 true
