@@ -19,6 +19,8 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
+      # Ensures fmp_security profiles are loaded
+      {Loin.FMP.FMPSecurityLoader, []},
       # Cache timeseries data
       Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
         id: :timeseries_data

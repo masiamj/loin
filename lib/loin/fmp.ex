@@ -10,6 +10,19 @@ defmodule Loin.FMP do
   alias Loin.FMP.FMPSecurity
 
   @doc """
+  Counts a list of fmp_securities.
+
+  ## Examples
+
+      iex> count_fmp_securities
+      9
+
+  """
+  def count_fmp_securities do
+    Repo.aggregate(FMPSecurity, :count)
+  end
+
+  @doc """
   Returns the list of fmp_securities.
 
   ## Examples
