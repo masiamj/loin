@@ -50,7 +50,7 @@ defmodule LoinWeb.HomeLive do
         </LoinWeb.Cards.generic>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <LoinWeb.Cards.generic title="S&P 500 constituents">
+        <LoinWeb.Cards.generic title="Uptrends">
           <ul class="grid grid-cols-1 gap-1 max-h-96 overflow-scroll">
             <%= for _item <- 1..500 do %>
               <li class="p-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-md">
@@ -85,7 +85,7 @@ defmodule LoinWeb.HomeLive do
             <% end %>
           </ul>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Nasdaq constituents">
+        <LoinWeb.Cards.generic title="Downtrends">
           <ul class="grid grid-cols-1 gap-1 max-h-96 overflow-scroll">
             <%= for _item <- 1..30 do %>
               <li class="p-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-md">
@@ -120,7 +120,7 @@ defmodule LoinWeb.HomeLive do
             <% end %>
           </ul>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Dow Jones constituents">
+        <LoinWeb.Cards.generic title="Trend changes">
           <ul class="grid grid-cols-1 gap-1 max-h-96 overflow-scroll">
             <%= for _item <- 1..100 do %>
               <li class="p-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-md">

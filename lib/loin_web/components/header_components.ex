@@ -74,9 +74,6 @@ defmodule LoinWeb.HeaderComponents do
               How it works
             </.link>
             <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
-              Trend changes
-            </.link>
-            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Screener
             </.link>
             <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
@@ -146,9 +143,6 @@ defmodule LoinWeb.HeaderComponents do
               <nav class="grid gap-y-1">
                 <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   How it works
-                </.link>
-                <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  Trend changes
                 </.link>
                 <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Screener
