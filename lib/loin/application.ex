@@ -20,7 +20,7 @@ defmodule Loin.Application do
       # Start Finch
       {Finch, name: Loin.Finch},
       # Ensures fmp_security profiles are loaded
-      {Loin.FMP.FMPSecurityLoader, []},
+      # {Loin.FMP.FMPSecurityLoader, []},
       # Cache timeseries data
       Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
         id: :timeseries_data
