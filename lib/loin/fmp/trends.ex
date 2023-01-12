@@ -30,6 +30,8 @@ defmodule Loin.FMP.Trends do
       end,
       timeout: :infinity
     )
+
+    {:ok}
   end
 
   @doc """
@@ -52,6 +54,8 @@ defmodule Loin.FMP.Trends do
       end,
       timeout: :infinity
     )
+
+    {:ok, symbols}
   end
 
   defp extract_latest_trend({_symbol, []}), do: nil

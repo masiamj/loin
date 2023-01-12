@@ -38,7 +38,7 @@ defmodule Loin.FMP.FMPSecurityLoader do
 
   @impl true
   def handle_call({:seed}, _from, state) do
-    :ok = Loin.FMP.insert_all_profiles()
+    :ok = Loin.FMP.insert_all_profiles(16_000)
 
     state =
       state

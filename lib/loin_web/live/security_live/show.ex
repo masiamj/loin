@@ -3,16 +3,25 @@ defmodule LoinWeb.SecurityLive do
 
   @impl true
   def mount(%{"symbol" => symbol}, _session, socket) do
-    serialized_data =
-      Loin.FMP.TimeseriesCache.get(symbol)
-      |> Jason.encode!()
+    proper_symbol = String.upcase(symbol)
 
-    socket =
-      socket
-      |> assign(:symbol, symbol)
-      |> assign(:timeseries_data, serialized_data)
+    case fetch_chart_data(proper_symbol) do
+      {:ok, chart_data} ->
+        socket =
+          socket
+          |> assign(:symbol, symbol)
+          |> assign(:timeseries_data, chart_data)
 
-    {:ok, socket}
+        {:ok, socket}
+
+      _result ->
+        socket =
+          socket
+          |> assign(:symbol, symbol)
+          |> assign(:timeseries_data, [])
+
+        {:ok, socket}
+    end
   end
 
   @impl true
@@ -43,5 +52,14 @@ defmodule LoinWeb.SecurityLive do
   defp apply_action(socket, :show, _params) do
     socket
     |> assign(:page_title, "Home")
+  end
+
+  defp fetch_chart_data(symbol) do
+    {:ok, {^symbol, data}} =
+      symbol
+      |> String.upcase()
+      |> Loin.TimeseriesCache.get()
+
+    Jason.encode(data)
   end
 end

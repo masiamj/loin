@@ -172,6 +172,41 @@ defmodule Loin.FMP do
   def get_daily_trend!(id), do: Repo.get!(DailyTrend, id)
 
   @doc """
+  Gets the most recent daily sector trends.
+
+  ## Examples
+
+      iex> get_daily_sector_trends
+      [%DailyTrend{}]
+
+  """
+  def get_daily_sector_trends do
+    entries =
+      from(dt in DailyTrend,
+        distinct: [asc: :symbol],
+        where:
+          dt.symbol in [
+            "GLD",
+            "XLB",
+            "XLC",
+            "XLE",
+            "XLF",
+            "XLI",
+            "XLK",
+            "XLP",
+            "XLRE",
+            "XLU",
+            "XLV",
+            "XLY"
+          ],
+        order_by: [desc: :date]
+      )
+      |> Repo.all()
+
+    {:ok, entries}
+  end
+
+  @doc """
   Creates a daily_trend.
 
   ## Examples

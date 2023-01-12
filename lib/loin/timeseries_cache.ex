@@ -1,7 +1,8 @@
-defmodule Loin.FMP.TimeseriesCache do
+defmodule Loin.TimeseriesCache do
   @moduledoc """
   This module is an interface to fetching, caching, and retrieving timeseries data.
   """
+  require Logger
   alias Loin.FMP.Service
 
   @cache_name :timeseries_data
@@ -15,28 +16,32 @@ defmodule Loin.FMP.TimeseriesCache do
   Gets the timeseries data for a symbol.
   """
   def get(symbol) when is_binary(symbol) do
+    Logger.info("Starting TimeseriesCache lookup for #{symbol}")
+
     result =
       Cachex.fetch(@cache_name, symbol, fn _key ->
+        # This is a fallback for reactive cache warming
+        Logger.info("TimeseriesCache miss for #{symbol}")
+
         case Service.batch_historical_prices([symbol]) do
-          %{^symbol => data} -> {:commit, {symbol, data}}
-          {_symbol, data} -> {:ok, data}
-          result -> {:ignore, result}
+          %{^symbol => data} -> {:commit, data}
+          %{} -> {:ignore}
         end
       end)
 
     case result do
-      {:ok, {^symbol, data}} ->
-        data
+      {:ok, data} ->
+        Logger.info("TimeseriesCache hit for #{symbol}")
+        {:ok, {symbol, data}}
 
-      {:ok, data} when is_list(data) ->
-        data
-
-      {:commit, {symbol, data}} ->
+      {:commit, data} when is_list(data) ->
+        Logger.info("TimeseriesCache persisted #{symbol} for 1 hour")
         Cachex.expire!(@cache_name, symbol, :timer.hours(1))
-        data
+        {:ok, {symbol, data}}
 
       result ->
-        result
+        Logger.info("Invalid TimeseriesCache operation: #{result}")
+        {:error, result}
     end
   end
 
@@ -44,15 +49,16 @@ defmodule Loin.FMP.TimeseriesCache do
   Gets many timeseries data series.
   """
   def get_many(symbols) when is_list(symbols) do
+    Logger.info("Starting Batch TimeseriesCache lookup for #{Enum.join(symbols, ", ")}")
+
     results =
       symbols
       |> Enum.uniq()
       |> Task.async_stream(fn symbol -> get(symbol) end, max_concurrency: 3, ordered: true)
-      |> Stream.map(fn {:ok, data} -> data end)
+      |> Stream.map(fn {:ok, {:ok, {symbol, data}}} -> {symbol, data} end)
+      |> Enum.into(%{})
 
-    Enum.zip_reduce([symbols, results], %{}, fn [symbol, data], acc ->
-      Map.merge(acc, %{symbol => data})
-    end)
+    {:ok, results}
   end
 
   @doc """
@@ -73,10 +79,9 @@ defmodule Loin.FMP.TimeseriesCache do
         ordered: true
       )
       |> Stream.flat_map(fn {:ok, result_map} -> result_map end)
-      |> Stream.map(fn {symbol, data} -> {symbol, data} end)
-      |> Enum.to_list()
+      |> Enum.into([])
 
-    with true <- Cachex.put_many!(@cache_name, entries, ttl: :timer.hours(24)) do
+    with true <- Cachex.put_many!(@cache_name, entries, ttl: :timer.hours(1)) do
       {:ok, symbols}
     end
   end

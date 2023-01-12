@@ -1,21 +1,21 @@
 defmodule LoinWeb.HomeLive do
   use LoinWeb, :live_view
 
+  alias Loin.{FMP, TimeseriesCache}
+
   @impl true
   def mount(_params, _session, socket) do
-    timeseries_data =
-      ["SPY", "QQQ"]
-      |> Loin.FMP.TimeseriesCache.get_many()
-      |> Enum.into(%{}, fn {key, value} -> {key, Jason.encode!(value)} end)
+    with {:ok, chart_data} <- fetch_chart_data(),
+         {:ok, sector_trends} <- fetch_sector_trends() do
+      socket =
+        socket
+        |> assign(:chart_data, chart_data)
+        |> assign(:sector_trends, sector_trends)
 
-    sector_trends = Loin.FMP.SectorTrendsCache.all()
-
-    socket =
-      socket
-      |> assign(:chart_data, timeseries_data)
-      |> assign(:sector_trends, sector_trends)
-
-    {:ok, socket, temporary_assigns: [chart_data: %{}, sector_trends: []]}
+      {:ok, socket, temporary_assigns: [chart_data: %{}, sector_trends: []]}
+    else
+      _result -> {:ok, socket}
+    end
   end
 
   @impl true
@@ -166,5 +166,15 @@ defmodule LoinWeb.HomeLive do
   defp apply_action(socket, :home, _params) do
     socket
     |> assign(:page_title, "Home")
+  end
+
+  defp fetch_chart_data() do
+    {:ok, results} = TimeseriesCache.get_many(["SPY", "QQQ"])
+    chart_data = Enum.into(results, %{}, fn {key, value} -> {key, Jason.encode!(value)} end)
+    {:ok, chart_data}
+  end
+
+  defp fetch_sector_trends() do
+    FMP.get_daily_sector_trends()
   end
 end

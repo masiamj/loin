@@ -25,10 +25,6 @@ defmodule Loin.Application do
       Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
         id: :timeseries_data
       ),
-      # Cache the sector trends
-      Supervisor.child_spec({Cachex, [name: :sector_trends, stats: true, warmers: []]},
-        id: :sector_trends
-      ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint
     ]
