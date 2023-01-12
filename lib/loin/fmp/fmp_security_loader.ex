@@ -33,7 +33,7 @@ defmodule Loin.FMP.FMPSecurityLoader do
 
   @impl true
   def init(_opts) do
-    {:ok, %{last_checked: nil, seeded: false}}
+    {:ok, %{last_checked: nil, seeded: false}, {:continue, :initialize}}
   end
 
   @impl true
