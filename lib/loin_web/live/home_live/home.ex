@@ -180,6 +180,8 @@ defmodule LoinWeb.HomeLive do
     FMP.get_daily_sector_trends()
   end
 
+  defp get_sector_trends_updated_at([]), do: DateTime.utc_now()
+
   defp get_sector_trends_updated_at(sector_trends) when is_list(sector_trends) do
     sector_trends
     |> Enum.min_by(&Map.get(&1, :updated_at))
