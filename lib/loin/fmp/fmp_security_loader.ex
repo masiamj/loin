@@ -65,8 +65,7 @@ defmodule Loin.FMP.FMPSecurityLoader do
         {:noreply, state}
 
       false ->
-        IO.inspect("false")
-        :ok = Loin.FMP.insert_all_profiles()
+        :ok = Loin.FMP.insert_all_profiles(100)
 
         state =
           state
