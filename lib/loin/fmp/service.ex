@@ -11,7 +11,7 @@ defmodule Loin.FMP.Service do
   Fetches all the profiles for all securities (Stream).
   """
   def all_profiles_stream() do
-    (@bulk_api_base_url <> "/profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
+    (@bulk_api_base_url <> "profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
     |> RemoteFileStreamer.stream()
     |> CSV.decode!(escape_max_lines: 25, headers: true)
     |> Stream.filter(&Utils.is_us_security/1)

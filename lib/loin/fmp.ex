@@ -126,7 +126,7 @@ defmodule Loin.FMP do
     {:ok, num_affected}
   end
 
-  def insert_all_profiles(limit \\ 50000) do
+  def insert_all_profiles(limit \\ 20000) do
     Loin.FMP.Service.all_profiles_stream()
     |> Stream.take(limit)
     |> Stream.chunk_every(10)
