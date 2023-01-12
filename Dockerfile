@@ -93,7 +93,7 @@ USER nobody
 
 # ENTRYPOINT ["./scripts/migrate-seed-serve.sh"]
 # CMD ["./scripts/migrate-seed-serve.sh"]
-CMD ["/app/bin/server"]
+CMD ["/app/bin/migrate && /app/bin/server"]
 
 # Appended by flyctl
 # ENV ECTO_IPV6 true
