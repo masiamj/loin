@@ -91,7 +91,8 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/loin ./
 
 USER nobody
 
-CMD ["./scripts/migrate-seed-serve.sh"]
+ENTRYPOINT ["./scripts/migrate-seed-serve.sh"]
+# CMD ["./scripts/migrate-seed-serve.sh"]
 # CMD ["/app/bin/server"]
 
 # Appended by flyctl

@@ -120,9 +120,6 @@ defmodule Loin.FMP do
         conflict_target: [:symbol]
       )
 
-    # symbols = Enum.map(entries, &Map.get(&1, :symbol))
-    # Logger.info("Saved profiles for #{symbols}")
-
     {:ok, num_affected}
   end
 
