@@ -6,11 +6,13 @@ defmodule LoinWeb.HomeLive do
   @impl true
   def mount(_params, _session, socket) do
     with {:ok, chart_data} <- fetch_chart_data(),
-         {:ok, sector_trends} <- fetch_sector_trends() do
+         {:ok, sector_trends} <- fetch_sector_trends(),
+         sector_trends_updated_at <- get_sector_trends_updated_at(sector_trends) do
       socket =
         socket
         |> assign(:chart_data, chart_data)
         |> assign(:sector_trends, sector_trends)
+        |> assign(:sector_trends_updated_at, sector_trends_updated_at)
 
       {:ok, socket, temporary_assigns: [chart_data: %{}, sector_trends: []]}
     else
@@ -43,7 +45,7 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Sector trends">
+        <LoinWeb.Cards.generic title="Sector trends" updated_at={@sector_trends_updated_at}>
           <LoinWeb.SectorTrends.heatmap trends={@sector_trends} />
         </LoinWeb.Cards.generic>
       </div>
@@ -176,5 +178,12 @@ defmodule LoinWeb.HomeLive do
 
   defp fetch_sector_trends() do
     FMP.get_daily_sector_trends()
+  end
+
+  defp get_sector_trends_updated_at(sector_trends) when is_list(sector_trends) do
+    sector_trends
+    |> Enum.min_by(&Map.get(&1, :updated_at))
+    |> Map.get(:updated_at)
+    |> Timex.format!("{WDshort} {Mshort} {D}, {YYYY} {h12}:{m}:{s} {AM} {Zabbr}")
   end
 end

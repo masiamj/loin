@@ -18,13 +18,19 @@ defmodule LoinWeb.Cards do
       </.simple_form>
   """
   attr :title, :string, required: true, doc: "the title of the card"
+  attr :updated_at, :string, default: nil
 
   slot :inner_block, required: true
 
   def generic(assigns) do
     ~H"""
     <div class="bg-white p-3 rounded-md border border-gray-200">
-      <p class="font-bold text-sm mb-2"><%= @title %></p>
+      <div class="flex flex-row items-center space-x-2 mb-2">
+        <p class="font-bold text-sm"><%= @title %></p>
+        <p :if={is_binary(@updated_at)} class="text-xs text-gray-400 italic tracking-tight">
+          Updated <%= @updated_at %>
+        </p>
+      </div>
       <div>
         <%= render_slot(@inner_block) %>
       </div>
