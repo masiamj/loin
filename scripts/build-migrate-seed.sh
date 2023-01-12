@@ -18,4 +18,4 @@ MIX_ENV=prod mix release --overwrite
 _build/prod/rel/loin/bin/loin eval "Loin.Release.migrate"
 
 # Run seeds
-_build/prod/rel/loin/bin/loin eval "Loin.Release.seed"
+# _build/prod/rel/loin/bin/loin eval "Loin.Release.seed"
