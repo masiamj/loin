@@ -2,6 +2,7 @@ defmodule Loin.FMP do
   @moduledoc """
   The FMP context.
   """
+  require Logger
 
   import Ecto.Query, warn: false
   alias Loin.Repo
@@ -119,12 +120,15 @@ defmodule Loin.FMP do
         conflict_target: [:symbol]
       )
 
+    # symbols = Enum.map(entries, &Map.get(&1, :symbol))
+    # Logger.info("Saved profiles for #{symbols}")
+
     {:ok, num_affected}
   end
 
-  def insert_all_profiles(num) do
+  def insert_all_profiles(limit \\ 50000) do
     Loin.FMP.Service.all_profiles_stream()
-    |> Stream.take(num)
+    |> Stream.take(limit)
     |> Stream.chunk_every(10)
     |> Stream.each(&insert_many_fmp_securities/1)
     |> Stream.run()
