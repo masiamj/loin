@@ -207,6 +207,78 @@ defmodule Loin.FMP do
   end
 
   @doc """
+  Gets a list of combined fmp_securities and daily_trends.
+
+  Filters by securities with a specific trend, and returns them sorted by market_cap desc.
+
+  ## Examples
+
+      iex> get_securities_via_trend_by_market_cap("up", 2)
+      [%{}, %{}]
+
+  """
+  def get_securities_via_trend_by_market_cap(trend, limit_number \\ 50)
+      when trend in ["down", "up"] and is_integer(limit_number) do
+    # Subquery to get trends distinct by symbol
+    latest_daily_trends =
+      from(dt in DailyTrend,
+        distinct: [asc: :symbol],
+        order_by: [desc: :date],
+        where: [trend: ^trend]
+      )
+
+    # Fetches the securities with their trend information
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(latest_daily_trends),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+
+    {:ok, entries}
+  end
+
+  @doc """
+  Gets a list of combined fmp_securities and daily_trends.
+
+  Filters by securities with a trend change, and returns them sorted by market_cap desc.
+
+  ## Examples
+
+      iex> get_securities_with_trend_change_by_market_cap("up", 2)
+      [%{}, %{}]
+
+  """
+  def get_securities_with_trend_change_by_market_cap(limit_number \\ 50)
+      when is_integer(limit_number) do
+    # Subquery to get trends distinct by symbol
+    latest_daily_trends =
+      from(dt in DailyTrend,
+        distinct: [asc: :symbol],
+        order_by: [desc: :date],
+        where: not is_nil(dt.trend_change)
+      )
+
+    # Fetches the securities with their trend information
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(latest_daily_trends),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+
+    {:ok, entries}
+  end
+
+  @doc """
   Creates a daily_trend.
 
   ## Examples

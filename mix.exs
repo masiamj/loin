@@ -61,6 +61,7 @@ defmodule Loin.MixProject do
       {:indicado, "~> 0.0.4"},
       {:jason, "~> 1.2"},
       {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:money, "~> 1.12"},
       {:oban, "~> 2.13"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
