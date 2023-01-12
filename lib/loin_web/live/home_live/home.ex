@@ -38,7 +38,7 @@ defmodule LoinWeb.HomeLive do
     ~H"""
     <div class="px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <LoinWeb.Cards.generic title="S&P 500 trend">
+        <LoinWeb.Cards.generic more_link="~p/s/SPY" title="S&P 500 trend">
           <div
             class="h-64 w-full"
             id="sp500_chart"
@@ -48,7 +48,7 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Nasdaq trend">
+        <LoinWeb.Cards.generic more_link="~p/s/QQQ" title="Nasdaq trend">
           <div
             class="h-64 w-full"
             id="nasdaq_chart"
@@ -58,19 +58,23 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Sector trends" updated_at={@sector_trends_updated_at}>
+        <LoinWeb.Cards.generic
+          more_link="~p/screener?type=etf"
+          title="Sector trends"
+          updated_at={@sector_trends_updated_at}
+        >
           <LoinWeb.SectorTrends.heatmap trends={@sector_trends} />
         </LoinWeb.Cards.generic>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <LoinWeb.Cards.generic title="Uptrends">
-          <LoinWeb.Lists.stocks_with_trends class="max-h-96 overflow-scroll" data={@uptrends} />
+        <LoinWeb.Cards.generic more_link="~p/screener?trend=up" title="Uptrends">
+          <LoinWeb.Lists.stocks_with_trends data={@uptrends} />
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Downtrends">
-          <LoinWeb.Lists.stocks_with_trends class="max-h-96 overflow-scroll" data={@downtrends} />
+        <LoinWeb.Cards.generic more_link="~p/screener?trend=down" title="Downtrends">
+          <LoinWeb.Lists.stocks_with_trends data={@downtrends} />
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic title="Trend changes">
-          <LoinWeb.Lists.stocks_with_trends class="max-h-96 overflow-scroll" data={@trend_changes} />
+        <LoinWeb.Cards.generic more_link="~p/screener?trend_change=all" title="Trend changes">
+          <LoinWeb.Lists.stocks_with_trends data={@trend_changes} />
         </LoinWeb.Cards.generic>
       </div>
     </div>
@@ -94,7 +98,7 @@ defmodule LoinWeb.HomeLive do
   end
 
   defp fetch_downtrends() do
-    FMP.get_securities_via_trend_by_market_cap("down", 50)
+    FMP.get_securities_via_trend_by_market_cap("down", 10)
   end
 
   defp fetch_sector_trends() do
@@ -102,11 +106,11 @@ defmodule LoinWeb.HomeLive do
   end
 
   defp fetch_trend_changes() do
-    FMP.get_securities_with_trend_change_by_market_cap(50)
+    FMP.get_securities_with_trend_change_by_market_cap(10)
   end
 
   defp fetch_uptrends() do
-    FMP.get_securities_via_trend_by_market_cap("up", 50)
+    FMP.get_securities_via_trend_by_market_cap("up", 10)
   end
 
   defp get_sector_trends_updated_at([]), do: DateTime.utc_now()
