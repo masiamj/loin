@@ -20,7 +20,7 @@ defmodule Loin.Release do
 
   def seed do
     load_app()
-    :ok = Loin.FMP.insert_all_profiles(16000)
+    :ok = Loin.FMP.insert_all_profiles(16_000)
   end
 
   defp repos do
