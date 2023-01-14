@@ -92,8 +92,6 @@ defmodule Loin.FMP.Transforms do
     })
   end
 
-
-
   @doc """
   Optionally parses a numeric binary into it's proper numeric form.
   """

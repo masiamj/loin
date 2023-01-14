@@ -42,7 +42,6 @@ defmodule LoinWeb.SecurityLive do
          {:ok, chart_data} <- fetch_chart_data(proper_symbol),
          is_etf <- Map.get(security, :is_etf),
          extra_information <- fetch_more_relevant_information_for_security(security) do
-      # IO.inspect(extra_information, label: "Extra")
       socket =
         socket
         |> assign(:is_etf, is_etf)
@@ -63,18 +62,28 @@ defmodule LoinWeb.SecurityLive do
     ~H"""
     <div class="px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="col-span-1 space-y-4">
-          <LoinWeb.Cards.generic title="Similar stocks">
-            <LoinWeb.Lists.stocks_with_trends data={assigns.peers} />
-          </LoinWeb.Cards.generic>
-          <LoinWeb.Cards.generic title="ETFs with exposure">
-            <LoinWeb.Lists.etfs_with_exposures data={assigns.etf_exposures} />
-          </LoinWeb.Cards.generic>
+        <div class="col-span-1 h-[88vh] overflow-y-scroll">
+          <div :if={!@is_etf} class="space-y-4">
+            <LoinWeb.Cards.generic title="Similar stocks">
+              <LoinWeb.Lists.stocks_with_trends data={assigns.peers} />
+            </LoinWeb.Cards.generic>
+            <LoinWeb.Cards.generic title="ETFs with exposure">
+              <LoinWeb.Lists.etfs_with_exposures data={assigns.etf_exposures} />
+            </LoinWeb.Cards.generic>
+          </div>
+          <div :if={@is_etf} class="space-y-4">
+            <LoinWeb.Cards.generic title="Sector exposure">
+              <LoinWeb.Lists.etf_sector_weights data={assigns.etf_sector_weights} />
+            </LoinWeb.Cards.generic>
+            <LoinWeb.Cards.generic title="ETF constituents">
+              <LoinWeb.Lists.etf_constituents data={assigns.etf_constituents} />
+            </LoinWeb.Cards.generic>
+          </div>
         </div>
-        <div class="col-span-1 lg:col-span-2">
+        <div class="col-span-1 lg:col-span-2 h-[83vh]">
           <LoinWeb.Cards.generic title={"#{String.upcase(@symbol)} trend"}>
             <div
-              class="h-96 w-full"
+              class="h-[82vh] w-full"
               data-timeseries={@timeseries_data}
               id="timeseries_chart"
               phx-hook="TimeseriesChart"
@@ -115,26 +124,30 @@ defmodule LoinWeb.SecurityLive do
       |> Enum.map(&Map.get(&1, :symbol, %{}))
       |> FMP.get_securities_by_symbols()
 
-    result_map_with_constituent =
-      Enum.reduce(constituents, result_map, fn %{symbol: symbol}, acc = constituent ->
-        acc
-        |> Map.get(symbol, %{})
-        |> Map.put(:constituent, constituent)
-      end)
+    results_with_constituent =
+      Enum.into(constituents, %{}, fn %{symbol: symbol} = constituent ->
+        item =
+          result_map
+          |> Map.get(symbol, %{})
+          |> Map.put(:constituent, constituent)
 
-    {:ok, result_map_with_constituent}
+        {symbol, item}
+      end)
+      |> Map.values()
+      |> Enum.sort_by(& &1.constituent.weight_percentage, :desc)
+
+    {:ok, results_with_constituent}
   end
 
   defp fetch_etf_exposure(symbol) do
     exposures = FMP.Service.etf_exposure_by_stock(symbol)
-    |> Enum.sort_by(&Map.get(&1, :etf_weight_percentage), :desc)
 
     {:ok, result_map} =
       exposures
       |> Enum.map(&Map.get(&1, :etf_symbol))
       |> FMP.get_securities_by_symbols()
 
-    result_map_with_exposure =
+    results_with_exposure =
       Enum.into(exposures, %{}, fn %{etf_symbol: symbol} = exposure ->
         item =
           result_map
@@ -143,8 +156,10 @@ defmodule LoinWeb.SecurityLive do
 
         {symbol, item}
       end)
+      |> Map.values()
+      |> Enum.sort_by(& &1.exposure.etf_weight_percentage, :desc)
 
-    {:ok, result_map_with_exposure}
+    {:ok, results_with_exposure}
   end
 
   defp fetch_etf_sector_weights(symbol) do
@@ -165,24 +180,37 @@ defmodule LoinWeb.SecurityLive do
         "XLY"
       ])
 
-    result_map_with_sector_weight =
-      Enum.reduce(sector_weights, sector_trends, fn sector_weight, acc ->
+    results_with_sector_weight =
+      Enum.into(sector_weights, %{}, fn sector_weight ->
         sector_name = Map.get(sector_weight, :sector)
         sector_etf_symbol = Map.get(@symbols_by_title, sector_name)
         sector_etf_title = Map.get(@titles_by_symbol, sector_etf_symbol)
 
-        acc
-        |> Map.get(sector_etf_symbol, %{})
-        |> Map.put(:sector_weight, Map.put(sector_weight, :name, sector_etf_title))
-      end)
+        item =
+          sector_trends
+          |> Map.get(sector_etf_symbol, %{})
+          |> Map.put(:sector_weight, Map.put(sector_weight, :name, sector_etf_title))
 
-    {:ok, result_map_with_sector_weight}
+        {sector_etf_symbol, item}
+      end)
+      |> Map.values()
+      |> Enum.sort_by(& &1.sector_weight.weight_percentage, :desc)
+
+    {:ok, results_with_sector_weight}
   end
 
   defp fetch_peers(symbol) do
-    symbol
-    |> FMP.Service.peers()
-    |> FMP.get_securities_by_symbols()
+    {:ok, securities} =
+      symbol
+      |> FMP.Service.peers()
+      |> FMP.get_securities_by_symbols()
+
+    results =
+      securities
+      |> Map.values()
+      |> Enum.sort_by(& &1.security.market_cap, :desc)
+
+    {:ok, results}
   end
 
   defp fetch_fmp_security(symbol) do
@@ -199,7 +227,7 @@ defmodule LoinWeb.SecurityLive do
   defp fetch_more_relevant_information_for_security(%{is_etf: false, symbol: symbol}) do
     with {:ok, peers} <- fetch_peers(symbol),
          {:ok, etf_exposures} <- fetch_etf_exposure(symbol) do
-      %{etf_exposures: Map.values(etf_exposures), peers: Map.values(peers)}
+      %{etf_exposures: etf_exposures, peers: peers}
     end
   end
 end
