@@ -6,7 +6,7 @@ defmodule Loin.FMP do
   import Ecto.Query, warn: false
   alias Loin.Repo
 
-  alias Loin.FMP.FMPSecurity
+  alias Loin.FMP.{DailyTrend, FMPSecurity}
 
   @doc """
   Counts a list of fmp_securities.
@@ -46,6 +46,37 @@ defmodule Loin.FMP do
 
   """
   def get_fmp_security!(id), do: Repo.get!(FMPSecurity, id)
+
+  @doc """
+  Gets many fmp_securities and daily_trends by their symbols.
+
+  ## Examples
+
+      iex> get_fmp_securities_by_symbols(["AAPL"])
+      {:ok, %{}}
+
+  """
+  def get_securities_by_symbols(symbols) when is_list(symbols) do
+    # Subquery to get trends distinct by symbol
+    latest_daily_trends =
+      from(dt in DailyTrend,
+        distinct: [asc: :symbol],
+        order_by: [desc: :date],
+        where: dt.symbol in ^symbols
+      )
+
+    # Fetches the securities with their trend information
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(latest_daily_trends),
+        on: fs.symbol == dt.symbol,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{security: %{symbol: symbol}} = item -> {symbol, item} end)
+
+    {:ok, entries}
+  end
 
   def get_fmp_securities_by_market_cap(limit_number \\ 50) when is_integer(limit_number) do
     FMPSecurity
@@ -139,8 +170,6 @@ defmodule Loin.FMP do
     |> Stream.each(&insert_many_fmp_securities/1)
     |> Stream.run()
   end
-
-  alias Loin.FMP.DailyTrend
 
   @doc """
   Returns the list of daily_trends.

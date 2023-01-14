@@ -11,32 +11,169 @@ defmodule LoinWeb.Lists do
   attr :data, :list, default: []
   attr :updated_at, :string, default: nil
 
+  def etf_constituents(assigns) do
+    ~H"""
+    <ul class={"grid grid-cols-1 divide-y #{@class}"}>
+      <%= for %{constituent: constituent, security: security, trend: trend} <- @data do %>
+        <a href={"/s/#{security.symbol}"}>
+          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2">
+              <div class="flex flex-col w-2/5">
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    <%= Map.get(security, :name) %>
+                  </p>
+                </div>
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    (<%= Map.get(constituent, :weight_percentage) %>% weight)
+                  </p>
+                </div>
+              </div>
+              <div class="flex flex-col w-2/5">
+                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
+                <p class="text-sm">
+                  <%= Map.get(trend, :close) |> Money.parse!() |> Money.to_string() %>
+                </p>
+              </div>
+              <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+                <.trend_badge trend={Map.get(trend, :trend)} />
+                <.trend_change_badge trend_change={Map.get(trend, :trend_change)} />
+              </div>
+            </div>
+          </li>
+        </a>
+      <% end %>
+    </ul>
+    """
+  end
+
+  @doc """
+  Renders a simple form.
+  """
+  attr :class, :string, default: ""
+  attr :data, :list, default: []
+  attr :updated_at, :string, default: nil
+
+  def etf_sector_weights(assigns) do
+    ~H"""
+    <ul class={"grid grid-cols-1 divide-y #{@class}"}>
+      <%= for %{sector_weight: sector_weight, security: security, trend: trend} <- @data do %>
+        <a href={"/s/#{security.symbol}"}>
+          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2">
+              <div class="flex flex-col w-2/5">
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    <%= Map.get(security, :symbol) %>
+                  </p>
+                </div>
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-sm font-medium"><%= Map.get(sector_weight, :name) %></p>
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    (<%= Map.get(sector_weight, :weight_percentage) %> weight)
+                  </p>
+                </div>
+              </div>
+              <div class="flex flex-col w-2/5">
+                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
+                <p class="text-sm">
+                  <%= Map.get(trend, :close) |> Money.parse!() |> Money.to_string() %>
+                </p>
+              </div>
+              <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+                <.trend_badge trend={Map.get(trend, :trend)} />
+                <.trend_change_badge trend_change={Map.get(trend, :trend_change)} />
+              </div>
+            </div>
+          </li>
+        </a>
+      <% end %>
+    </ul>
+    """
+  end
+
+  @doc """
+  Renders a simple form.
+  """
+  attr :class, :string, default: ""
+  attr :data, :list, default: []
+  attr :updated_at, :string, default: nil
+
+  def etfs_with_exposures(assigns) do
+    ~H"""
+    <ul class={"grid grid-cols-1 divide-y #{@class}"}>
+      <%= for %{exposure: exposure, security: security, trend: trend} <- @data do %>
+        <a href={"/s/#{security.symbol}"}>
+          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2">
+              <div class="flex flex-col w-2/5">
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    <%= Map.get(security, :name) %>
+                  </p>
+                </div>
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    (<%= Map.get(exposure, :etf_weight_percentage) %>% exposure)
+                  </p>
+                </div>
+              </div>
+              <div class="flex flex-col w-2/5">
+                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
+                <p class="text-sm">
+                  <%= Map.get(trend, :close) |> Money.parse!() |> Money.to_string() %>
+                </p>
+              </div>
+              <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+                <.trend_badge trend={Map.get(trend, :trend)} />
+                <.trend_change_badge trend_change={Map.get(trend, :trend_change)} />
+              </div>
+            </div>
+          </li>
+        </a>
+      <% end %>
+    </ul>
+    """
+  end
+
+  @doc """
+  Renders a simple form.
+  """
+  attr :class, :string, default: ""
+  attr :data, :list, default: []
+  attr :updated_at, :string, default: nil
+
   def stocks_with_trends(assigns) do
     ~H"""
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{security: security, trend: trend} <- @data do %>
-        <li class="bg-white hover:bg-gray-100 p-2" role="button">
-          <div class="flex flex-row items-center justify-between space-x-2">
-            <div class="flex flex-col w-2/5">
-              <div class="flex flex-row items-center gap-1">
-                <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                  <%= Map.get(security, :name) %>
+        <a href={"/s/#{security.symbol}"}>
+          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2">
+              <div class="flex flex-col w-2/5">
+                <div class="flex flex-row items-center gap-1">
+                  <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+                    <%= Map.get(security, :name) %>
+                  </p>
+                </div>
+                <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+              </div>
+              <div class="flex flex-col w-2/5">
+                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
+                <p class="text-sm">
+                  <%= Map.get(trend, :close) |> Money.parse!() |> Money.to_string() %>
                 </p>
               </div>
-              <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+              <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+                <.trend_badge trend={Map.get(trend, :trend)} />
+                <.trend_change_badge trend_change={Map.get(trend, :trend_change)} />
+              </div>
             </div>
-            <div class="flex flex-col w-2/5">
-              <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-              <p class="text-sm">
-                <%= Map.get(trend, :close) |> Money.parse!() |> Money.to_string() %>
-              </p>
-            </div>
-            <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-              <.trend_badge trend={Map.get(trend, :trend)} />
-              <.trend_change_badge trend_change={Map.get(trend, :trend_change)} />
-            </div>
-          </div>
-        </li>
+          </li>
+        </a>
       <% end %>
     </ul>
     """
