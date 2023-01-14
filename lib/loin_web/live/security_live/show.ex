@@ -34,8 +34,6 @@ defmodule LoinWeb.SecurityLive do
 
   @impl true
   def mount(%{"symbol" => symbol}, _session, socket) do
-    proper_symbol = String.upcase(symbol)
-
     with proper_symbol <- String.upcase(symbol),
          {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
            fetch_fmp_security(proper_symbol),
