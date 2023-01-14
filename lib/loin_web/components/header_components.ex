@@ -25,9 +25,9 @@ defmodule LoinWeb.HeaderComponents do
     <div class="relative bg-white" id={@id}>
       <div class="px-4 pb-4 lg:pb-0">
         <div class="flex items-center justify-between py-2 lg:justify-start lg:space-x-10">
-          <a href="#" class="font-bold">
+          <.link href={~p"/"} class="font-bold">
             Trenderloin
-          </a>
+          </.link>
           <div class="lg:hidden">
             <button
               type="button"
@@ -70,23 +70,32 @@ defmodule LoinWeb.HeaderComponents do
             </div>
           </div>
           <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
-            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+            <.link
+              navigate={~p"/users/log_in"}
+              class="relative px-2 py-1 text-gray-500 hover:text-black"
+            >
               How it works
             </.link>
-            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+            <.link
+              navigate={~p"/users/log_in"}
+              class="relative px-2 py-1 text-gray-500 hover:text-black"
+            >
               Screener
             </.link>
-            <.link href={~p"/users/log_in"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+            <.link
+              navigate={~p"/users/log_in"}
+              class="relative px-2 py-1 text-gray-500 hover:text-black"
+            >
               Charts
             </.link>
-            <.link href={~p"/users/log_in"} class="relative group">
+            <.link patch={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
               <button class="relative px-3 py-1 bg-white rounded-md">
                 Log in
               </button>
             </.link>
-            <.link href={~p"/users/register"} class="relative group">
+            <.link patch={~p"/users/register"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
               </div>
               <button class="relative px-3 py-1 bg-black rounded-md text-white">
@@ -117,9 +126,9 @@ defmodule LoinWeb.HeaderComponents do
         <div class="rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="px-5 pt-5 pb-6">
             <div class="flex items-center justify-between">
-              <a href="#" class="font-bold">
+              <.link navigate={~p"/"} class="font-bold">
                 Trenderloin
-              </a>
+              </.link>
               <button
                 type="button"
                 class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -141,27 +150,27 @@ defmodule LoinWeb.HeaderComponents do
             </div>
             <div class="mt-4">
               <nav class="grid gap-y-1">
-                <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   How it works
                 </.link>
-                <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Screener
                 </.link>
-                <.link href={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Charts
                 </.link>
               </nav>
             </div>
           </div>
           <div class="px-8 pb-4 flex flex-row items-center space-x-8 w-full">
-            <.link href={~p"/users/log_in"} class="relative group w-full">
+            <.link patch={~p"/users/log_in"} class="relative group w-full">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
               <button class="relative px-3 py-1 bg-white border border-gray-300 rounded-md w-full">
                 Log in
               </button>
             </.link>
-            <.link href={~p"/users/register"} class="relative group w-full">
+            <.link patch={~p"/users/register"} class="relative group w-full">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
               </div>
               <button class="relative px-3 py-1 bg-black rounded-md text-white w-full">
@@ -192,8 +201,6 @@ defmodule LoinWeb.HeaderComponents do
   end
 
   defp hide_mobile_menu() do
-    IO.puts("hide_mobile_menu")
-
     JS.hide(
       to: "#mobile-menu",
       transition: {"transition-all transform ease-out duration-200", "opacity-100", "opacity-0"}

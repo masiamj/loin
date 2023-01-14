@@ -3,6 +3,7 @@ defmodule Loin.FMP.FMPSecurityLoader do
   Ensures profiles are always loaded in the app.
   """
   use GenServer
+  require Logger
 
   # Callbacks
 
@@ -38,12 +39,15 @@ defmodule Loin.FMP.FMPSecurityLoader do
 
   @impl true
   def handle_call({:seed}, _from, state) do
+    Logger.info("Starting FMPSecurityLoader seed function with a 90s timeout")
     :ok = Loin.FMP.insert_all_profiles(16_000)
 
     state =
       state
       |> Map.put(:last_checked, DateTime.utc_now())
       |> Map.put(:seeded, true)
+
+    Logger.info("Finished FMPSecurityLoader seeding successfully")
 
     {:reply, :ok, state}
   end
@@ -55,8 +59,12 @@ defmodule Loin.FMP.FMPSecurityLoader do
 
   @impl true
   def handle_continue(:initialize, state) do
+    Logger.info("Handling :continue in FMPSecurityLoader")
+
     case has_fmp_securities?() do
       true ->
+        Logger.info("The fmp_securities are already loaded... skipping seeding...")
+
         state =
           state
           |> Map.put(:last_checked, DateTime.utc_now())
@@ -65,12 +73,15 @@ defmodule Loin.FMP.FMPSecurityLoader do
         {:noreply, state}
 
       false ->
+        Logger.info("The fmp_securities are not loading, starting seed...")
         :ok = Loin.FMP.insert_all_profiles(100)
 
         state =
           state
           |> Map.put(:last_checked, DateTime.utc_now())
           |> Map.put(:seeded, true)
+
+        Logger.info("The fmp_securities were seeded successfully...")
 
         {:noreply, state}
     end

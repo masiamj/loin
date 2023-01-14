@@ -2,6 +2,7 @@ defmodule Loin.FMP.Trends do
   @moduledoc """
   Performs operations for trends.
   """
+  require Logger
   alias Loin.Repo
   alias Loin.FMP.{DailyTrend, FMPSecurity, Service, Transforms}
   import Ecto.Query, warn: false
@@ -10,6 +11,8 @@ defmodule Loin.FMP.Trends do
   Processes trends for all available symbols.
   """
   def process_all() do
+    Logger.info("Starting to process all trends...")
+
     Repo.transaction(
       fn ->
         FMPSecurity
@@ -21,6 +24,7 @@ defmodule Loin.FMP.Trends do
           fn items ->
             symbols = Enum.map(items, &Map.get(&1, :symbol))
             {:ok, processed_symbols} = fetch_and_store(symbols)
+            Logger.info("Processed trends for #{Enum.join(processed_symbols, ", ")}")
             processed_symbols
           end,
           max_concurrency: 2,
@@ -38,6 +42,8 @@ defmodule Loin.FMP.Trends do
   Given a list of symbols, processes trends for all available symbols.
   """
   def process_many(symbols) when is_list(symbols) do
+    Logger.info("Starting to process many trends...")
+
     Repo.transaction(
       fn ->
         symbols
@@ -45,6 +51,7 @@ defmodule Loin.FMP.Trends do
         |> Task.async_stream(
           fn items ->
             {:ok, processed_symbols} = fetch_and_store(items)
+            Logger.info("Processed trends for #{Enum.join(processed_symbols, ", ")}")
             processed_symbols
           end,
           max_concurrency: 2,

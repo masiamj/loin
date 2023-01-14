@@ -2,7 +2,7 @@ defmodule LoinWeb.SectorTrends do
   @moduledoc """
   Provides a set of card components.
   """
-  use Phoenix.Component
+  use LoinWeb, :live_view
 
   @titles_by_symbol %{
     "XLB" => "Materials",
@@ -18,6 +18,17 @@ defmodule LoinWeb.SectorTrends do
     "XLY" => "Cons. Disc.",
     "GLD" => "Gold"
   }
+
+  @doc """
+  Not sure why we need this, CoreComponents doesn't have it.
+
+  The compiler is complaining and I don't have time to deal with it, so tossing it here.
+  """
+  def render(assigns) do
+    ~H"""
+    THIS IS A COMPILER PLACERHOLDER. DO NOT USE ME.
+    """
+  end
 
   @doc """
   Renders a simple form.
@@ -38,13 +49,15 @@ defmodule LoinWeb.SectorTrends do
     ~H"""
     <div class="grid grid-cols-3 lg:grid-cols-3 gap-0.5">
       <%= for item <- @trends do %>
-        <div class={"p-3 #{background_color(item)} rounded-sm"} role="button">
-          <p class="text-gray-100 text-xs"><%= Map.get(item, :symbol) %></p>
-          <div class="flex items-center justify-between space-x-2">
-            <p class="text-white text-sm font-medium"><%= title_for_symbol(item) %></p>
-            <p><%= emoji_for_trend_change(item) %></p>
+        <.link navigate={~p"/s/#{item.symbol}"}>
+          <div class={"p-3 #{background_color(item)} rounded-sm"} role="button">
+            <p class="text-gray-100 text-xs"><%= Map.get(item, :symbol) %></p>
+            <div class="flex items-center justify-between space-x-2">
+              <p class="text-white text-sm font-medium"><%= title_for_symbol(item) %></p>
+              <p><%= emoji_for_trend_change(item) %></p>
+            </div>
           </div>
-        </div>
+        </.link>
       <% end %>
     </div>
     """

@@ -64,6 +64,8 @@ defmodule LoinWeb.Router do
 
     live_session :redirect_if_user_is_authenticated,
       on_mount: [{LoinWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/", HomeLive, :home
+      live "/s/:symbol", SecurityLive, :show
       live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
@@ -98,9 +100,6 @@ defmodule LoinWeb.Router do
   scope "/", LoinWeb do
     pipe_through [:browser]
 
-    live "/", HomeLive, :home
-    live "/s/:symbol", SecurityLive, :show
-    live "/example/:symbol", SecurityLive, :show
     live "/fmp_securities", FMPSecurityLive.Index, :index
     live "/fmp_securities/new", FMPSecurityLive.Index, :new
     live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
