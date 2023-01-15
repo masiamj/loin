@@ -54,7 +54,7 @@ defmodule LoinWeb.HeaderComponents do
             </button>
           </div>
           <div class="hidden lg:flex lg:flex-1 justify-center">
-            <div class="relative w-3/5">
+            <div class="relative w-3/5" id="unauthenticate-header-stock-searcher-element" phx-hook="StockSearcher">
               <input
                 type="text"
                 name="unauthenticated-header-search"

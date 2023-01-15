@@ -14,19 +14,6 @@
     </script>
   </head>
   <body class="bg-gray-100">
-    <%= if @current_user do %>
-      <li>
-        <%= @current_user.email %>
-      </li>
-      <li>
-        <.link href={~p"/users/settings"}>Settings</.link>
-      </li>
-      <li>
-        <.link href={~p"/users/log_out"} method="delete">Log out</.link>
-      </li>
-    <% else %>
-      <LoinWeb.HeaderComponents.unauthenticated id="unauthenticated-header" />
-    <% end %>
     <div>
       <%= @inner_content %>
     </div>
