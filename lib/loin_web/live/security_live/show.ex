@@ -3,6 +3,20 @@ defmodule LoinWeb.SecurityLive do
 
   alias Loin.{FMP, TimeseriesCache}
 
+  @sector_symbols MapSet.new([
+                    "XLB",
+                    "XLC",
+                    "XLE",
+                    "XLF",
+                    "XLI",
+                    "XLK",
+                    "XLP",
+                    "XLRE",
+                    "XLU",
+                    "XLV",
+                    "XLY"
+                  ])
+
   @symbols_by_title %{
     "Industrials" => "XLI",
     "Financial Services" => "XLF",
@@ -33,26 +47,76 @@ defmodule LoinWeb.SecurityLive do
   }
 
   @impl true
-  def mount(%{"symbol" => symbol}, _session, socket) do
-    with proper_symbol <- String.upcase(symbol),
-         {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
-           fetch_fmp_security(proper_symbol),
-         {:ok, chart_data} <- fetch_chart_data(proper_symbol),
-         is_etf <- Map.get(security, :is_etf),
-         extra_information <- fetch_more_relevant_information_for_security(security) do
-      socket =
-        socket
-        |> assign(:is_etf, is_etf)
-        |> assign(:symbol, proper_symbol)
-        |> assign(:security, security)
-        |> assign(:timeseries_data, chart_data)
-        |> assign(:trend, trend)
-        |> assign(extra_information)
+  def mount(%{"compare" => compare_symbol, "symbol" => symbol}, _session, socket) do
+    proper_symbol = String.upcase(symbol)
+    proper_compare_symbol = String.upcase(compare_symbol)
 
-      {:ok, socket}
-    else
-      _item -> {:ok, socket}
-    end
+    [
+      {:ok, %{^proper_symbol => proper, ^proper_compare_symbol => compare}},
+      {:ok, chart_data},
+      {:ok, compare_chart_data}
+    ] =
+      Task.await_many([
+        Task.async(fn -> fetch_fmp_securities([proper_symbol, proper_compare_symbol]) end),
+        Task.async(fn -> fetch_chart_data(proper_symbol) end),
+        Task.async(fn -> fetch_chart_data(proper_compare_symbol) end)
+      ])
+
+    is_etf =
+      proper
+      |> Map.get(:security)
+      |> Map.get(:is_etf)
+
+    extra_information = fetch_more_relevant_information_for_security(proper.security)
+
+    socket =
+      socket
+      |> assign(:is_etf, is_etf)
+      |> assign(:symbol, proper_symbol)
+      |> assign(:is_comparing, true)
+      |> assign(:compare_symbol, compare_symbol)
+      |> assign(:security, proper.security)
+      |> assign(:compare_security, compare.security)
+      |> assign(:timeseries_data, chart_data)
+      |> assign(:compare_timeseries_data, compare_chart_data)
+      |> assign(:trend, proper.trend)
+      |> assign(:compare_trend, compare.trend)
+      |> assign(extra_information)
+
+    {:ok, socket}
+  end
+
+  @impl true
+  def mount(%{"symbol" => symbol}, _session, socket) do
+    proper_symbol = String.upcase(symbol)
+
+    [
+      {:ok, %{^proper_symbol => proper}},
+      {:ok, chart_data}
+    ] =
+      Task.await_many([
+        Task.async(fn -> fetch_fmp_security(proper_symbol) end),
+        Task.async(fn -> fetch_chart_data(proper_symbol) end)
+      ])
+
+    is_etf =
+      proper
+      |> Map.get(:security)
+      |> Map.get(:is_etf)
+
+    extra_information = fetch_more_relevant_information_for_security(proper.security)
+
+    socket =
+      socket
+      |> assign(:is_etf, is_etf)
+      |> assign(:symbol, proper_symbol)
+      |> assign(:is_comparing, false)
+      |> assign(:security, proper.security)
+      |> assign(:timeseries_data, chart_data)
+      |> assign(:trend, proper.trend)
+      |> assign(extra_information)
+
+    {:ok, socket}
   end
 
   @impl true
@@ -63,14 +127,17 @@ defmodule LoinWeb.SecurityLive do
         <div class="col-span-1 h-[88vh] overflow-y-scroll">
           <div :if={!@is_etf} class="space-y-4">
             <LoinWeb.Cards.generic title="Similar stocks">
-              <LoinWeb.Lists.stocks_with_trends data={assigns.peers} />
+              <LoinWeb.Lists.similar_stocks data={assigns.peers} />
             </LoinWeb.Cards.generic>
             <LoinWeb.Cards.generic title="ETFs with exposure">
               <LoinWeb.Lists.etfs_with_exposures data={assigns.etf_exposures} />
             </LoinWeb.Cards.generic>
           </div>
           <div :if={@is_etf} class="space-y-4">
-            <LoinWeb.Cards.generic title="Sector exposure">
+            <LoinWeb.Cards.generic
+              :if={length(assigns.etf_sector_weights) > 0}
+              title="Sector exposure"
+            >
               <LoinWeb.Lists.etf_sector_weights data={assigns.etf_sector_weights} />
             </LoinWeb.Cards.generic>
             <LoinWeb.Cards.generic title="ETF constituents">
@@ -78,12 +145,26 @@ defmodule LoinWeb.SecurityLive do
             </LoinWeb.Cards.generic>
           </div>
         </div>
-        <div class="col-span-1 lg:col-span-2 h-[83vh]">
-          <LoinWeb.Cards.generic title={"#{String.upcase(@symbol)} trend"}>
+        <div class="col-span-1 lg:col-span-2 h-[82vh] space-y-4">
+          <LoinWeb.Cards.generic title={"#{@symbol} trend"}>
             <div
-              class="h-[82vh] w-full"
+              class={"#{chart_height(@is_comparing)} w-full"}
               data-timeseries={@timeseries_data}
               id="timeseries_chart"
+              phx-hook="TimeseriesChart"
+              phx-update="ignore"
+            >
+            </div>
+          </LoinWeb.Cards.generic>
+          <LoinWeb.Cards.generic
+            :if={@is_comparing}
+            more_link={~p"/s/#{@compare_symbol}"}
+            title={"#{@compare_symbol} trend"}
+          >
+            <div
+              class={"#{chart_height(@is_comparing)} w-full"}
+              data-timeseries={@compare_timeseries_data}
+              id="compare_timeseries_chart"
               phx-hook="TimeseriesChart"
               phx-update="ignore"
             >
@@ -215,10 +296,20 @@ defmodule LoinWeb.SecurityLive do
     FMP.get_securities_by_symbols([symbol])
   end
 
+  defp fetch_fmp_securities(symbols) when is_list(symbols) do
+    FMP.get_securities_by_symbols(symbols)
+  end
+
   defp fetch_more_relevant_information_for_security(%{is_etf: true, symbol: symbol}) do
-    with {:ok, etf_constituents} <- fetch_etf_constituents(symbol),
-         {:ok, etf_sector_weights} <- fetch_etf_sector_weights(symbol) do
-      %{etf_constituents: etf_constituents, etf_sector_weights: etf_sector_weights}
+    {:ok, etf_constituents} = fetch_etf_constituents(symbol)
+
+    case MapSet.member?(@sector_symbols, symbol) do
+      true ->
+        %{etf_constituents: etf_constituents, etf_sector_weights: []}
+
+      false ->
+        {:ok, etf_sector_weights} = fetch_etf_sector_weights(symbol)
+        %{etf_constituents: etf_constituents, etf_sector_weights: etf_sector_weights}
     end
   end
 
@@ -226,6 +317,13 @@ defmodule LoinWeb.SecurityLive do
     with {:ok, peers} <- fetch_peers(symbol),
          {:ok, etf_exposures} <- fetch_etf_exposure(symbol) do
       %{etf_exposures: etf_exposures, peers: peers}
+    end
+  end
+
+  defp chart_height(is_comparing) when is_boolean(is_comparing) do
+    case is_comparing do
+      true -> "h-[37vh]"
+      false -> "h-[82vh]"
     end
   end
 end

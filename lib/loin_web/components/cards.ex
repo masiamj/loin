@@ -2,7 +2,18 @@ defmodule LoinWeb.Cards do
   @moduledoc """
   Provides a set of card components.
   """
-  use Phoenix.Component
+  use LoinWeb, :live_view
+
+  @doc """
+  Not sure why we need this, CoreComponents doesn't have it.
+
+  The compiler is complaining and I don't have time to deal with it, so tossing it here.
+  """
+  def render(assigns) do
+    ~H"""
+    THIS IS A COMPILER PLACERHOLDER. DO NOT USE ME.
+    """
+  end
 
   @doc """
   Renders a simple form.
@@ -32,12 +43,13 @@ defmodule LoinWeb.Cards do
           <p :if={is_binary(@updated_at)} class="text-xs text-gray-400 italic tracking-tight">
             Updated <%= @updated_at %>
           </p>
-          <a
+          <.link
             :if={@more_link}
+            navigate={@more_link}
             class="px-2 py-1 bg-white hover:bg-gray-100 rounded-lg flex items-center justify-center text-blue-600 hover:text-blue-700 text-xs font-medium"
           >
             See more <Heroicons.arrow_top_right_on_square class="h-3 w-3 ml-1 font-bold" />
-          </a>
+          </.link>
         </div>
         <div>
           <%= render_slot(@inner_block) %>
