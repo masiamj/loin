@@ -3,6 +3,8 @@ defmodule Loin.FMP do
   The FMP context.
   """
 
+  require Logger
+
   import Ecto.Query, warn: false
   alias Loin.Repo
 
@@ -154,6 +156,10 @@ defmodule Loin.FMP do
   Inserts many FMPSecurity records.
   """
   def insert_many_fmp_securities(entries \\ []) when is_list(entries) do
+    symbols = Enum.map_join(entries, ", ", &Map.get(&1, :symbol))
+
+    Logger.info("Inserting profiles for symbols: #{symbols}")
+
     {num_affected, nil} =
       Repo.insert_all(FMPSecurity, entries,
         on_conflict: {:replace_all_except, [:id, :inserted_at, :symbol]},

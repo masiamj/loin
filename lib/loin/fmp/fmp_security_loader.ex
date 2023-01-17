@@ -74,7 +74,7 @@ defmodule Loin.FMP.FMPSecurityLoader do
 
       false ->
         Logger.info("The fmp_securities are not loading, starting seed...")
-        :ok = Loin.FMP.insert_all_profiles(100)
+        :ok = Loin.FMP.insert_all_profiles()
 
         state =
           state
