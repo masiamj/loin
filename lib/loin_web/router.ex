@@ -94,23 +94,19 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.UserAuth, :mount_current_user}] do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
+
+      live "/fmp_securities", FMPSecurityLive.Index, :index
+      live "/fmp_securities/new", FMPSecurityLive.Index, :new
+      live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
+      live "/fmp_securities/:id", FMPSecurityLive.Show, :show
+      live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
+
+      live "/daily_trends", DailyTrendLive.Index, :index
+      live "/daily_trends/new", DailyTrendLive.Index, :new
+      live "/daily_trends/:id/edit", DailyTrendLive.Index, :edit
+
+      live "/daily_trends/:id", DailyTrendLive.Show, :show
+      live "/daily_trends/:id/show/edit", DailyTrendLive.Show, :edit
     end
-  end
-
-  scope "/", LoinWeb do
-    pipe_through [:browser]
-
-    live "/fmp_securities", FMPSecurityLive.Index, :index
-    live "/fmp_securities/new", FMPSecurityLive.Index, :new
-    live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
-    live "/fmp_securities/:id", FMPSecurityLive.Show, :show
-    live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
-
-    live "/daily_trends", DailyTrendLive.Index, :index
-    live "/daily_trends/new", DailyTrendLive.Index, :new
-    live "/daily_trends/:id/edit", DailyTrendLive.Index, :edit
-
-    live "/daily_trends/:id", DailyTrendLive.Show, :show
-    live "/daily_trends/:id/show/edit", DailyTrendLive.Show, :edit
   end
 end
