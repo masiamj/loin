@@ -13,7 +13,7 @@ defmodule Loin.FMP.Profiles do
       Loin.FMP.Service.all_profiles_stream()
       |> Stream.map(fn item ->
         Logger.info("Processing #{item.symbol}")
-        Map.take(item, [:image, :industry, :name, :sector, :symbol])
+        Map.take(item, [:image, :industry, :market_cap, :name, :sector, :symbol])
       end)
       |> Enum.take(limit)
       |> Jason.encode!()

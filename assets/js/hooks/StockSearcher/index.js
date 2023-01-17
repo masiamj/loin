@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy'
+import reverse from 'lodash/reverse'
 import { Document as FSDocument } from 'flexsearch'
 import stockProfiles from './stock-profiles.json'
 
@@ -11,7 +13,7 @@ export const StockSearcher = {
       document: {
         id: 'id',
         index: ['name', 'symbol'],
-        store: ['name', 'symbol', 'image', 'sector', 'industry']
+        store: ['name', 'symbol', 'image', 'market_cap', 'sector', 'industry']
       },
       resolution: 3,
       tokenize: 'full',
@@ -28,12 +30,12 @@ export const StockSearcher = {
         limit: 10,
       })
 
-      const allResults = resultsList.reduce((acc, { field, result = [] } = {}) => {
+      const allResults = resultsList.reduce((acc, { result = [] } = {}) => {
         const slimResults = result.map(({ doc: { name, symbol, ...rest } } = {}) => ({ ...rest, label: name, value: symbol }))
         return acc.concat(slimResults)
       }, [])
 
-      return allResults
+      return reverse(sortBy(allResults, 'market_cap'))
     }
 
     autocomplete({

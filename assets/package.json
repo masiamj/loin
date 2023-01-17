@@ -4,7 +4,8 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "flexsearch": "^0.7.31",
-    "lightweight-charts": "^3.8.0"
+    "lightweight-charts": "^3.8.0",
+    "lodash": "^4.17.21"
   },
   "scripts": {
     "test": "echo 'Nothing to test'"
