@@ -31,13 +31,15 @@ defmodule LoinWeb.RealtimeUpdateLive do
 
   @impl true
   def handle_info(:update, socket) do
-    data = socket
-    |> Map.get(:assigns)
-    |> Map.get(:data, [])
-    |> List.update_at(2, fn item -> item + 1 end)
+    data =
+      socket
+      |> Map.get(:assigns)
+      |> Map.get(:data, [])
+      |> List.update_at(2, fn item -> item + 1 end)
 
-    socket = socket
-    |> assign(:data, data)
+    socket =
+      socket
+      |> assign(:data, data)
 
     Process.send_after(self(), :update, 100)
     {:noreply, socket}

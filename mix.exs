@@ -27,7 +27,7 @@ defmodule Loin.MixProject do
   def application do
     [
       mod: {Loin.Application, []},
-      extra_applications: [:ex_unit, :logger, :runtime_tools, :exprotobuf]
+      extra_applications: [:ex_unit, :logger, :runtime_tools]
     ]
   end
 
@@ -50,7 +50,6 @@ defmodule Loin.MixProject do
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:ex_check, "~> 0.14.0", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev, :test], runtime: false},
-      {:exprotobuf, "~> 1.2"},
       {:external_service, "~> 1.1"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
