@@ -3,3 +3,11 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+.autocomplete>div:hover {
+  @apply bg-gray-100 !important;
+}
+
+.autocomplete>div.selected {
+  @apply bg-blue-500 !important;
+  @apply text-white !important;
+}

@@ -2,18 +2,7 @@ defmodule LoinWeb.HeaderComponents do
   @moduledoc """
   Provides the Header components.
   """
-  use LoinWeb, :live_view
-
-  @doc """
-  Not sure why we need this, CoreComponents doesn't have it.
-
-  The compiler is complaining and I don't have time to deal with it, so tossing it here.
-  """
-  def render(assigns) do
-    ~H"""
-    THIS IS A COMPILER PLACERHOLDER. DO NOT USE ME.
-    """
-  end
+  use LoinWeb, :live_component
 
   @doc """
   Renders an unauthenticated header.
@@ -54,13 +43,14 @@ defmodule LoinWeb.HeaderComponents do
             </button>
           </div>
           <div class="hidden lg:flex lg:flex-1 justify-center">
-            <div class="relative w-3/5" id="unauthenticate-header-stock-searcher-element" phx-hook="StockSearcher">
+            <div class="relative w-3/5">
               <input
                 type="text"
                 name="unauthenticated-header-search"
                 id="unauthenticated-header-search"
                 class="block w-full rounded-md border-gray-300 pr-12 shadow-sm focus:border-black focus:ring-black sm:text-sm"
                 placeholder="Search by name or ticker"
+                phx-hook="StockSearcher"
               />
               <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
                 <kbd class="inline-flex items-center rounded border border-gray-200 px-2 font-sans text-sm font-medium text-gray-400">
@@ -88,14 +78,14 @@ defmodule LoinWeb.HeaderComponents do
             >
               Charts
             </.link>
-            <.link patch={~p"/users/log_in"} class="relative group">
+            <.link navigate={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
               <button class="relative px-3 py-1 bg-white rounded-md">
                 Log in
               </button>
             </.link>
-            <.link patch={~p"/users/register"} class="relative group">
+            <.link navigate={~p"/users/register"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
               </div>
               <button class="relative px-3 py-1 bg-black rounded-md text-white">
@@ -107,10 +97,10 @@ defmodule LoinWeb.HeaderComponents do
         <div class="relative block lg:hidden">
           <input
             type="text"
-            name="unauthenticated-header-search"
-            id="unauthenticated-header-search"
+            id="mobile-unauthenticated-header-search"
             class="block w-full rounded-md border-gray-300 pr-12 shadow-sm focus:border-black focus:ring-black sm:text-sm"
             placeholder="Search by name or ticker"
+            phx-hook="StockSearcher"
           />
           <div class="absolute inset-y-0 right-0 flex items-center pr-2">
             <Heroicons.magnifying_glass class="h-5 w-5 stroke-gray-400" />
@@ -181,12 +171,10 @@ defmodule LoinWeb.HeaderComponents do
         </div>
       </div>
       <script>
-              hotkeys('cmd+k', event => {
-                event.preventDefault();
-                document.getElementById('unauthenticated-header-search').focus()
-                console.log('done')
-          }
-        );
+        hotkeys('cmd+k', event => {
+          event.preventDefault();
+          document.getElementById('unauthenticated-header-search').focus()
+        });
       </script>
     </div>
     """
