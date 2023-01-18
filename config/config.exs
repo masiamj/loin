@@ -97,6 +97,12 @@ config :money,
   # don't display the delimiter or fractional units if the fractional units are only insignificant zeros
   strip_insignificant_fractional_unit: false
 
+# Admin tooling configuration
+config :kaffy,
+  otp_app: :loin,
+  ecto_repo: Loin.Repo,
+  router: LoinWeb.Router
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

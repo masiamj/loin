@@ -14,6 +14,14 @@ defmodule LoinWeb.Router do
     plug :fetch_current_user
   end
 
+  pipeline :kaffy_browser do
+    plug :accepts, ["html", "json"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   pipeline :developers do
     plug :basic_auth, username: "loincloth", password: "trending"
   end
@@ -44,15 +52,16 @@ defmodule LoinWeb.Router do
 
     scope "/dev" do
       pipe_through [:browser, :developers]
-
-      live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
+
+      # Admin portal routes
+      use Kaffy.Routes, scope: "/admin", pipe_through: [:kaffy_browser]
     end
 
     # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
     scope path: "/feature-flags" do
       pipe_through [:browser, :developers]
-
       forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
     end
   end
@@ -66,8 +75,8 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       live "/", HomeLive, :home
       live "/s/:symbol", SecurityLive, :show
-      live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
+      live "/users/register", UserRegistrationLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
       live "/users/reset_password/:token", UserResetPasswordLive, :edit
     end
@@ -94,19 +103,6 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.UserAuth, :mount_current_user}] do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
-
-      live "/fmp_securities", FMPSecurityLive.Index, :index
-      live "/fmp_securities/new", FMPSecurityLive.Index, :new
-      live "/fmp_securities/:id/edit", FMPSecurityLive.Index, :edit
-      live "/fmp_securities/:id", FMPSecurityLive.Show, :show
-      live "/fmp_securities/:id/show/edit", FMPSecurityLive.Show, :edit
-
-      live "/daily_trends", DailyTrendLive.Index, :index
-      live "/daily_trends/new", DailyTrendLive.Index, :new
-      live "/daily_trends/:id/edit", DailyTrendLive.Index, :edit
-
-      live "/daily_trends/:id", DailyTrendLive.Show, :show
-      live "/daily_trends/:id/show/edit", DailyTrendLive.Show, :edit
     end
   end
 end
