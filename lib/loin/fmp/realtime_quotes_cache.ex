@@ -40,20 +40,7 @@ defmodule Loin.RealtimeQuotesCache do
 
   defp handle_frame_content(%{"event" => "login"}, state) do
     Logger.info("RealtimeQuotesCache authenticated successfully")
-    # subscribe_to_all()
-    subscribe_to_many([
-      "AAPL",
-      "MSFT",
-      "GOOGL",
-      "SPY",
-      "SQQQ",
-      "SPGP",
-      "TSLA",
-      "KRUS",
-      "UAL",
-      "NWN"
-    ])
-
+    subscribe_to_all()
     {:ok, state}
   end
 
@@ -77,13 +64,5 @@ defmodule Loin.RealtimeQuotesCache do
   defp subscribe_to_all() do
     message = Jason.encode!(%{"event" => "subscribe", "data" => %{"ticker" => "*"}})
     WebSockex.cast(self(), {:send_message, message})
-  end
-
-  defp subscribe_to_many(symbols) when is_list(symbols) do
-    symbols
-    |> Enum.map(fn symbol ->
-      Jason.encode!(%{"event" => "subscribe", "data" => %{"ticker" => symbol}})
-    end)
-    |> Enum.each(fn message -> WebSockex.cast(self(), {:send_message, message}) end)
   end
 end
