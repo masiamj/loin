@@ -35,7 +35,7 @@ defmodule Loin.FMP.Trends do
       timeout: :infinity
     )
 
-    {:ok}
+    :ok
   end
 
   @doc """
@@ -63,6 +63,18 @@ defmodule Loin.FMP.Trends do
     )
 
     {:ok, symbols}
+  end
+
+  @doc """
+  Prunes DailyTrend from a certain number of days ago.
+  """
+  def prune_many(days_ago \\ 5) do
+    {num_affected, nil} =
+      DailyTrend
+      |> where([dt], dt.date < from_now(^days_ago, "day"))
+      |> Repo.delete_all()
+
+    {:ok, num_affected}
   end
 
   defp extract_latest_trend({_symbol, []}), do: nil
