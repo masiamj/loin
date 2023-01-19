@@ -5,7 +5,7 @@ defmodule Loin.TimeseriesCache do
   require Logger
   alias Loin.FMP.Service
 
-  @cache_name :timeseries_data
+  @cache_name :timeseries_cache
 
   @doc """
   Clears the cache.

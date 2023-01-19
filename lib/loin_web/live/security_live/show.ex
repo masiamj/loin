@@ -1,7 +1,7 @@
 defmodule LoinWeb.SecurityLive do
   use LoinWeb, :live_view
 
-  alias Loin.{FMP, TimeseriesCache}
+  alias Loin.{FMP, PeersCache, TimeseriesCache}
 
   @sector_symbols MapSet.new([
                     "XLB",
@@ -213,17 +213,15 @@ defmodule LoinWeb.SecurityLive do
   end
 
   defp fetch_peers(symbol) do
-    {:ok, securities} =
-      symbol
-      |> FMP.Service.peers()
-      |> FMP.get_securities_by_symbols()
+    with {:ok, {^symbol, peers_symbols}} <- PeersCache.get(symbol),
+         {:ok, securities} <- FMP.get_securities_by_symbols(peers_symbols) do
+      results =
+        securities
+        |> Map.values()
+        |> Enum.sort_by(& &1.security.market_cap, :desc)
 
-    results =
-      securities
-      |> Map.values()
-      |> Enum.sort_by(& &1.security.market_cap, :desc)
-
-    {:ok, results}
+      {:ok, results}
+    end
   end
 
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do

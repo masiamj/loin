@@ -19,9 +19,13 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
+      # Cache peers data
+      Supervisor.child_spec({Cachex, [name: :peers_cache, stats: true, warmers: []]},
+        id: :peers_cache
+      ),
       # Cache timeseries data
-      Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
-        id: :timeseries_data
+      Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
+        id: :timeseries_cache
       ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
