@@ -27,7 +27,7 @@ defmodule LoinWeb.Lists do
     ~H"""
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{constituent: constituent, security: security, trend: trend} <- @data do %>
-        <.link navigate={~p"?compare=#{security.symbol}"}>
+        <.link navigate={~p"/s/#{security.symbol}"}>
           <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
             <div class="flex flex-row items-center justify-between space-x-2">
               <div class="flex flex-col w-2/5">
@@ -72,7 +72,7 @@ defmodule LoinWeb.Lists do
     ~H"""
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{sector_weight: sector_weight, security: security, trend: trend} <- @data do %>
-        <.link navigate={~p"?compare=#{security.symbol}"}>
+        <.link navigate={~p"/s/#{security.symbol}"}>
           <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
             <div class="flex flex-row items-center justify-between space-x-2">
               <div class="flex flex-col w-2/5">
@@ -117,7 +117,7 @@ defmodule LoinWeb.Lists do
     ~H"""
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{exposure: exposure, security: security, trend: trend} <- @data do %>
-        <.link navigate={~p"?compare=#{security.symbol}"}>
+        <.link navigate={~p"/s/#{security.symbol}"}>
           <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
             <div class="flex flex-row items-center justify-between space-x-2">
               <div class="flex flex-col w-2/5">
@@ -162,7 +162,7 @@ defmodule LoinWeb.Lists do
     ~H"""
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{security: security, trend: trend} <- @data do %>
-        <.link navigate={~p"?compare=#{security.symbol}"}>
+        <.link navigate={~p"/s/#{security.symbol}"}>
           <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
             <div class="flex flex-row items-center justify-between space-x-2">
               <div class="flex flex-col w-2/5">
