@@ -103,6 +103,20 @@ config :kaffy,
   ecto_repo: Loin.Repo,
   router: LoinWeb.Router
 
+config :loin, Oban,
+  repo: Loin.Repo,
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 300},
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"30 * * * *", Loin.Workers.FMPSecurityPrimer},
+       {"30 18 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
+       {"30 6 * * *", Loin.Workers.DailyTrendPruner},
+       {"30 4-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
+     ]}
+  ],
+  queues: [default: 10]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

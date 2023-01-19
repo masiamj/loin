@@ -9,19 +9,32 @@ defmodule Loin.FMPTest do
     import Loin.FMPFixtures
 
     @invalid_attrs %{
+      ceo: nil,
+      change: nil,
+      change_percent: nil,
+      cik: nil,
+      city: nil,
       country: nil,
       currency: nil,
       description: nil,
+      eps: nil,
       exchange: nil,
       exchange_short_name: nil,
       full_time_employees: nil,
       image: nil,
       industry: nil,
+      ipo_date: nil,
       is_etf: nil,
+      last_dividend: nil,
       market_cap: nil,
       name: nil,
+      pe: nil,
+      price: nil,
       sector: nil,
+      state: nil,
       symbol: nil,
+      volume: nil,
+      volume_avg: nil,
       website: nil
     }
 
@@ -37,19 +50,32 @@ defmodule Loin.FMPTest do
 
     test "create_fmp_security/1 with valid data creates a fmp_security" do
       valid_attrs = %{
+        ceo: "Mr. Elon Musk",
+        change: 22321.1,
+        change_percent: 12.3,
+        cik: "234234234",
+        city: "Chicago",
         country: "USD",
         currency: "US",
         description: "some description",
+        eps: 21.3,
         exchange: "some exchange",
         exchange_short_name: "some exchange_short_name",
         full_time_employees: 42,
         image: "some image",
         industry: "some industry",
+        ipo_date: "2022-01-02",
         is_etf: true,
+        last_dividend: 13.2,
         market_cap: 42,
         name: "some name",
+        pe: 2134.2,
+        price: 134.23,
         sector: "some sector",
+        state: "IL",
         symbol: "some symbol",
+        volume: 2_342_342,
+        volume_avg: 234_234,
         website: "some website"
       }
 

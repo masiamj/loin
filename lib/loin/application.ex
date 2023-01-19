@@ -29,8 +29,6 @@ defmodule Loin.Application do
       {Oban, oban_config()}
     ]
 
-    IO.inspect(oban_config())
-
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Loin.Supervisor]
@@ -46,19 +44,6 @@ defmodule Loin.Application do
   end
 
   defp oban_config() do
-    [
-      repo: Loin.Repo,
-      plugins: [
-        {Oban.Plugins.Pruner, max_age: 300},
-        {Oban.Plugins.Cron,
-         crontab: [
-           {"30 * * * *", Loin.Workers.FMPSecurityPrimer},
-           {"30 18 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
-           {"30 6 * * *", Loin.Workers.DailyTrendPruner},
-           {"30 4-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
-         ]}
-      ],
-      queues: [default: 10]
-    ]
+    Application.fetch_env!(:loin, Oban)
   end
 end
