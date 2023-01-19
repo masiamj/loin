@@ -3,10 +3,6 @@ defmodule Loin.Repo.Migrations.AddFunWithFlagsTogglesTable do
 
   @table_name :fun_with_flags_toggles
 
-  # This migration assumes the default table name of "fun_with_flags_toggles"
-  # is being used. If you have overridden that via configuration, you should
-  # change this migration accordingly.
-
   def up do
     create table(@table_name, primary_key: false) do
       add :id, :bigserial, primary_key: true
@@ -14,8 +10,6 @@ defmodule Loin.Repo.Migrations.AddFunWithFlagsTogglesTable do
       add :gate_type, :string, null: false
       add :target, :string, null: false
       add :enabled, :boolean, null: false
-
-      timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz)
     end
 
     create index(

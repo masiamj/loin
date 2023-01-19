@@ -83,13 +83,7 @@ defmodule LoinWeb.HeaderComponents do
             >
               Screener
             </.link>
-            <.link
-              navigate={~p"/users/log_in"}
-              class="relative px-2 py-1 text-gray-500 hover:text-black"
-            >
-              Charts
-            </.link>
-            <.link navigate={~p"/users/log_in"} class="relative group">
+            <%!-- <.link navigate={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
               <button class="relative px-3 py-1 bg-white rounded-md">
@@ -102,7 +96,7 @@ defmodule LoinWeb.HeaderComponents do
               <button class="relative px-3 py-1 bg-black rounded-md text-white">
                 Sign up
               </button>
-            </.link>
+            </.link> --%>
           </div>
         </div>
         <div class="relative block lg:hidden">
@@ -157,13 +151,13 @@ defmodule LoinWeb.HeaderComponents do
                 <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Screener
                 </.link>
-                <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <%!-- <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Charts
-                </.link>
+                </.link> --%>
               </nav>
             </div>
           </div>
-          <div class="px-8 pb-4 flex flex-row items-center space-x-8 w-full">
+          <%!-- <div class="px-8 pb-4 flex flex-row items-center space-x-8 w-full">
             <.link patch={~p"/users/log_in"} class="relative group w-full">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
@@ -178,7 +172,7 @@ defmodule LoinWeb.HeaderComponents do
                 Sign up
               </button>
             </.link>
-          </div>
+          </div> --%>
         </div>
       </div>
       <script>

@@ -64,6 +64,10 @@ defmodule Loin.FMP.Transforms do
   """
   def profile(%{"Symbol" => symbol} = security) when is_map(security) do
     %{
+      ceo: Map.get(security, "CEO"),
+      change: Map.get(security, "Changes") |> maybe_string_to_float(),
+      cik: Map.get(security, "cik"),
+      city: Map.get(security, "city"),
       country: Map.get(security, "country"),
       currency: Map.get(security, "currency"),
       description: Map.get(security, "description"),
@@ -72,11 +76,16 @@ defmodule Loin.FMP.Transforms do
       full_time_employees: Map.get(security, "fullTimeEmployees") |> maybe_string_to_integer(),
       image: Map.get(security, "image"),
       industry: Map.get(security, "industry"),
+      ipo_date: Map.get(security, "ipoDate"),
       is_etf: Map.get(security, "isEtf") == "TRUE",
+      last_dividend: Map.get(security, "lastDiv"),
       market_cap: Map.get(security, "MktCap") |> maybe_string_to_integer(),
       name: Map.get(security, "companyName"),
+      price: Map.get(security, "Price") |> maybe_string_to_float(),
       sector: Map.get(security, "sector"),
+      state: Map.get(security, "state"),
       symbol: symbol,
+      volume_avg: Map.get(security, "volAvg"),
       website: Map.get(security, "website")
     }
     |> put_timestamps()
@@ -90,6 +99,30 @@ defmodule Loin.FMP.Transforms do
       inserted_at: DateTime.utc_now(),
       updated_at: DateTime.utc_now()
     })
+  end
+
+  @doc """
+  Optionally parses a numeric binary into it's proper numeric form.
+  """
+  def maybe_string_to_float(value) do
+    try do
+      cond do
+        is_nil(value) ->
+          nil
+
+        value == "" ->
+          nil
+
+        true ->
+          value
+          |> Float.parse()
+          |> elem(0)
+      end
+    rescue
+      ArgumentError ->
+        Logger.error("Failed to parse binary value into float", value: value)
+        nil
+    end
   end
 
   @doc """
