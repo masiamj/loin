@@ -1,4 +1,7 @@
 defmodule Loin.Workers.DailyTrendPruner do
+  @moduledoc """
+  Cleans up old daily_trends storage.
+  """
   use Oban.Worker, queue: :default, max_attempts: 2
 
   require Logger

@@ -32,8 +32,8 @@ defmodule Loin.FMPFixtures do
         price: 212.21,
         sector: "some sector",
         symbol: "some symbol",
-        volume: 32342,
-        volume_avg: 23423,
+        volume: 32_342,
+        volume_avg: 23_423,
         website: "some website"
       })
       |> Loin.FMP.create_fmp_security()

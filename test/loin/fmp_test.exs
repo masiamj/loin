@@ -51,7 +51,7 @@ defmodule Loin.FMPTest do
     test "create_fmp_security/1 with valid data creates a fmp_security" do
       valid_attrs = %{
         ceo: "Mr. Elon Musk",
-        change: 22321.1,
+        change: 22_321.1,
         change_percent: 12.3,
         cik: "234234234",
         city: "Chicago",

@@ -1,4 +1,7 @@
 defmodule Loin.Workers.QuotesPrimer do
+  @moduledoc """
+  Primes quotes in the database (part of fmp_security).
+  """
   use Oban.Worker, queue: :default, max_attempts: 2
 
   require Logger

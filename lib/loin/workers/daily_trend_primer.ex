@@ -1,4 +1,7 @@
 defmodule Loin.Workers.DailyTrendPrimer do
+  @moduledoc """
+  Primes daily_trends in the database.
+  """
   use Oban.Worker, queue: :default, max_attempts: 2
 
   require Logger

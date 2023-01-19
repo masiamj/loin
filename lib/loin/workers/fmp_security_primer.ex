@@ -1,4 +1,7 @@
 defmodule Loin.Workers.FMPSecurityPrimer do
+  @moduledoc """
+  Primes fmp_securities in the database.
+  """
   use Oban.Worker, queue: :default, max_attempts: 2
 
   require Logger
