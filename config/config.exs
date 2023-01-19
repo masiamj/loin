@@ -109,10 +109,12 @@ config :loin, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-       {"30 * * * *", Loin.Workers.FMPSecurityPrimer},
-       {"30 18 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
-       {"30 6 * * *", Loin.Workers.DailyTrendPruner},
-       {"30 4-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
+       # 6:30PM Mon-Fri EST
+       {"30 23 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
+       # 12:30AM Mon-Fri EST
+       {"30 5 * * MON-FRI", Loin.Workers.DailyTrendPruner},
+       # Every half hour between 6AM-6:30PM Mon-Fri EST
+       {"*/30 11-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
      ]}
   ],
   queues: [default: 10]

@@ -109,17 +109,6 @@ defmodule Loin.FMP do
     |> get_securities_by_symbols()
   end
 
-  @doc """
-  Inserts all fmp_securities into the table (a priming function).
-  """
-  def insert_all_profiles(limit \\ 20_000) do
-    Loin.FMP.Service.all_profiles_stream()
-    |> Stream.take(limit)
-    |> Stream.chunk_every(10)
-    |> Stream.each(&insert_many_fmp_securities/1)
-    |> Stream.run()
-  end
-
   # Private
 
   defp latest_daily_trends_query() do
@@ -142,19 +131,6 @@ defmodule Loin.FMP do
   defp filter_by_has_trend_change(query), do: where(query, [dt], not is_nil(dt.trend_change))
 
   defp filter_by_trend(query, trend) when trend in ["up", "down"], do: where(query, trend: ^trend)
-
-  defp insert_many_fmp_securities(entries, replace_all_except \\ [:id, :inserted_at, :symbol]) do
-    symbols = Enum.map_join(entries, ", ", &Map.get(&1, :symbol))
-    Logger.info("Inserting profiles for symbols: #{symbols}")
-
-    {num_affected, nil} =
-      Repo.insert_all(FMPSecurity, entries,
-        on_conflict: {:replace_all_except, replace_all_except},
-        conflict_target: [:symbol]
-      )
-
-    {:ok, num_affected}
-  end
 
   defp query_into_map(query) do
     entries =

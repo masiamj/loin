@@ -98,6 +98,25 @@ defmodule Loin.FMP.Service do
     |> List.flatten()
   end
 
+  def batch_quotes(symbols) when is_list(symbols) do
+    joined_symbols = Enum.map_join(symbols, ",", &String.upcase/1)
+    Logger.info("Batch requesting quotes for #{joined_symbols}")
+
+    result =
+      "/quote/#{joined_symbols}"
+      |> create_request()
+      |> Req.get!()
+      |> handle_response()
+      |> Utils.map(&Transforms.quote/1)
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
+
+    Logger.info("Got batch quotes result map for symbols #{Map.keys(result) |> Enum.join(", ")}")
+
+    result
+  end
+
+  # Private
+
   defp create_request(path, params \\ %{}) do
     params = Map.put(params, "apikey", Loin.Config.fmp_api_key())
     Req.new(base_url: @api_base_url, url: path, params: params)
