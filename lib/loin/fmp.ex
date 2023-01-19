@@ -78,13 +78,25 @@ defmodule Loin.FMP do
   """
   def get_securities_via_trend(trend, limit_number \\ 50)
       when trend in ["down", "up"] and is_integer(limit_number) do
-    latest_daily_trends_query()
-    |> filter_by_trend(trend)
-    |> select([:symbol])
-    |> limit(^limit_number)
-    |> Repo.all()
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> get_securities_by_symbols()
+    trends_query =
+      latest_daily_trends_query()
+      |> filter_by_trend(trend)
+
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(trends_query),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{security: security} = item ->
+        {security.symbol, item}
+      end)
+
+    {:ok, entries}
   end
 
   @doc """
@@ -100,22 +112,35 @@ defmodule Loin.FMP do
   """
   def get_securities_with_trend_change(limit_number \\ 50)
       when is_integer(limit_number) do
-    latest_daily_trends_query()
-    |> filter_by_has_trend_change()
-    |> select([:symbol])
-    |> limit(^limit_number)
-    |> Repo.all()
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> get_securities_by_symbols()
+    trends_query =
+      latest_daily_trends_query()
+      |> filter_by_has_trend_change()
+
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(trends_query),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{security: security} = item ->
+        {security.symbol, item}
+      end)
+
+    {:ok, entries}
   end
 
   # Private
 
   defp latest_daily_trends_query() do
-    DailyTrend
-    |> distinct(asc: :symbol)
-    |> order_by(desc: :date)
-    |> where(is_valid: true)
+    from(dt in DailyTrend,
+      distinct: [asc: :symbol],
+      order_by: [desc: :date],
+      where: [is_valid: true]
+    )
   end
 
   defp fmp_securities_query() do

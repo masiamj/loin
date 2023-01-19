@@ -48,27 +48,9 @@ defmodule LoinWeb.SecurityLive do
 
   @impl true
   def mount(%{"symbol" => symbol}, _session, socket) do
-    proper_symbol = String.upcase(symbol)
-
-    with {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
-           FMP.get_securities_by_symbols([proper_symbol]),
-         {:ok, chart_data} <- fetch_chart_data(symbol),
-         is_etf <- Map.get(security, :is_etf),
-         extra_information <- fetch_more_relevant_information(security) do
-      socket =
-        socket
-        |> assign(:is_etf, is_etf)
-        |> assign(:symbol, proper_symbol)
-        |> assign(:security, security)
-        |> assign(:timeseries_data, chart_data)
-        |> assign(:trend, trend)
-        |> assign(extra_information)
-
-      {:ok, socket, temporary_assigns: [security: nil, timeseries_data: [], trend: nil]}
-    else
-      _bad ->
-        {:ok, redirect(socket, to: "/")}
-    end
+    mount_data = mount_impl(symbol)
+    socket = assign(socket, mount_data)
+    {:ok, socket, temporary_assigns: [security: nil, timeseries_data: %{}, trend: nil]}
   end
 
   @impl true
@@ -77,13 +59,13 @@ defmodule LoinWeb.SecurityLive do
     <div class="px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="col-span-1 h-[88vh] overflow-y-scroll">
-          <div :if={false} class="space-y-4">
+          <div class="space-y-4">
             <LoinWeb.Cards.generic title="Similar stocks">
               <LoinWeb.Lists.similar_stocks data={assigns.peers} />
             </LoinWeb.Cards.generic>
-            <LoinWeb.Cards.generic title="ETFs with exposure">
+            <%!-- <LoinWeb.Cards.generic title="ETFs with exposure">
               <LoinWeb.Lists.etfs_with_exposures data={assigns.etf_exposures} />
-            </LoinWeb.Cards.generic>
+            </LoinWeb.Cards.generic> --%>
           </div>
           <div :if={false} class="space-y-4">
             <LoinWeb.Cards.generic
@@ -115,8 +97,15 @@ defmodule LoinWeb.SecurityLive do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(%{"symbol" => symbol} = params, _url, socket) do
+    mount_data = mount_impl(symbol)
+
+    socket =
+      socket
+      |> assign(mount_data)
+      |> apply_action(socket.assigns.live_action, params)
+
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :show, _params) do
@@ -241,6 +230,26 @@ defmodule LoinWeb.SecurityLive do
     with {:ok, peers} <- fetch_peers(symbol),
          {:ok, etf_exposures} <- fetch_etf_exposure(symbol) do
       %{etf_exposures: etf_exposures, peers: peers}
+    end
+  end
+
+  defp mount_impl(symbol) do
+    proper_symbol = String.upcase(symbol)
+
+    with {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
+           FMP.get_securities_by_symbols([proper_symbol]),
+         {:ok, chart_data} <- fetch_chart_data(symbol),
+         is_etf <- Map.get(security, :is_etf),
+         extra_information <- fetch_more_relevant_information(security) do
+      %{}
+      |> Map.put(:is_etf, is_etf)
+      |> Map.put(:symbol, proper_symbol)
+      |> Map.put(:security, security)
+      |> Map.put(:timeseries_data, chart_data)
+      |> Map.put(:trend, trend)
+      |> Map.merge(extra_information)
+    else
+      _ -> %{}
     end
   end
 end

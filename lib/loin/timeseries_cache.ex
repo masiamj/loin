@@ -62,6 +62,22 @@ defmodule Loin.TimeseriesCache do
   end
 
   @doc """
+  Gets many timeseries data series (encoded as string).
+  """
+  def get_many_encoded(symbols) when is_list(symbols) do
+    Logger.info("Starting Batch TimeseriesCache lookup for #{Enum.join(symbols, ", ")}")
+
+    results =
+      symbols
+      |> Enum.uniq()
+      |> Task.async_stream(fn symbol -> get(symbol) end, max_concurrency: 3, ordered: true)
+      |> Stream.map(fn {:ok, {:ok, {symbol, data}}} -> {symbol, Jason.encode!(data)} end)
+      |> Enum.into(%{})
+
+    {:ok, results}
+  end
+
+  @doc """
   Gets cache keys.
   """
   def keys(), do: Cachex.keys(@cache_name)

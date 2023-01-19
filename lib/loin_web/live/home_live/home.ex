@@ -5,7 +5,7 @@ defmodule LoinWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    with {:ok, chart_data} <- fetch_chart_data(),
+    with {:ok, chart_data} <- TimeseriesCache.get_many_encoded(["SPY", "QQQ"]),
          {:ok, downtrends} <- FMP.get_securities_via_trend("down", 10),
          {:ok, sector_trends} <- FMP.get_daily_sector_trends(),
          {:ok, trend_changes} <- FMP.get_securities_with_trend_change(10),
@@ -77,11 +77,5 @@ defmodule LoinWeb.HomeLive do
   defp apply_action(socket, :home, _params) do
     socket
     |> assign(:page_title, "Home")
-  end
-
-  defp fetch_chart_data() do
-    {:ok, results} = TimeseriesCache.get_many(["SPY", "QQQ"])
-    chart_data = Enum.into(results, %{}, fn {key, value} -> {key, Jason.encode!(value)} end)
-    {:ok, chart_data}
   end
 end
