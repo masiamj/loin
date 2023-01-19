@@ -12,11 +12,13 @@ defmodule Loin.FMP.FMPSecurity do
   schema "fmp_securities" do
     field :ceo, :string
     field :change, :float
+    field :change_percent, :float
     field :cik, :string
     field :city, :string
     field :country, :string
     field :currency, :string
     field :description, :string
+    field :eps, :float
     field :exchange, :string
     field :exchange_short_name, :string
     field :full_time_employees, :integer
@@ -27,10 +29,12 @@ defmodule Loin.FMP.FMPSecurity do
     field :last_dividend, :float
     field :market_cap, :integer
     field :name, :string
+    field :pe, :float
     field :price, :float
     field :sector, :string
     field :state, :string
     field :symbol, :string
+    field :volume, :integer
     field :volume_avg, :integer
     field :website, :string
 
@@ -43,11 +47,13 @@ defmodule Loin.FMP.FMPSecurity do
     |> cast(attrs, [
       :ceo,
       :change,
+      :change_percent,
       :cik,
       :city,
       :country,
       :currency,
       :description,
+      :eps,
       :exchange,
       :exchange_short_name,
       :full_time_employees,
@@ -58,15 +64,16 @@ defmodule Loin.FMP.FMPSecurity do
       :last_dividend,
       :market_cap,
       :name,
+      :pe,
       :price,
       :sector,
       :state,
       :symbol,
+      :volume,
       :volume_avg,
       :website
     ])
     |> validate_required([
-      :change,
       :cik,
       :country,
       :currency,
@@ -76,10 +83,8 @@ defmodule Loin.FMP.FMPSecurity do
       :is_etf,
       :market_cap,
       :name,
-      :price,
       :sector,
-      :symbol,
-      :volume_avg
+      :symbol
     ])
     |> unique_constraint([:symbol])
   end

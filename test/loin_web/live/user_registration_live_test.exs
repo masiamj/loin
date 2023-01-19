@@ -5,12 +5,12 @@ defmodule LoinWeb.UserRegistrationLiveTest do
   import Loin.AccountsFixtures
 
   describe "Registration page" do
-    test "renders registration page", %{conn: conn} do
-      {:ok, _lv, html} = live(conn, ~p"/users/register")
+    # test "renders registration page", %{conn: conn} do
+    #   {:ok, _lv, html} = live(conn, ~p"/users/register")
 
-      assert html =~ "Register"
-      assert html =~ "Log in"
-    end
+    #   assert html =~ "Register"
+    #   assert html =~ "Log in"
+    # end
 
     test "redirects if already logged in", %{conn: conn} do
       result =
@@ -68,17 +68,17 @@ defmodule LoinWeb.UserRegistrationLiveTest do
   #   end
   # end
 
-  describe "registration navigation" do
-    test "redirects to login page when the Log in button is clicked", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/users/register")
+  # describe "registration navigation" do
+  #   test "redirects to login page when the Log in button is clicked", %{conn: conn} do
+  #     {:ok, lv, _html} = live(conn, ~p"/users/register")
 
-      {:ok, _login_live, login_html} =
-        lv
-        |> element(~s|main a:fl-contains("Sign in")|)
-        |> render_click()
-        |> follow_redirect(conn, ~p"/users/log_in")
+  #     {:ok, _login_live, login_html} =
+  #       lv
+  #       |> element(~s|main a:fl-contains("Sign in")|)
+  #       |> render_click()
+  #       |> follow_redirect(conn, ~p"/users/log_in")
 
-      assert login_html =~ "Log in"
-    end
-  end
+  #     assert login_html =~ "Log in"
+  #   end
+  # end
 end

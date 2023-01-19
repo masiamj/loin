@@ -19,14 +19,14 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
-      # Ensures fmp_security profiles are loaded
-      {Loin.FMP.FMPSecurityLoader, []},
       # Cache timeseries data
       Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
         id: :timeseries_data
       ),
       # Start the Endpoint (http/https)
-      LoinWeb.Endpoint
+      LoinWeb.Endpoint,
+      # Start the Oban jobs processor
+      {Oban, oban_config()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -41,5 +41,9 @@ defmodule Loin.Application do
   def config_change(changed, _new, removed) do
     LoinWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_config() do
+    Application.fetch_env!(:loin, Oban)
   end
 end

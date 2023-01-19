@@ -155,14 +155,15 @@ defmodule Loin.FMP do
   @doc """
   Inserts many FMPSecurity records.
   """
-  def insert_many_fmp_securities(entries \\ []) when is_list(entries) do
+  def insert_many_fmp_securities(entries, replace_all_except \\ [:id, :inserted_at, :symbol])
+      when is_list(entries) do
     symbols = Enum.map_join(entries, ", ", &Map.get(&1, :symbol))
 
     Logger.info("Inserting profiles for symbols: #{symbols}")
 
     {num_affected, nil} =
       Repo.insert_all(FMPSecurity, entries,
-        on_conflict: {:replace_all_except, [:id, :inserted_at, :symbol]},
+        on_conflict: {:replace_all_except, replace_all_except},
         conflict_target: [:symbol]
       )
 

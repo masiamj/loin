@@ -11,9 +11,15 @@ defmodule Loin.FMPFixtures do
     {:ok, fmp_security} =
       attrs
       |> Enum.into(%{
+        ceo: "Mr. Elon Musk",
+        change: 1.32,
+        change_percent: 2.23,
+        cik: "323423423",
+        city: "Chicago",
         country: "US",
         currency: "USD",
         description: "some description",
+        eps: 232.23,
         exchange: "some exchange",
         exchange_short_name: "some exchange_short_name",
         full_time_employees: 42,
@@ -22,8 +28,12 @@ defmodule Loin.FMPFixtures do
         is_etf: true,
         market_cap: 42,
         name: "some name",
+        pe: 223.23,
+        price: 212.21,
         sector: "some sector",
         symbol: "some symbol",
+        volume: 32_342,
+        volume_avg: 23_423,
         website: "some website"
       })
       |> Loin.FMP.create_fmp_security()

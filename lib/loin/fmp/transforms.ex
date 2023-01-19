@@ -44,9 +44,9 @@ defmodule Loin.FMP.Transforms do
     historical_items
     |> Enum.map(fn item ->
       %{
-        close: Map.get(item, "close"),
+        close: Map.get(item, "close") |> string_to_number(:float),
         date: Map.get(item, "date"),
-        volume: Map.get(item, "volume")
+        volume: Map.get(item, "volume") |> string_to_number(:float)
       }
     end)
     |> Enum.reverse()
@@ -65,7 +65,7 @@ defmodule Loin.FMP.Transforms do
   def profile(%{"Symbol" => symbol} = security) when is_map(security) do
     %{
       ceo: Map.get(security, "CEO"),
-      change: Map.get(security, "Changes") |> maybe_string_to_float(),
+      change: Map.get(security, "Changes") |> string_to_number(:float),
       cik: Map.get(security, "cik"),
       city: Map.get(security, "city"),
       country: Map.get(security, "country"),
@@ -73,19 +73,19 @@ defmodule Loin.FMP.Transforms do
       description: Map.get(security, "description"),
       exchange: Map.get(security, "exchange"),
       exchange_short_name: Map.get(security, "exchangeShortName"),
-      full_time_employees: Map.get(security, "fullTimeEmployees") |> maybe_string_to_integer(),
+      full_time_employees: Map.get(security, "fullTimeEmployees") |> string_to_number(:integer),
       image: Map.get(security, "image"),
       industry: Map.get(security, "industry"),
       ipo_date: Map.get(security, "ipoDate"),
       is_etf: Map.get(security, "isEtf") == "TRUE",
-      last_dividend: Map.get(security, "lastDiv"),
-      market_cap: Map.get(security, "MktCap") |> maybe_string_to_integer(),
+      last_dividend: Map.get(security, "lastDiv") |> string_to_number(:float),
+      market_cap: Map.get(security, "MktCap") |> string_to_number(:integer),
       name: Map.get(security, "companyName"),
-      price: Map.get(security, "Price") |> maybe_string_to_float(),
+      price: Map.get(security, "Price") |> string_to_number(:float),
       sector: Map.get(security, "sector"),
       state: Map.get(security, "state"),
       symbol: symbol,
-      volume_avg: Map.get(security, "volAvg"),
+      volume_avg: Map.get(security, "volAvg") |> string_to_number(:integer),
       website: Map.get(security, "website")
     }
     |> put_timestamps()
@@ -101,52 +101,28 @@ defmodule Loin.FMP.Transforms do
     })
   end
 
-  @doc """
-  Optionally parses a numeric binary into it's proper numeric form.
-  """
-  def maybe_string_to_float(value) do
-    try do
-      cond do
-        is_nil(value) ->
-          nil
+  defp string_to_number(nil, _any), do: nil
+  defp string_to_number("", _any), do: nil
+  defp string_to_number(value, :integer) when is_integer(value), do: value
 
-        value == "" ->
-          nil
+  defp string_to_number(value, :integer) when is_float(value), do: trunc(value)
 
-        true ->
-          value
-          |> Float.parse()
-          |> elem(0)
-      end
-    rescue
-      ArgumentError ->
-        Logger.error("Failed to parse binary value into float", value: value)
-        nil
+  defp string_to_number(value, :integer) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      {int, _dec} -> int
+      _ -> nil
     end
   end
 
-  @doc """
-  Optionally parses a numeric binary into it's proper numeric form.
-  """
-  def maybe_string_to_integer(value) do
-    try do
-      cond do
-        is_nil(value) ->
-          nil
+  defp string_to_number(value, :float) when is_float(value), do: value
+  defp string_to_number(value, :float) when is_integer(value), do: value + 0.0
 
-        value == "" ->
-          nil
-
-        true ->
-          value
-          |> Float.parse()
-          |> elem(0)
-          |> trunc()
-      end
-    rescue
-      ArgumentError ->
-        Logger.error("Failed to parse binary value into integer", value: value)
-        nil
+  defp string_to_number(value, :float) do
+    case Float.parse(value) do
+      {float, ""} -> float
+      {float, _dec} -> float
+      _ -> nil
     end
   end
 end

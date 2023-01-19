@@ -36,3 +36,6 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Disable Oban jobs in test mode
+config :loin, Oban, testing: :inline
