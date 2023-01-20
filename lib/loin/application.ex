@@ -19,17 +19,25 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
+      # Cache ETF constituents
+      Supervisor.child_spec({Cachex, [name: :etf_constituents_cache, stats: true, warmers: []]},
+        id: :etf_constituents_cache
+      ),
+      # Cache ETF sector weights
+      Supervisor.child_spec({Cachex, [name: :etf_sector_weight_cache, stats: true, warmers: []]},
+        id: :etf_sector_weight_cache
+      ),
       # Cache peers data
       Supervisor.child_spec({Cachex, [name: :peers_cache, stats: true, warmers: []]},
         id: :peers_cache
       ),
-      # Cache timeseries data
-      Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
-        id: :timeseries_cache
-      ),
       # Cache the stock ETF exposure data
       Supervisor.child_spec({Cachex, [name: :stock_etf_exposure_cache, stats: true, warmers: []]},
         id: :stock_etf_exposure_cache
+      ),
+      # Cache timeseries data
+      Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
+        id: :timeseries_cache
       ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,

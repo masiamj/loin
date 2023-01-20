@@ -42,6 +42,23 @@ defmodule Loin.PeersCache do
   end
 
   @doc """
+  Gets peers prepared for the web interface.
+  """
+  def get_for_web(symbol) do
+    Logger.info("Starting PeersCache for web lookup for #{symbol}")
+
+    {:ok, {^symbol, peers_symbols}} = get(symbol)
+    {:ok, result_map} = Loin.FMP.get_securities_by_symbols(peers_symbols)
+
+    results =
+      result_map
+      |> Map.values()
+      |> Enum.sort_by(& &1.security.market_cap, :desc)
+
+    {:ok, results}
+  end
+
+  @doc """
   Gets cache keys.
   """
   def keys(), do: Cachex.keys(@cache_name)

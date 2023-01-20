@@ -62,6 +62,17 @@ defmodule Loin.TimeseriesCache do
   end
 
   @doc """
+  Gets timeseries data series (encoded as string).
+  """
+  def get_encoded(symbol) when is_binary(symbol) do
+    Logger.info("Starting TimeseriesCache lookup for #{symbol}")
+
+    {:ok, {symbol, data}} = get(symbol)
+
+    {:ok, {symbol, Jason.encode!(data)}}
+  end
+
+  @doc """
   Gets many timeseries data series (encoded as string).
   """
   def get_many_encoded(symbols) when is_list(symbols) do

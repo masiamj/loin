@@ -1,11 +1,11 @@
-defmodule Loin.StockETFExposureCache do
+defmodule Loin.ETFConstituentsCache do
   @moduledoc """
-  This module is an interface to fetching, caching, and retrieving ETF exposure for a specific stock.
+  This module is an interface to fetching, caching, and retrieving ETF constituents.
   """
   require Logger
   alias Loin.FMP.Service
 
-  @cache_name :stock_etf_exposure_cache
+  @cache_name :etf_constituents_cache
 
   @doc """
   Clears the cache.
@@ -13,62 +13,62 @@ defmodule Loin.StockETFExposureCache do
   def clear(), do: Cachex.clear!(@cache_name)
 
   @doc """
-  Gets the ETFs exposed to a specific symbol.
+  Gets the ETF's constituents.
   """
   def get(symbol) when is_binary(symbol) do
-    Logger.info("Starting StockETFExposureCache lookup for #{symbol}")
+    Logger.info("Starting ETFConstituentsCache lookup for #{symbol}")
 
     result =
       Cachex.fetch(@cache_name, symbol, fn _key ->
-        Logger.info("StockETFExposureCache miss for #{symbol}")
-        etfs = Service.etf_exposure_by_stock(symbol)
-        {:commit, etfs}
+        Logger.info("ETFConstituentsCache miss for #{symbol}")
+        constituents = Service.etf_holdings(symbol)
+        {:commit, constituents}
       end)
 
     case result do
       {:ok, data} ->
-        Logger.info("StockETFExposureCache hit for #{symbol}")
+        Logger.info("ETFConstituentsCache hit for #{symbol}")
         {:ok, {symbol, data}}
 
       {:commit, data} when is_list(data) ->
-        Logger.info("StockETFExposureCache persisted #{symbol} for 24 hour")
+        Logger.info("ETFConstituentsCache persisted #{symbol} for 24 hour")
         Cachex.expire!(@cache_name, symbol, :timer.hours(24))
         {:ok, {symbol, data}}
 
       result ->
-        Logger.info("Invalid StockETFExposureCache operation: #{result}")
+        Logger.info("Invalid ETFConstituentsCache operation: #{result}")
         {:error, result}
     end
   end
 
   @doc """
-  Gets ETF exposure prepared for the web interface.
+  Gets ETF constituents prepared for the web interface.
   """
   def get_for_web(symbol) when is_binary(symbol) do
-    Logger.info("Starting StockETFExposureCache for web lookup for #{symbol}")
+    Logger.info("Starting ETFConstituentsCache for web lookup for #{symbol}")
 
-    {:ok, {^symbol, exposures}} = get(symbol)
+    {:ok, {^symbol, constituents}} = get(symbol)
 
     {:ok, result_map} =
-      exposures
-      |> Enum.map(&Map.get(&1, :etf_symbol))
+      constituents
+      |> Enum.map(&Map.get(&1, :symbol))
       |> Loin.FMP.get_securities_by_symbols()
 
     results =
-      exposures
-      |> Enum.reduce([], fn %{etf_symbol: symbol} = exposure, acc ->
+      constituents
+      |> Enum.reduce([], fn %{symbol: symbol} = constituent, acc ->
         case Map.has_key?(result_map, symbol) do
           true ->
             result_map
             |> Map.get(symbol, %{})
-            |> Map.put(:exposure, exposure)
+            |> Map.put(:constituent, constituent)
             |> then(fn item -> [item | acc] end)
 
           false ->
             acc
         end
       end)
-      |> Enum.sort_by(& &1.exposure.etf_weight_percentage, :desc)
+      |> Enum.sort_by(& &1.constituent.weight_percentage, :desc)
 
     {:ok, results}
   end
