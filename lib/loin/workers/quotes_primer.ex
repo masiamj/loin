@@ -9,7 +9,7 @@ defmodule Loin.Workers.QuotesPrimer do
   @impl true
   def perform(%Oban.Job{args: %{"id" => id}}) do
     Logger.info("Starting QuotesPrimer job: #{id}")
-    # :ok = Loin.FMP.insert_all_profiles()
+    :ok = Loin.FMP.Quotes.process_all()
     Logger.info("Finished QuotesPrimer job: #{id}")
 
     :ok

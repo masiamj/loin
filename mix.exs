@@ -17,7 +17,8 @@ defmodule Loin.MixProject do
         doctor: :test,
         sobelow: :test,
         "deps.audit": :test
-      ]
+      ],
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 

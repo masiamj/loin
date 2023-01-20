@@ -60,6 +60,24 @@ defmodule Loin.FMP.Transforms do
   end
 
   @doc """
+  Maps a raw quote entry to an application-level quote entry.
+  """
+  def quote(security) when is_map(security) do
+    %{
+      change: Map.get(security, "change") |> string_to_number(:float),
+      change_percent: Map.get(security, "changesPercentage") |> string_to_number(:float),
+      eps: Map.get(security, "eps") |> string_to_number(:float),
+      market_cap: Map.get(security, "marketCap") |> string_to_number(:integer),
+      pe: Map.get(security, "pe") |> string_to_number(:float),
+      price: Map.get(security, "price") |> string_to_number(:float),
+      volume: Map.get(security, "volume") |> string_to_number(:integer),
+      volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
+      symbol: Map.get(security, "symbol")
+    }
+    |> put_timestamps()
+  end
+
+  @doc """
   Maps a raw Profile to an application-level security.
   """
   def profile(%{"Symbol" => symbol} = security) when is_map(security) do
