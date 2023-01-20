@@ -48,13 +48,13 @@ defmodule LoinWeb.SectorTrends do
   def heatmap(assigns) do
     ~H"""
     <div class="grid grid-cols-3 lg:grid-cols-3 gap-0.5">
-      <%= for item <- @trends do %>
-        <.link navigate={~p"/s/#{item.symbol}"}>
-          <div class={"p-3 #{background_color(item)} rounded-sm"} role="button">
-            <p class="text-gray-100 text-xs"><%= Map.get(item, :symbol) %></p>
+      <%= for {symbol, %{trend: trend}} <- @trends do %>
+        <.link navigate={~p"/s/#{symbol}"}>
+          <div class={"p-3 #{background_color(trend)} rounded-sm"} role="button">
+            <p class="text-gray-100 text-xs"><%= symbol %></p>
             <div class="flex items-center justify-between space-x-2">
-              <p class="text-white text-sm font-medium"><%= title_for_symbol(item) %></p>
-              <p><%= emoji_for_trend_change(item) %></p>
+              <p class="text-white text-sm font-medium"><%= title_for_symbol(trend) %></p>
+              <p><%= emoji_for_trend_change(trend) %></p>
             </div>
           </div>
         </.link>
@@ -62,6 +62,8 @@ defmodule LoinWeb.SectorTrends do
     </div>
     """
   end
+
+  defp background_color(nil), do: "bg-gray-800"
 
   defp background_color(%{trend: trend}) do
     case trend do
@@ -71,6 +73,8 @@ defmodule LoinWeb.SectorTrends do
       nil -> "bg-gray-800"
     end
   end
+
+  defp emoji_for_trend_change(nil), do: ""
 
   defp emoji_for_trend_change(%{trend_change: trend_change}) do
     case trend_change do
@@ -84,5 +88,6 @@ defmodule LoinWeb.SectorTrends do
     end
   end
 
+  defp title_for_symbol(nil), do: "--"
   defp title_for_symbol(%{symbol: symbol}), do: Map.get(@titles_by_symbol, symbol, "")
 end

@@ -14,27 +14,37 @@ const getColorForItem = ({ trend } = {}) => {
 }
 
 export const TimeseriesChart = {
+  createChart() {
+    this.chartInstance = createChart(this.el)
+  },
   getTimeseriesData() {
     const serializedData = this.el.dataset.timeseries || '[]'
     const deserializedData = JSON.parse(serializedData)
     return deserializedData
   },
   mounted() {
-    console.log('TimeseriesChart hook mounted')
-    this.chartInstance = createChart(this.el)
-
+    this.createChart()
+    this.renderChart()
+    console.log(this.lineSeries)
+  },
+  renderChart() {
     const data = this.getTimeseriesData()
-
     const chartData = data.map(({ close, date, trend } = {}) => ({
       color: getColorForItem({ trend }),
       time: date,
       value: close
     }))
 
-    const lineSeries = this.chartInstance.addLineSeries();
+    if (this.lineSeries) {
+      this.chartInstance.removeSeries(this.lineSeries)
+      this.lineSeries = null
+    }
 
-    lineSeries.setData(chartData);
-
+    this.lineSeries = this.chartInstance.addLineSeries();
+    this.lineSeries.setData(chartData);
     this.chartInstance.timeScale().fitContent();
+  },
+  updated() {
+    this.renderChart()
   }
 }

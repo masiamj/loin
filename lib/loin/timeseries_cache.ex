@@ -5,7 +5,7 @@ defmodule Loin.TimeseriesCache do
   require Logger
   alias Loin.FMP.Service
 
-  @cache_name :timeseries_data
+  @cache_name :timeseries_cache
 
   @doc """
   Clears the cache.
@@ -56,6 +56,33 @@ defmodule Loin.TimeseriesCache do
       |> Enum.uniq()
       |> Task.async_stream(fn symbol -> get(symbol) end, max_concurrency: 3, ordered: true)
       |> Stream.map(fn {:ok, {:ok, {symbol, data}}} -> {symbol, data} end)
+      |> Enum.into(%{})
+
+    {:ok, results}
+  end
+
+  @doc """
+  Gets timeseries data series (encoded as string).
+  """
+  def get_encoded(symbol) when is_binary(symbol) do
+    Logger.info("Starting TimeseriesCache lookup for #{symbol}")
+
+    {:ok, {symbol, data}} = get(symbol)
+
+    {:ok, {symbol, Jason.encode!(data)}}
+  end
+
+  @doc """
+  Gets many timeseries data series (encoded as string).
+  """
+  def get_many_encoded(symbols) when is_list(symbols) do
+    Logger.info("Starting Batch TimeseriesCache lookup for #{Enum.join(symbols, ", ")}")
+
+    results =
+      symbols
+      |> Enum.uniq()
+      |> Task.async_stream(fn symbol -> get(symbol) end, max_concurrency: 3, ordered: true)
+      |> Stream.map(fn {:ok, {:ok, {symbol, data}}} -> {symbol, Jason.encode!(data)} end)
       |> Enum.into(%{})
 
     {:ok, results}

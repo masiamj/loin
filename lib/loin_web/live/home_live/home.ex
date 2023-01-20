@@ -5,31 +5,23 @@ defmodule LoinWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    with {:ok, chart_data} <- fetch_chart_data(),
-         {:ok, downtrends} <- fetch_downtrends(),
-         {:ok, sector_trends} <- fetch_sector_trends(),
-         {:ok, trend_changes} <- fetch_trend_changes(),
-         {:ok, uptrends} <- fetch_uptrends(),
-         sector_trends_updated_at <- get_sector_trends_updated_at(sector_trends) do
+    with {:ok, chart_data} <- TimeseriesCache.get_many_encoded(["SPY", "QQQ"]),
+         {:ok, downtrends} <- FMP.get_securities_via_trend("down", 10),
+         {:ok, sector_trends} <- FMP.get_daily_sector_trends(),
+         {:ok, trend_changes} <- FMP.get_securities_with_trend_change(10),
+         {:ok, uptrends} <- FMP.get_securities_via_trend("up", 10) do
       socket =
         socket
         |> assign(:chart_data, chart_data)
         |> assign(:downtrends, downtrends)
         |> assign(:sector_trends, sector_trends)
-        |> assign(:sector_trends_updated_at, sector_trends_updated_at)
         |> assign(:trend_changes, trend_changes)
         |> assign(:uptrends, uptrends)
 
-      {:ok, socket,
-       temporary_assigns: [
-         chart_data: %{},
-         downtrends: [],
-         sector_trends: [],
-         trend_changes: [],
-         uptrends: []
-       ]}
+      {:ok, socket}
     else
-      _result -> {:ok, socket}
+      _result ->
+        {:ok, socket}
     end
   end
 
@@ -58,11 +50,7 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic
-          more_link="~p/screener?type=etf"
-          title="Sector trends"
-          updated_at={@sector_trends_updated_at}
-        >
+        <LoinWeb.Cards.generic more_link="~p/screener?type=etf" title="Sector trends">
           <LoinWeb.SectorTrends.heatmap trends={@sector_trends} />
         </LoinWeb.Cards.generic>
       </div>
@@ -89,36 +77,5 @@ defmodule LoinWeb.HomeLive do
   defp apply_action(socket, :home, _params) do
     socket
     |> assign(:page_title, "Home")
-  end
-
-  defp fetch_chart_data() do
-    {:ok, results} = TimeseriesCache.get_many(["SPY", "QQQ"])
-    chart_data = Enum.into(results, %{}, fn {key, value} -> {key, Jason.encode!(value)} end)
-    {:ok, chart_data}
-  end
-
-  defp fetch_downtrends() do
-    FMP.get_securities_via_trend_by_market_cap("down", 10)
-  end
-
-  defp fetch_sector_trends() do
-    FMP.get_daily_sector_trends()
-  end
-
-  defp fetch_trend_changes() do
-    FMP.get_securities_with_trend_change_by_market_cap(10)
-  end
-
-  defp fetch_uptrends() do
-    FMP.get_securities_via_trend_by_market_cap("up", 10)
-  end
-
-  defp get_sector_trends_updated_at([]), do: DateTime.utc_now()
-
-  defp get_sector_trends_updated_at(sector_trends) when is_list(sector_trends) do
-    sector_trends
-    |> Enum.min_by(&Map.get(&1, :updated_at))
-    |> Map.get(:updated_at)
-    |> Timex.format!("{WDshort} {Mshort} {D}, {YYYY} {h12}:{m}:{s} {AM} {Zabbr}")
   end
 end
