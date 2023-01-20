@@ -10,9 +10,11 @@
       <.link href={~p"/users/log_out"} method="delete">Log out</.link>
     </li>
   <% else %>
-    <LoinWeb.HeaderComponents.unauthenticated id="unauthenticated-header" />
+    <div class="fixed w-full z-50">
+      <LoinWeb.HeaderComponents.unauthenticated id="unauthenticated-header" />
+    </div>
   <% end %>
-  <div>
+  <div class="pt-24 lg:pt-12">
     <.flash kind={:info} title="Success!" flash={@flash} />
     <.flash kind={:error} title="Error!" flash={@flash} />
     <.flash
