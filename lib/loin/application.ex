@@ -27,6 +27,10 @@ defmodule Loin.Application do
       Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
         id: :timeseries_cache
       ),
+      # Cache the stock ETF exposure data
+      Supervisor.child_spec({Cachex, [name: :stock_etf_exposure_cache, stats: true, warmers: []]},
+        id: :stock_etf_exposure_cache
+      ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
       # Start the Oban jobs processor
