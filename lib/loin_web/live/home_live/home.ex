@@ -17,6 +17,7 @@ defmodule LoinWeb.HomeLive do
         |> assign(:sector_trends, sector_trends)
         |> assign(:trend_changes, trend_changes)
         |> assign(:uptrends, uptrends)
+        |> assign(:page_title, "Stock market trends, sector trends")
 
       {:ok, socket}
     else
@@ -28,11 +29,11 @@ defmodule LoinWeb.HomeLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="px-4 py-8 lg:py-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <LoinWeb.Cards.generic more_link="~p/s/SPY" title="S&P 500 trend">
           <div
-            class="h-64 w-full"
+            class="h-56 w-full"
             id="sp500_chart"
             data-timeseries={Map.get(@chart_data, "SPY", [])}
             phx-hook="TimeseriesChart"
@@ -42,7 +43,7 @@ defmodule LoinWeb.HomeLive do
         </LoinWeb.Cards.generic>
         <LoinWeb.Cards.generic more_link="~p/s/QQQ" title="Nasdaq trend">
           <div
-            class="h-64 w-full"
+            class="h-56 w-full"
             id="nasdaq_chart"
             data-timeseries={Map.get(@chart_data, "QQQ", [])}
             phx-hook="TimeseriesChart"
@@ -53,8 +54,6 @@ defmodule LoinWeb.HomeLive do
         <LoinWeb.Cards.generic more_link="~p/screener?type=etf" title="Sector trends">
           <LoinWeb.SectorTrends.heatmap trends={@sector_trends} />
         </LoinWeb.Cards.generic>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <LoinWeb.Cards.generic more_link="~p/screener?trend=up" title="Uptrends">
           <LoinWeb.Lists.stocks_with_trends data={@uptrends} />
         </LoinWeb.Cards.generic>
@@ -67,15 +66,5 @@ defmodule LoinWeb.HomeLive do
       </div>
     </div>
     """
-  end
-
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :home, _params) do
-    socket
-    |> assign(:page_title, "Home")
   end
 end

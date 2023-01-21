@@ -50,11 +50,11 @@ defmodule LoinWeb.SectorTrends do
     <div class="grid grid-cols-3 lg:grid-cols-3 gap-0.5">
       <%= for {symbol, %{trend: trend}} <- @trends do %>
         <.link navigate={~p"/s/#{symbol}"}>
-          <div class={"p-3 #{background_color(trend)} rounded-sm"} role="button">
+          <div class={"p-2.5 #{background_color(trend)} rounded-sm"} role="button">
             <p class="text-gray-100 text-xs"><%= symbol %></p>
             <div class="flex items-center justify-between space-x-2">
               <p class="text-white text-sm font-medium"><%= title_for_symbol(trend) %></p>
-              <p><%= emoji_for_trend_change(trend) %></p>
+              <p class="text-sm"><%= emoji_for_trend_change(trend) %></p>
             </div>
           </div>
         </.link>

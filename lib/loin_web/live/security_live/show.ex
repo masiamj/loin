@@ -25,42 +25,37 @@ defmodule LoinWeb.SecurityLive do
                   ])
 
   @impl true
-  def mount(%{"symbol" => symbol}, _session, socket) do
-    mount_data = mount_impl(symbol)
-    socket = assign(socket, mount_data)
-    {:ok, socket, temporary_assigns: [timeseries_data: []]}
+  def mount(_params, _session, socket) do
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="col-span-1 h-[88vh] overflow-y-scroll">
-          <div class="space-y-4">
-            <LoinWeb.Cards.generic title="Similar stocks">
-              <LoinWeb.Lists.similar_stocks data={assigns.peers} />
-            </LoinWeb.Cards.generic>
-            <%!-- <LoinWeb.Cards.generic title="ETFs with exposure">
-              <LoinWeb.Lists.etfs_with_exposures data={assigns.etf_exposures} />
-            </LoinWeb.Cards.generic> --%>
-          </div>
-          <div :if={false} class="space-y-4">
-            <LoinWeb.Cards.generic
-              :if={length(assigns.etf_sector_weights) > 0}
-              title="Sector exposure"
-            >
-              <LoinWeb.Lists.etf_sector_weights data={assigns.etf_sector_weights} />
-            </LoinWeb.Cards.generic>
-            <LoinWeb.Cards.generic title="ETF constituents">
-              <LoinWeb.Lists.etf_constituents data={assigns.etf_constituents} />
-            </LoinWeb.Cards.generic>
-          </div>
+    <div class="px-2 pt-7 pb-6 lg:py-4">
+      <div class="flex flex-row-reverse lg:flex-row flex-wrap items-start justify-between w-full">
+        <div class="w-full lg:w-1/3 lg:h-[91.5vh] lg:overflow-y-scroll order-last lg:order-first mt-16 lg:mt-0 rounded-md">
+          <ul class="grid grid-cols-1 border border-gray-200">
+            <%= for %{data: data, title: title} <- @sections do %>
+              <li :if={length(data) > 0}>
+                <p class="py-3 px-2 bg-blue-100 text-sm text-blue-600 font-medium sticky top-0">
+                  <%= title %> (<%= length(data) %>)
+                </p>
+                <ul>
+                  <%= for item <- data do %>
+                    <li class="border-b-[1px] border-gray-200">
+                      <LoinWeb.Securities.generic_security item={item} />
+                    </li>
+                  <% end %>
+                </ul>
+              </li>
+            <% end %>
+          </ul>
         </div>
-        <div class="col-span-1 lg:col-span-2 h-[82vh]">
+        <div class="w-full lg:w-2/3 h-[40vh] lg:h-[86vh] order-first lg:order-first lg:pl-2">
           <LoinWeb.Cards.generic title={"#{@symbol} trend"}>
             <div
-              class="h-[81vh] w-full"
+              class="h-[40vh] lg:h-[86vh] w-full"
               data-timeseries={@timeseries_data}
               id="timeseries_chart"
               phx-hook="TimeseriesChart"
@@ -80,20 +75,31 @@ defmodule LoinWeb.SecurityLive do
     {:noreply, assign(socket, mount_data)}
   end
 
+  # Private
+
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do
     {:ok, etf_constituents} = ETFConstituentsCache.get_for_web(symbol)
 
+    base = %{
+      page_title: "#{symbol} ETF 60-day trend, sector exposure, and constituents"
+    }
+
     case MapSet.member?(@sector_symbols, symbol) do
       true ->
-        %{
-          etf_constituents: etf_constituents,
-          etf_sector_weights: [],
-          page_title: "#{symbol} ETF 60-day trend, sector exposure, and constituents"
-        }
+        Map.put(base, :sections, %{
+          sections: [
+            %{title: "Sector weights", data: []},
+            %{title: "ETF Constituents", data: etf_constituents}
+          ]
+        })
 
       false ->
         {:ok, etf_sector_weights} = ETFSectorWeightCache.get_for_web(symbol)
-        %{etf_constituents: etf_constituents, etf_sector_weights: etf_sector_weights}
+
+        Map.put(base, :sections, [
+          %{title: "Sector weights", data: etf_sector_weights},
+          %{title: "ETF Constituents", data: etf_constituents}
+        ])
     end
   end
 
@@ -101,9 +107,11 @@ defmodule LoinWeb.SecurityLive do
     with {:ok, peers} <- PeersCache.get_for_web(symbol),
          {:ok, etf_exposures} <- StockETFExposureCache.get_for_web(symbol) do
       %{
-        etf_exposures: etf_exposures,
         page_title: "#{symbol} 60-day trend, alternatives, and ETF exposures",
-        peers: peers
+        sections: [
+          %{title: "Similar stocks", data: peers},
+          %{title: "ETF Exposure", data: etf_exposures}
+        ]
       }
     end
   end

@@ -28,8 +28,8 @@ defmodule LoinWeb.Lists do
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{constituent: constituent, security: security, trend: trend} <- @data do %>
         <.link navigate={~p"/s/#{security.symbol}"}>
-          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
-            <div class="flex flex-row items-center justify-between space-x-2">
+          <li class="bg-white hover:bg-gray-100 px-2" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2 h-11">
               <div class="flex flex-col w-2/5">
                 <div class="flex flex-row items-center gap-1">
                   <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
@@ -43,11 +43,16 @@ defmodule LoinWeb.Lists do
                   </p>
                 </div>
               </div>
-              <div class="flex flex-col w-2/5">
-                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-                <p class="text-sm">
-                  <%= Map.get(security, :price) |> Money.parse!() |> Money.to_string() %>
-                </p>
+              <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+                <span class="w-1/2">
+                  <.security_price security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change_percent security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change security={security} />
+                </span>
               </div>
               <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
                 <.trend_badge trend={trend} />
@@ -73,8 +78,8 @@ defmodule LoinWeb.Lists do
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{sector_weight: sector_weight, security: security, trend: trend} <- @data do %>
         <.link navigate={~p"/s/#{security.symbol}"}>
-          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
-            <div class="flex flex-row items-center justify-between space-x-2">
+          <li class="bg-white hover:bg-gray-100 px-2" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2 h-11">
               <div class="flex flex-col w-2/5">
                 <div class="flex flex-row items-center gap-1">
                   <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
@@ -88,11 +93,16 @@ defmodule LoinWeb.Lists do
                   </p>
                 </div>
               </div>
-              <div class="flex flex-col w-2/5">
-                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-                <p class="text-sm">
-                  <%= Map.get(security, :price) |> Money.parse!() |> Money.to_string() %>
-                </p>
+              <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+                <span class="w-1/2">
+                  <.security_price security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change_percent security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change security={security} />
+                </span>
               </div>
               <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
                 <.trend_badge trend={trend} />
@@ -118,8 +128,8 @@ defmodule LoinWeb.Lists do
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{exposure: exposure, security: security, trend: trend} <- @data do %>
         <.link navigate={~p"/s/#{security.symbol}"}>
-          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
-            <div class="flex flex-row items-center justify-between space-x-2">
+          <li class="bg-white hover:bg-gray-100 px-2" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2 h-11">
               <div class="flex flex-col w-2/5">
                 <div class="flex flex-row items-center gap-1">
                   <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
@@ -133,11 +143,16 @@ defmodule LoinWeb.Lists do
                   </p>
                 </div>
               </div>
-              <div class="flex flex-col w-2/5">
-                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-                <p class="text-sm">
-                  <%= Map.get(security, :price) |> Money.parse!() |> Money.to_string() %>
-                </p>
+              <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+                <span class="w-1/2">
+                  <.security_price security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change_percent security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change security={security} />
+                </span>
               </div>
               <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
                 <.trend_badge trend={trend} />
@@ -163,8 +178,8 @@ defmodule LoinWeb.Lists do
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for %{security: security, trend: trend} <- @data do %>
         <.link patch={~p"/s/#{security.symbol}"}>
-          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
-            <div class="flex flex-row items-center justify-between space-x-2">
+          <li class="bg-white hover:bg-gray-100 px-2" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2 h-11">
               <div class="flex flex-col w-2/5">
                 <div class="flex flex-row items-center gap-1">
                   <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
@@ -173,11 +188,16 @@ defmodule LoinWeb.Lists do
                 </div>
                 <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
               </div>
-              <div class="flex flex-col w-2/5">
-                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-                <p class="text-sm">
-                  <%= Map.get(security, :price) |> Money.parse!() |> Money.to_string() %>
-                </p>
+              <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+                <span class="w-1/2">
+                  <.security_price security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change_percent security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change security={security} />
+                </span>
               </div>
               <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
                 <.trend_badge trend={trend} />
@@ -203,8 +223,8 @@ defmodule LoinWeb.Lists do
     <ul class={"grid grid-cols-1 divide-y #{@class}"}>
       <%= for {symbol, %{security: security, trend: trend}} <- @data do %>
         <.link navigate={~p"/s/#{symbol}"}>
-          <li class="bg-white hover:bg-gray-100 px-2 py-1" role="button">
-            <div class="flex flex-row items-center justify-between space-x-2">
+          <li class="bg-white hover:bg-gray-100 px-2" role="button">
+            <div class="flex flex-row items-center justify-between space-x-2 h-11">
               <div class="flex flex-col w-2/5">
                 <div class="flex flex-row items-center gap-1">
                   <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
@@ -213,11 +233,16 @@ defmodule LoinWeb.Lists do
                 </div>
                 <p class="text-sm font-medium"><%= symbol %></p>
               </div>
-              <div class="flex flex-col w-2/5">
-                <p class="text-xs text-gray-400" style="font-size:10px;">Close</p>
-                <p class="text-sm">
-                  <%= Map.get(security, :price) |> Money.parse!() |> Money.to_string() %>
-                </p>
+              <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+                <span class="w-1/2">
+                  <.security_price security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change_percent security={security} />
+                </span>
+                <span class="w-1/4">
+                  <.security_change security={security} />
+                </span>
               </div>
               <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
                 <.trend_badge trend={trend} />
@@ -229,6 +254,71 @@ defmodule LoinWeb.Lists do
       <% end %>
     </ul>
     """
+  end
+
+  defp class_for_value(value) do
+    case value do
+      0.0 -> "text-gray-500"
+      value when value > 0 -> "text-green-500"
+      value when value < 0 -> "text-red-500"
+    end
+  end
+
+  defp get_change_percent(security) when is_map(security) do
+    case Map.get(security, :change_percent) do
+      nil -> "-"
+      value when is_float(value) -> Float.round(value)
+    end
+  end
+
+  defp security_price(assigns) do
+    value =
+      assigns
+      |> Map.get(:security, %{})
+      |> Map.get(:price, "-")
+      |> Money.parse!()
+      |> Money.to_string()
+
+    assigns = assign(assigns, :value, value)
+
+    ~H"""
+    <span>
+      <%= @value %>
+    </span>
+    """
+  end
+
+  defp security_change(assigns) do
+    with raw_value <- Map.get(assigns.security, :change, 0.0),
+         class <- class_for_value(raw_value),
+         value <- raw_value |> Money.parse!() |> Money.to_string() do
+      assigns =
+        assigns
+        |> assign(:class, class)
+        |> assign(:value, value)
+
+      ~H"""
+      <span class={@class}>
+        <%= @value %>
+      </span>
+      """
+    end
+  end
+
+  defp security_change_percent(assigns) do
+    with value <- get_change_percent(assigns.security),
+         class <- class_for_value(value) do
+      assigns =
+        assigns
+        |> assign(:class, class)
+        |> assign(:value, value)
+
+      ~H"""
+      <span class={@class}>
+        <%= @value %>%
+      </span>
+      """
+    end
   end
 
   defp trend_badge(assigns) when is_nil(assigns.trend),

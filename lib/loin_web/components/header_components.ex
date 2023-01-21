@@ -22,10 +22,10 @@ defmodule LoinWeb.HeaderComponents do
 
   def unauthenticated(assigns) do
     ~H"""
-    <div class="relative bg-white" id={@id}>
-      <div class="px-4 pb-4 lg:pb-0">
-        <div class="flex items-center justify-between py-2 lg:justify-start lg:space-x-10">
-          <.link href={~p"/"} class="font-bold">
+    <div class="relative bg-white w-full shadow-sm border-b border-gray-200" id={@id}>
+      <div class="px-4 pb-4 lg:pb-0 w-full">
+        <div class="flex items-center justify-between py-2 lg:justify-start">
+          <.link href={~p"/"} class="font-bold lg:w-1/3">
             Trenderloin
           </.link>
           <div class="lg:hidden">
@@ -53,8 +53,8 @@ defmodule LoinWeb.HeaderComponents do
               </svg>
             </button>
           </div>
-          <div class="hidden lg:flex lg:flex-1 justify-center">
-            <div class="relative w-3/5">
+          <div class="hidden lg:flex w-1/3 px-2">
+            <div class="relative w-full">
               <input
                 type="text"
                 name="unauthenticated-header-search"
@@ -77,12 +77,12 @@ defmodule LoinWeb.HeaderComponents do
             >
               How it works
             </.link>
-            <.link
+            <%!-- <.link
               navigate={~p"/users/log_in"}
               class="relative px-2 py-1 text-gray-500 hover:text-black"
             >
               Screener
-            </.link>
+            </.link> --%>
             <%!-- <.link navigate={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
@@ -148,9 +148,9 @@ defmodule LoinWeb.HeaderComponents do
                 <.link navigate={~p"/how-it-works"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   How it works
                 </.link>
-                <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <%!-- <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Screener
-                </.link>
+                </.link> --%>
                 <%!-- <.link navigate={~p"/users/log_in"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Charts
                 </.link> --%>
