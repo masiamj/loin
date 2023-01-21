@@ -200,7 +200,7 @@ defmodule LoinWeb.Securities do
     end
   end
 
-  defp security_price(assigns) do
+  def security_price(assigns) do
     value =
       assigns
       |> Map.get(:security, %{})
@@ -217,7 +217,7 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  defp security_change(assigns) do
+  def security_change(assigns) do
     with raw_value <- Map.get(assigns.security, :change, 0.0),
          class <- class_for_value(raw_value),
          value <- raw_value |> Money.parse!() |> Money.to_string() do
@@ -234,7 +234,7 @@ defmodule LoinWeb.Securities do
     end
   end
 
-  defp security_change_percent(assigns) do
+  def security_change_percent(assigns) do
     with value <- get_change_percent(assigns.security),
          class <- class_for_value(value) do
       assigns =
