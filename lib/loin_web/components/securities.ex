@@ -21,40 +21,38 @@ defmodule LoinWeb.Securities do
   """
   attr :item, :map, required: true
 
-  def generic_security(
-        %{item: %{constituent: constituent, security: security, trend: trend}} = assigns
-      ) do
+  def generic_security(%{item: %{constituent: _constituent}} = assigns) do
     ~H"""
-    <.link navigate={~p"/s/#{security.symbol}"}>
+    <.link navigate={~p"/s/#{@item.security.symbol}"}>
       <li class="bg-white hover:bg-gray-100 px-2" role="button">
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(security, :name) %>
+                <%= Map.get(@item.security, :name) %>
               </p>
             </div>
             <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+              <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(constituent, :weight_percentage) %>% weight)
+                (<%= Map.get(@item.constituent, :weight_percentage) %>% weight)
               </p>
             </div>
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price security={security} />
+              <.security_price security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent security={security} />
+              <.security_change_percent security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change security={security} />
+              <.security_change security={@item.security} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge trend={trend} />
-            <.trend_change_badge trend={trend} />
+            <.trend_badge trend={@item.trend} />
+            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -62,43 +60,38 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  @doc """
-  Renders an ETF sector weight.
-  """
-  def generic_security(
-        %{item: %{sector_weight: sector_weight, security: security, trend: trend}} = assigns
-      ) do
+  def generic_security(%{item: %{sector_weight: _sector_weight}} = assigns) do
     ~H"""
-    <.link navigate={~p"/s/#{security.symbol}"}>
+    <.link navigate={~p"/s/#{@item.security.symbol}"}>
       <li class="bg-white hover:bg-gray-100 px-2" role="button">
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(security, :symbol) %>
+                <%= Map.get(@item.security, :symbol) %>
               </p>
             </div>
             <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium"><%= Map.get(sector_weight, :name) %></p>
+              <p class="text-sm font-medium"><%= Map.get(@item.sector_weight, :name) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(sector_weight, :weight_percentage) %> weight)
+                (<%= Map.get(@item.sector_weight, :weight_percentage) %> weight)
               </p>
             </div>
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price security={security} />
+              <.security_price security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent security={security} />
+              <.security_change_percent security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change security={security} />
+              <.security_change security={@item.security} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge trend={trend} />
-            <.trend_change_badge trend={trend} />
+            <.trend_badge trend={@item.trend} />
+            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -106,41 +99,38 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  @doc """
-  Renders an ETF exposed to a stock.
-  """
-  def generic_security(%{item: %{exposure: exposure, security: security, trend: trend}} = assigns) do
+  def generic_security(%{item: %{exposure: _exposure}} = assigns) do
     ~H"""
-    <.link navigate={~p"/s/#{security.symbol}"}>
+    <.link navigate={~p"/s/#{@item.security.symbol}"}>
       <li class="bg-white hover:bg-gray-100 px-2" role="button">
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(security, :name) %>
+                <%= Map.get(@item.security, :name) %>
               </p>
             </div>
             <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+              <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(exposure, :etf_weight_percentage) %>% exposure)
+                (<%= Map.get(@item.exposure, :etf_weight_percentage) %>% exposure)
               </p>
             </div>
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price security={security} />
+              <.security_price security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent security={security} />
+              <.security_change_percent security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change security={security} />
+              <.security_change security={@item.security} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge trend={trend} />
-            <.trend_change_badge trend={trend} />
+            <.trend_badge trend={@item.trend} />
+            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -148,36 +138,33 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  @doc """
-  Renders a stock peer.
-  """
-  def generic_security(%{item: %{security: security, trend: trend}} = assigns) do
+  def generic_security(assigns) do
     ~H"""
-    <.link patch={~p"/s/#{security.symbol}"}>
+    <.link patch={~p"/s/#{@item.security.symbol}"}>
       <li class="bg-white hover:bg-gray-100 px-2" role="button">
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(security, :name) %>
+                <%= Map.get(@item.security, :name) %>
               </p>
             </div>
-            <p class="text-sm font-medium"><%= Map.get(security, :symbol) %></p>
+            <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price security={security} />
+              <.security_price security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent security={security} />
+              <.security_change_percent security={@item.security} />
             </span>
             <span class="w-1/4">
-              <.security_change security={security} />
+              <.security_change security={@item.security} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge trend={trend} />
-            <.trend_change_badge trend={trend} />
+            <.trend_badge trend={@item.trend} />
+            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -250,66 +237,69 @@ defmodule LoinWeb.Securities do
     end
   end
 
-  defp trend_badge(assigns) when is_nil(assigns.trend),
-    do: ~H"""
+  defp trend_badge(%{trend: nil} = assigns) do
+    ~H"""
 
     """
-
-  defp trend_badge(assigns) when is_map(assigns.trend) do
-    case Map.get(assigns.trend, :trend) do
-      "up" ->
-        ~H"""
-        <div class="text-green-500 text-xs font-medium flex items-center justify-center">
-          <span>Uptrend</span>
-        </div>
-        """
-
-      "down" ->
-        ~H"""
-        <div class="text-red-500 text-xs font-medium flex items-center justify-center">
-          <span>Downtrend</span>
-        </div>
-        """
-
-      "neutral" ->
-        ~H"""
-        <div class="text-gray-500 text-xs font-medium flex items-center justify-center">
-          <span>Neutral</span>
-        </div>
-        """
-
-      nil ->
-        ~H"""
-        <div></div>
-        """
-    end
   end
 
-  defp trend_change_badge(assigns) when is_nil(assigns.trend),
-    do: ~H"""
+  defp trend_badge(%{trend: %{trend: "up"}} = assigns) do
+    ~H"""
+    <div class="text-green-500 text-xs font-medium flex items-center justify-center">
+      <span>Uptrend</span>
+    </div>
+    """
+  end
+
+  defp trend_badge(%{trend: %{trend: "down"}} = assigns) do
+    ~H"""
+    <div class="text-red-500 text-xs font-medium flex items-center justify-center">
+      <span>Downtrend</span>
+    </div>
+    """
+  end
+
+  defp trend_badge(%{trend: %{trend: "neutral"}} = assigns) do
+    ~H"""
+    <div class="text-gray-500 text-xs font-medium flex items-center justify-center">
+      <span>Neutral</span>
+    </div>
+    """
+  end
+
+  defp trend_badge(%{trend: %{trend: nil}} = assigns) do
+    ~H"""
+    <div></div>
+    """
+  end
+
+  defp trend_change_badge(%{trend: nil} = assigns) do
+    ~H"""
 
     """
+  end
 
-  defp trend_change_badge(assigns) when is_map(assigns.trend) do
-    case Map.get(assigns.trend, :trend_change) do
-      tc when tc in ["down_to_up", "down_to_neutral", "neutral_to_up"] ->
-        ~H"""
-        <div>
-          <span>⬆️</span>
-        </div>
-        """
+  defp trend_change_badge(%{trend: %{trend_change: trend_change}} = assigns)
+       when trend_change in ["down_to_up", "down_to_neutral", "neutral_to_up"] do
+    ~H"""
+    <div>
+      <span>⬆️</span>
+    </div>
+    """
+  end
 
-      tc when tc in ["up_to_down", "up_to_neutral", "neutral_to_down"] ->
-        ~H"""
-        <div>
-          <span>⬇️</span>
-        </div>
-        """
+  defp trend_change_badge(%{trend: %{trend_change: trend_change}} = assigns)
+       when trend_change in ["up_to_down", "up_to_neutral", "neutral_to_down"] do
+    ~H"""
+    <div>
+      <span>⬇️</span>
+    </div>
+    """
+  end
 
-      _ ->
-        ~H"""
-        <div></div>
-        """
-    end
+  defp trend_change_badge(%{trend: %{trend_change: _}} = assigns) do
+    ~H"""
+    <div></div>
+    """
   end
 end
