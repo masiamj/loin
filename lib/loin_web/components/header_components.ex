@@ -22,7 +22,7 @@ defmodule LoinWeb.HeaderComponents do
 
   def unauthenticated(assigns) do
     ~H"""
-    <div class="relative bg-white w-full shadow-sm border-b border-gray-200" id={@id}>
+    <div class="relative bg-white w-full" id={@id}>
       <div class="px-4 pb-4 lg:pb-0 w-full">
         <div class="flex items-center justify-between py-2 lg:justify-start">
           <.link href={~p"/"} class="font-bold lg:w-1/3">

@@ -50,7 +50,7 @@ defmodule LoinWeb.Lists do
                 <span class="w-1/4">
                   <.security_change_percent security={security} />
                 </span>
-                <span class="w-1/4">
+                <span class="hidden lg:block w-1/4">
                   <.security_change security={security} />
                 </span>
               </div>
@@ -100,7 +100,7 @@ defmodule LoinWeb.Lists do
                 <span class="w-1/4">
                   <.security_change_percent security={security} />
                 </span>
-                <span class="w-1/4">
+                <span class="hidden lg:block w-1/4">
                   <.security_change security={security} />
                 </span>
               </div>
@@ -150,7 +150,7 @@ defmodule LoinWeb.Lists do
                 <span class="w-1/4">
                   <.security_change_percent security={security} />
                 </span>
-                <span class="w-1/4">
+                <span class="hidden lg:block w-1/4">
                   <.security_change security={security} />
                 </span>
               </div>
@@ -195,7 +195,7 @@ defmodule LoinWeb.Lists do
                 <span class="w-1/4">
                   <.security_change_percent security={security} />
                 </span>
-                <span class="w-1/4">
+                <span class="hidden lg:block w-1/4">
                   <.security_change security={security} />
                 </span>
               </div>
@@ -240,7 +240,7 @@ defmodule LoinWeb.Lists do
                 <span class="w-1/4">
                   <.security_change_percent security={security} />
                 </span>
-                <span class="w-1/4">
+                <span class="hidden lg:block w-1/4">
                   <.security_change security={security} />
                 </span>
               </div>

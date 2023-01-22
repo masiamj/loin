@@ -46,7 +46,7 @@ defmodule LoinWeb.Securities do
             <span class="w-1/4">
               <.security_change_percent security={@item.security} />
             </span>
-            <span class="w-1/4">
+            <span class="hidden lg:block w-1/4">
               <.security_change security={@item.security} />
             </span>
           </div>
@@ -85,7 +85,7 @@ defmodule LoinWeb.Securities do
             <span class="w-1/4">
               <.security_change_percent security={@item.security} />
             </span>
-            <span class="w-1/4">
+            <span class="hidden lg:block w-1/4">
               <.security_change security={@item.security} />
             </span>
           </div>
@@ -124,7 +124,7 @@ defmodule LoinWeb.Securities do
             <span class="w-1/4">
               <.security_change_percent security={@item.security} />
             </span>
-            <span class="w-1/4">
+            <span class="hidden lg:block w-1/4">
               <.security_change security={@item.security} />
             </span>
           </div>
@@ -158,7 +158,7 @@ defmodule LoinWeb.Securities do
             <span class="w-1/4">
               <.security_change_percent security={@item.security} />
             </span>
-            <span class="w-1/4">
+            <span class="hidden lg:block w-1/4">
               <.security_change security={@item.security} />
             </span>
           </div>

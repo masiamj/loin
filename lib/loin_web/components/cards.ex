@@ -37,7 +37,7 @@ defmodule LoinWeb.Cards do
 
   def generic(assigns) do
     ~H"""
-    <div class={"relative bg-white p-3 rounded-md border border-gray-200 #{@class}"}>
+    <div class={"relative bg-white p-3 rounded-md #{@class}"}>
       <div class="flex flex-row items-center justify-between space-x-2 mb-2">
         <p class="font-bold text-sm"><%= @title %></p>
         <p :if={is_binary(@updated_at)} class="text-xs text-gray-400 italic tracking-tight">

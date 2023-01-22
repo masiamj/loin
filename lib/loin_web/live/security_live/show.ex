@@ -19,7 +19,7 @@ defmodule LoinWeb.SecurityLive do
   def render(assigns) do
     ~H"""
     <div class="px-2 pt-7 pb-6 lg:py-4">
-      <div class="p-3 bg-white border border-gray-200 flex flex-row flex-wrap justify-between gap-4 w-full mb-2">
+      <div class="p-3 bg-white flex flex-row flex-wrap justify-between gap-4 w-full mb-2">
         <div class="flex flex-col gap-1 w-full lg:w-2/5">
           <div class="flex flex-row items-center space-x-4">
             <h1 class="text-lg font-bold"><%= @security.name %> (<%= @symbol %>)</h1>
@@ -42,8 +42,8 @@ defmodule LoinWeb.SecurityLive do
         </div>
       </div>
       <div class="flex flex-row-reverse lg:flex-row flex-wrap items-start justify-between w-full">
-        <div class="w-full lg:w-1/3 lg:h-[80vh] lg:overflow-y-scroll order-last lg:order-first mt-16 lg:mt-0 rounded-md">
-          <ul class="grid grid-cols-1 border border-gray-200">
+        <div class="w-full lg:w-1/3 lg:h-[80vh] lg:overflow-y-scroll order-last lg:order-first mt-16 lg:mt-0">
+          <ul class="grid grid-cols-1">
             <%= for %{data: data, title: title} <- @sections do %>
               <li :if={length(data) > 0}>
                 <p class="py-3 px-2 bg-blue-100 text-sm text-blue-600 font-medium sticky top-0">
@@ -51,7 +51,7 @@ defmodule LoinWeb.SecurityLive do
                 </p>
                 <ul>
                   <%= for item <- data do %>
-                    <li class="border-b-[1px] border-gray-200">
+                    <li class="border-b-[1px]">
                       <LoinWeb.Securities.generic_security item={item} />
                     </li>
                   <% end %>
@@ -112,6 +112,7 @@ defmodule LoinWeb.SecurityLive do
         value: Map.get(security, :pe)
       }
     ]
+    |> Enum.filter(fn %{value: value} -> value != nil end)
   end
 
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do
