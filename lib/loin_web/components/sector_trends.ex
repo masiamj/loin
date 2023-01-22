@@ -11,11 +11,11 @@ defmodule LoinWeb.SectorTrends do
     "XLF" => "Financials",
     "XLI" => "Industrials",
     "XLK" => "Tech",
-    "XLP" => "Cons. Staples",
+    "XLP" => "Staples",
     "XLRE" => "Real Estate",
     "XLU" => "Utilities",
     "XLV" => "Healthcare",
-    "XLY" => "Cons. Disc.",
+    "XLY" => "Cyclical",
     "GLD" => "Gold"
   }
 
