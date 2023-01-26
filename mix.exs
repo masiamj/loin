@@ -65,6 +65,7 @@ defmodule Loin.MixProject do
       {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:money, "~> 1.12"},
       {:oban, "~> 2.13"},
+      {:oban_web, "~> 2.9", repo: "oban"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},

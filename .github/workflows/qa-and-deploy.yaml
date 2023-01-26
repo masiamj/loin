@@ -54,6 +54,11 @@ jobs:
           restore-keys: |
             deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
             deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+      - name: Authorize Oban
+        run: |
+          mix hex.repo add oban https://getoban.pro/repo \
+          --fetch-public-key ${{secrets.OBAN_KEY_FINGERPRINT}} \
+          --auth-key ${{secrets.OBAN_LICENSE_KEY}}
       - name: Fetch deps
         run: mix deps.get
       - name: Remove application build

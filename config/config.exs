@@ -107,6 +107,8 @@ config :loin, Oban,
   repo: Loin.Repo,
   plugins: [
     # {Oban.Plugins.Pruner, max_age: 300},
+    Oban.Plugins.Gossip,
+    Oban.Web.Plugins.Stats,
     {Oban.Plugins.Cron,
      crontab: [
        # 6:30PM Mon-Fri EST

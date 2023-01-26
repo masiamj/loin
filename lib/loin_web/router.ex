@@ -42,21 +42,25 @@ defmodule LoinWeb.Router do
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:loin, :dev_routes) do
+  # if Application.compile_env(:loin, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
     # you can use Plug.BasicAuth to set up some basic authentication
     # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
+    import Oban.Web.Router
 
     scope "/dev" do
       pipe_through [:browser, :developers]
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-      live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
-
-      # Admin portal routes
+      # Admin portal
       use Kaffy.Routes, scope: "/admin", pipe_through: [:kaffy_browser]
+      # Phoenix LiveDashboard
+      live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
+      # Oban web dashboard
+      oban_dashboard "/jobs"
+      # Email viewer
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
 
     # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
@@ -64,7 +68,7 @@ defmodule LoinWeb.Router do
       pipe_through [:browser, :developers]
       forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
     end
-  end
+  # end
 
   ## Authentication routes
 
