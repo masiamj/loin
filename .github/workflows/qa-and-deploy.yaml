@@ -15,6 +15,8 @@ jobs:
   code-quality:
     env:
       FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+      OBAN_KEY_FINGERPRINT: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+      OBAN_LICENSE_KEY: ${{ secrets.OBAN_LICENSE_KEY }}
       MIX_ENV: test
     name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest
