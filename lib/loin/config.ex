@@ -5,6 +5,8 @@ defmodule Loin.Config do
   require Logger
 
   @fmp_api_key_env_var "FMP_API_KEY"
+  @oban_key_fingerprint "OBAN_KEY_FINGERPRINT"
+  @oban_license_key "OBAN_LICENSE_KEY"
 
   @doc """
   Gets the FMP API Key.
@@ -19,7 +21,9 @@ defmodule Loin.Config do
   def validate!() do
     missing_environment_vars =
       [
-        @fmp_api_key_env_var
+        @fmp_api_key_env_var,
+        @oban_key_fingerprint,
+        @oban_license_key
       ]
       |> Enum.reduce([], fn key, acc ->
         case System.get_env(key) do

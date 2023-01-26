@@ -5,7 +5,7 @@ defmodule LoinWeb.Router do
   import Plug.BasicAuth
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, ["html", "json"]
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, {LoinWeb.Layouts, :root}
@@ -14,64 +14,35 @@ defmodule LoinWeb.Router do
     plug :fetch_current_user
   end
 
-  pipeline :kaffy_browser do
-    plug :accepts, ["html", "json"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
-
   pipeline :developers do
     plug :basic_auth, username: "loincloth", password: "trending"
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  # Developers-only section
+  import Phoenix.LiveDashboard.Router
+  import Oban.Web.Router
+
+  scope "/dev" do
+    # use Kaffy.Routes, scope: "/admin", pipe_through: [:browser, :developers]
+
+    pipe_through [:browser, :developers]
+    use Kaffy.Routes, scope: "/admin"
+    # Admin portal
+    # Phoenix LiveDashboard
+    live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
+    # Oban web dashboard
+    oban_dashboard("/jobs")
+    # Email viewer
+    forward "/mailbox", Plug.Swoosh.MailboxPreview
   end
 
-  # scope "/", LoinWeb do
-  #   pipe_through :browser
-
-  #   get "/", PageController, :home
-  # end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", LoinWeb do
-  #   pipe_through :api
-  # end
-
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  # if Application.compile_env(:loin, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-    import Oban.Web.Router
-
-    scope "/dev" do
-      pipe_through [:browser, :developers]
-      # Admin portal
-      use Kaffy.Routes, scope: "/admin", pipe_through: [:kaffy_browser]
-      # Phoenix LiveDashboard
-      live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
-      # Oban web dashboard
-      oban_dashboard "/jobs"
-      # Email viewer
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-
-    # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
-    scope path: "/feature-flags" do
-      pipe_through [:browser, :developers]
-      forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
-    end
-  # end
+  # Routes for FunWithFlagsUI: https://github.com/tompave/fun_with_flags_ui
+  scope path: "/feature-flags" do
+    pipe_through [:browser, :developers]
+    forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
+  end
 
   ## Authentication routes
-
   scope "/", LoinWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
