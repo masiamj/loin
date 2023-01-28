@@ -14,4 +14,7 @@ defmodule Loin.Workers.DailyTrendPrimer do
 
     :ok
   end
+
+  @impl true
+  def timeout(_job), do: :timer.minutes(15)
 end
