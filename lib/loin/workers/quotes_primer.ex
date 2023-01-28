@@ -14,4 +14,7 @@ defmodule Loin.Workers.QuotesPrimer do
 
     :ok
   end
+
+  @impl true
+  def timeout(_job), do: :timer.minutes(5)
 end
