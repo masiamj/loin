@@ -1,1 +1,0 @@
-flyctl deploy -a loin -c ./fly.production.toml --remote-only --env OBAN_KEY_FINGERPRINT=${OBAN_KEY_FINGERPRINT} --env OBAN_LICENSE_KEY=${OBAN_LICENSE_KEY}
