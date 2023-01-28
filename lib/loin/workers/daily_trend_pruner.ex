@@ -7,7 +7,7 @@ defmodule Loin.Workers.DailyTrendPruner do
   require Logger
 
   @impl true
-  def perform(%Oban.Job{args: %{id: id}}) do
+  def perform(%Oban.Job{id: id}) do
     Logger.info("Starting DailyTrendPruner job: #{id}")
     {:ok, number_of_trends_removed} = Loin.FMP.Trends.prune_many(-5)
 

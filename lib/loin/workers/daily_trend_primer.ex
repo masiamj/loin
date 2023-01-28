@@ -7,7 +7,7 @@ defmodule Loin.Workers.DailyTrendPrimer do
   require Logger
 
   @impl true
-  def perform(%Oban.Job{args: %{id: id}}) do
+  def perform(%Oban.Job{id: id}) do
     Logger.info("Starting DailyTrendPrimer job: #{id}")
     :ok = Loin.FMP.Trends.process_all()
     Logger.info("Finished DailyTrendPrimer job: #{id}")
