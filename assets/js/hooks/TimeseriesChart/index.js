@@ -183,7 +183,11 @@ export const TimeseriesChart = {
     /**
      * Scale to constraints
      */
-    this.chartInstance.timeScale().fitContent();
+
+    this.chartInstance.timeScale().setVisibleRange({
+      from: (new Date("2021/09/01")).getTime() / 1000,
+      to: (new Date()).getTime() / 1000,
+    })
   },
   updated() {
     this.renderChart()

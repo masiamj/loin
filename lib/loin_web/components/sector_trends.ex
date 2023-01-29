@@ -68,9 +68,9 @@ defmodule LoinWeb.SectorTrends do
   defp background_color(%{trend: trend}) do
     case trend do
       "down" -> "bg-red-600"
-      "neutral" -> "bg-gray-600"
+      "neutral" -> "bg-yellow-600"
       "up" -> "bg-green-600"
-      nil -> "bg-gray-800"
+      nil -> "bg-gray-600"
     end
   end
 
