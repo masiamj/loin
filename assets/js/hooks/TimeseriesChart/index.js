@@ -1,7 +1,5 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 
-const currentLocale = window.navigator.languages[0];
-
 const getColorForItem = ({ trend } = {}) => {
   switch (trend) {
     case null:
@@ -13,6 +11,40 @@ const getColorForItem = ({ trend } = {}) => {
     case 'neutral':
       return '#ca8a04'
   }
+}
+
+const calculateReturnPercentage = (last = {}, current = {}) => {
+  console.log({ last, current })
+  if (last && last.close > 0) {
+    return Math.round(((current.close - last.close) / last.close) * 100)
+  }
+
+  return null
+}
+
+const getMarkers = (completeDataset = []) => {
+  const { list } = completeDataset.reduce((acc, item) => {
+    switch (item.trend_change) {
+      case 'down_to_up':
+      case 'neutral_to_up':
+        if (!acc.lastEntry) {
+          acc.list.push({ time: item.date, color: 'green', shape: 'arrowUp', text: `Enter`, position: 'belowBar' })
+          acc.lastEntry = item
+        }
+        return acc
+      case 'up_to_down':
+      case 'neutral_to_down':
+        if (acc.lastEntry) {
+          acc.list.push({ time: item.date, color: 'red', shape: 'arrowDown', text: `Exit ${calculateReturnPercentage(acc.lastEntry, item)}%`, position: 'aboveBar' })
+          acc.lastEntry = null
+          acc.lastExit = item
+        }
+        return acc
+      default:
+        return acc
+    }
+  }, { list: [], lastEntry: null, lastExit: null })
+  return list
 }
 
 export const TimeseriesChart = {
@@ -60,18 +92,30 @@ export const TimeseriesChart = {
   renderChart() {
     const data = this.getTimeseriesData()
 
+    /**
+     * Data for price line
+     */
     const chartData = data.map(({ close, date, trend } = {}) => ({
       color: getColorForItem({ trend }),
       time: date,
       value: close
     }))
 
+    /**
+     * Data for volume histogram
+     */
     const volumeData = data.map(({ volume, date }) => ({
       color: 'rgba(37,99,235, 0.4)',
       time: date,
       value: volume
     }))
 
+    const markers = getMarkers(data)
+    console.log(markers)
+
+    /**
+     * Handle changing chart data (clear and reset)
+     */
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
       this.chartInstance.removeSeries(this.volumeSeries)
@@ -79,8 +123,16 @@ export const TimeseriesChart = {
       this.volumeSeries = null
     }
 
+    /**
+     * Creates series on persistent chart instance
+     */
     this.lineSeries = this.chartInstance.addLineSeries();
     this.lineSeries.setData(chartData);
+    this.lineSeries.setMarkers(markers)
+
+    /**
+     * Create custom volume histogram
+     */
     this.volumeSeries = this.chartInstance.addHistogramSeries({
       priceFormat: {
         type: 'volume',
@@ -91,7 +143,12 @@ export const TimeseriesChart = {
         bottom: 0,
       },
     });
+
     this.volumeSeries.setData(volumeData)
+
+    /**
+     * Scale to constraints
+     */
     this.chartInstance.timeScale().fitContent();
   },
   updated() {

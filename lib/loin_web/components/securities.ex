@@ -190,9 +190,17 @@ defmodule LoinWeb.Securities do
       </div>
       <div class="px-4 py-2">
       <.read_more content={@security.description} id="quote-security-description" />
-      <%= for item <- 1..100 do %>
-      <p><%= item %></p>
-      <% end %>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+      <.labeled_data_item label="Market cap" value={format_money_decimal @security.market_cap} />
+      <.labeled_data_item label="CEO" value={@security.ceo} />
+      <.labeled_data_item label="Full time employees" value={format_money_decimal @security.full_time_employees} />
+      <.labeled_data_item :if={is_binary(@security.city) and is_binary(@security.state)} label="Headquarters" value={"#{@security.city}, #{@security.state}"} />
+      <.labeled_data_item label="IPO Date" value={Timex.parse!(@security.ipo_date,"%Y-%m-%d", :strftime) |> Timex.format!("%b %d, %Y", :strftime)} />
+      <.labeled_data_item label="Last dividend" value={format_money_decimal @security.last_dividend} />
+      <.labeled_data_item label="Price-to-earnings (PE) Ratio" value={format_decimal @security.pe} />
+      <.labeled_data_item label="Earnings-per-share (EPS)" value={format_money_decimal @security.eps} />
+
+      </div>
       </div>
     </div>
     """
@@ -200,16 +208,9 @@ defmodule LoinWeb.Securities do
 
   defp class_for_value(value) do
     case value do
-      0.0 -> "text-gray-500 font-medium"
-      value when value > 0 -> "text-green-500 font-medium"
-      value when value < 0 -> "text-red-500 font-medium"
-    end
-  end
-
-  defp get_change_percent(security) when is_map(security) do
-    case Map.get(security, :change_percent) do
-      nil -> "-"
-      value when is_float(value) -> Float.round(value)
+      0.0 -> "text-gray-500"
+      value when value > 0 -> "text-green-500"
+      value when value < 0 -> "text-red-500"
     end
   end
 
@@ -222,6 +223,15 @@ defmodule LoinWeb.Securities do
     <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium w-min-16 line-clamp-1" navigate={~p"/screener?industry=#{value}"}>
       <%= value %>
     </.link>
+    """
+  end
+
+  defp labeled_data_item(assigns) do
+    ~H"""
+    <div>
+      <label class="text-xs text-gray-500"><%= @label %></label>
+      <p class="text-sm"><%= @value %></p>
+    </div>
     """
   end
 
@@ -241,9 +251,7 @@ defmodule LoinWeb.Securities do
     value =
       assigns
       |> Map.get(:security, %{})
-      |> Map.get(:price, "-")
-      |> Money.parse!()
-      |> Money.to_string()
+      |> Map.get(:price, "0")
 
     assigns = assign(assigns, :value, value)
 
@@ -257,7 +265,7 @@ defmodule LoinWeb.Securities do
   def security_change(assigns) do
     with raw_value <- Map.get(assigns.security, :change, 0.0),
          class <- class_for_value(raw_value),
-         value <- raw_value |> Money.parse!() |> Money.to_string() do
+         value <- format_decimal(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)
@@ -272,8 +280,9 @@ defmodule LoinWeb.Securities do
   end
 
   def security_change_percent(assigns) do
-    with value <- get_change_percent(assigns.security),
-         class <- class_for_value(value) do
+    with raw_value <- Map.get(assigns.security, :change_percent, nil),
+         class <- class_for_value(raw_value),
+         value <- format_percent(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)
@@ -281,7 +290,7 @@ defmodule LoinWeb.Securities do
 
       ~H"""
       <span class={@class}>
-        <%= @value %>%
+        <%= @value %>
       </span>
       """
     end

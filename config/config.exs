@@ -73,30 +73,6 @@ config :fun_with_flags, :cache_bust_notifications,
   adapter: FunWithFlags.Notifications.PhoenixPubSub,
   client: Loin.PubSub
 
-config :money,
-  # this allows you to do Money.new(100)
-  default_currency: :USD,
-  # change the default thousands separator for Money.to_string
-  separator: ",",
-  # change the default decimal delimiter for Money.to_string
-  delimiter: ".",
-  # don’t display the currency symbol in Money.to_string
-  symbol: true,
-  # position the symbol
-  symbol_on_right: false,
-  # add a space between symbol and number
-  symbol_space: false,
-  # display units after the delimiter
-  fractional_unit: true,
-  # don’t display the insignificant zeros or the delimiter
-  strip_insignificant_zeros: false,
-  # add the currency code after the number
-  code: false,
-  # display the minus sign before the currency symbol for Money.to_string
-  minus_sign_first: true,
-  # don't display the delimiter or fractional units if the fractional units are only insignificant zeros
-  strip_insignificant_fractional_unit: false
-
 # Admin tooling configuration
 config :kaffy,
   otp_app: :loin,
