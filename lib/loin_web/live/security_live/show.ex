@@ -18,35 +18,22 @@ defmodule LoinWeb.SecurityLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="px-2 pt-7 pb-6 lg:py-4">
-      <div class="p-3 bg-white flex flex-row flex-wrap justify-between gap-4 w-full mb-2">
-        <div class="flex flex-col gap-1 w-full lg:w-2/5">
-          <div class="flex flex-row items-center space-x-4">
-            <h1 class="text-lg font-bold"><%= @security.name %> (<%= @symbol %>)</h1>
-
-            <div class="flex flex-row items-center justify-end gap-2 text-xs">
-              <LoinWeb.Securities.security_price security={@security} />
-              <LoinWeb.Securities.security_change_percent security={@security} />
-              <LoinWeb.Securities.security_change security={@security} />
-            </div>
-          </div>
-          <p class="text-xs text-gray-500 line-clamp-2"><%= @security.description %></p>
+    <div>
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-0 divide-x lg:h-[94vh]">
+        <LoinWeb.Securities.quote_section security={@security} trend={@trend} />
+        <div
+          class="h-[40vh] lg:h-[94vh] w-full col-span-2"
+          data-timeseries={@timeseries_data}
+          id="timeseries_chart"
+          phx-hook="TimeseriesChart"
+          phx-update="ignore"
+        >
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-6 w-full lg:w-1/2 gap-4">
-          <%= for %{title: title, value: value} <- @quote_data do %>
-            <div class="flex flex-col">
-              <p class="text-xs text-gray-500"><%= title %></p>
-              <p class="text-xs"><%= value %></p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <div class="flex flex-row-reverse lg:flex-row flex-wrap items-start justify-between w-full">
-        <div class="w-full lg:w-1/3 lg:h-[80vh] lg:overflow-y-scroll order-last lg:order-first mt-16 lg:mt-0">
-          <ul class="grid grid-cols-1">
+        <div class="lg:h-[94vh] lg:overflow-y-scroll">
+          <ul>
             <%= for %{data: data, title: title} <- @sections do %>
               <li :if={length(data) > 0}>
-                <p class="py-3 px-2 bg-blue-100 text-sm text-blue-600 font-medium sticky top-0">
+                <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
                   <%= title %> (<%= length(data) %>)
                 </p>
                 <ul>
@@ -59,18 +46,6 @@ defmodule LoinWeb.SecurityLive do
               </li>
             <% end %>
           </ul>
-        </div>
-        <div class="w-full lg:w-2/3 h-[40vh] lg:h-[74vh] order-first lg:order-first lg:pl-2">
-          <LoinWeb.Cards.generic title={"#{@symbol} trend"}>
-            <div
-              class="h-[40vh] lg:h-[74vh] w-full"
-              data-timeseries={@timeseries_data}
-              id="timeseries_chart"
-              phx-hook="TimeseriesChart"
-              phx-update="ignore"
-            >
-            </div>
-          </LoinWeb.Cards.generic>
         </div>
       </div>
     </div>

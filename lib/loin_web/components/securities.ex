@@ -52,7 +52,6 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
             <.trend_badge trend={@item.trend} />
-            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -91,7 +90,6 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
             <.trend_badge trend={@item.trend} />
-            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -130,7 +128,6 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
             <.trend_badge trend={@item.trend} />
-            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -164,7 +161,6 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
             <.trend_badge trend={@item.trend} />
-            <.trend_change_badge trend={@item.trend} />
           </div>
         </div>
       </li>
@@ -172,11 +168,41 @@ defmodule LoinWeb.Securities do
     """
   end
 
+  @doc """
+  Renders a quote section for a specific security.
+  """
+  attr :security, :map, required: true
+  attr :trend, :map, default: %{}
+
+  def quote_section(assigns) do
+    ~H"""
+    <div class="bg-white pb-3 lg:h-full lg:overflow-y-scroll">
+      <div class="flex flex-col sticky top-0 py-2 px-4 bg-blue-50">
+        <h1 class="font-semibold text-blue-500"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-1 text-sm">
+          <.security_price security={@security} />
+          <.security_change_percent security={@security} />
+          <.security_change security={@security} />
+          <.trend_badge trend={@trend} />
+          <.sector_badge security={@security} />
+          <%!-- <.industry_badge security={@security} /> --%>
+        </div>
+      </div>
+      <div class="px-4 py-2">
+      <.read_more content={@security.description} id="quote-security-description" />
+      <%= for item <- 1..100 do %>
+      <p><%= item %></p>
+      <% end %>
+      </div>
+    </div>
+    """
+  end
+
   defp class_for_value(value) do
     case value do
-      0.0 -> "text-gray-500"
-      value when value > 0 -> "text-green-500"
-      value when value < 0 -> "text-red-500"
+      0.0 -> "text-gray-500 font-medium"
+      value when value > 0 -> "text-green-500 font-medium"
+      value when value < 0 -> "text-red-500 font-medium"
     end
   end
 
@@ -185,6 +211,30 @@ defmodule LoinWeb.Securities do
       nil -> "-"
       value when is_float(value) -> Float.round(value)
     end
+  end
+
+  def industry_badge(assigns) do
+    value = assigns
+    |> Map.get(:security, %{})
+    |> Map.get(:industry)
+
+    ~H"""
+    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium w-min-16 line-clamp-1" navigate={~p"/screener?industry=#{value}"}>
+      <%= value %>
+    </.link>
+    """
+  end
+
+  def sector_badge(assigns) do
+    value = assigns
+    |> Map.get(:security, %{})
+    |> Map.get(:sector)
+
+    ~H"""
+    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium" navigate={~p"/screener?sector=#{value}"}>
+      <%= value %>
+    </.link>
+    """
   end
 
   def security_price(assigns) do
@@ -198,7 +248,7 @@ defmodule LoinWeb.Securities do
     assigns = assign(assigns, :value, value)
 
     ~H"""
-    <span>
+    <span class="font-medium text-gray-700">
       <%= @value %>
     </span>
     """
@@ -245,7 +295,7 @@ defmodule LoinWeb.Securities do
 
   defp trend_badge(%{trend: %{trend: "up"}} = assigns) do
     ~H"""
-    <div class="text-green-500 text-xs font-medium flex items-center justify-center">
+    <div class="text-green-500 text-xs font-medium flex items-center justify-center bg-green-100 px-2 py-0.5 rounded">
       <span>Uptrend</span>
     </div>
     """
@@ -253,7 +303,7 @@ defmodule LoinWeb.Securities do
 
   defp trend_badge(%{trend: %{trend: "down"}} = assigns) do
     ~H"""
-    <div class="text-red-500 text-xs font-medium flex items-center justify-center">
+    <div class="text-red-500 text-xs font-medium flex items-center justify-center bg-red-100 px-2 py-0.5 rounded">
       <span>Downtrend</span>
     </div>
     """
@@ -261,43 +311,13 @@ defmodule LoinWeb.Securities do
 
   defp trend_badge(%{trend: %{trend: "neutral"}} = assigns) do
     ~H"""
-    <div class="text-gray-500 text-xs font-medium flex items-center justify-center">
+    <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
       <span>Neutral</span>
     </div>
     """
   end
 
   defp trend_badge(%{trend: %{trend: nil}} = assigns) do
-    ~H"""
-    <div></div>
-    """
-  end
-
-  defp trend_change_badge(%{trend: nil} = assigns) do
-    ~H"""
-
-    """
-  end
-
-  defp trend_change_badge(%{trend: %{trend_change: trend_change}} = assigns)
-       when trend_change in ["down_to_up", "down_to_neutral", "neutral_to_up"] do
-    ~H"""
-    <div>
-      <span>⬆️</span>
-    </div>
-    """
-  end
-
-  defp trend_change_badge(%{trend: %{trend_change: trend_change}} = assigns)
-       when trend_change in ["up_to_down", "up_to_neutral", "neutral_to_down"] do
-    ~H"""
-    <div>
-      <span>⬇️</span>
-    </div>
-    """
-  end
-
-  defp trend_change_badge(%{trend: %{trend_change: _}} = assigns) do
     ~H"""
     <div></div>
     """
