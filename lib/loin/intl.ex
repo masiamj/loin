@@ -13,7 +13,7 @@ defmodule Loin.Intl do
   """
   def format_date(date_string) do
     case date_string do
-      nil ->
+      value when value in [nil, ""] ->
         "-"
 
       value ->
