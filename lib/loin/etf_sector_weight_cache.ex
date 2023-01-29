@@ -28,11 +28,11 @@ defmodule Loin.ETFSectorWeightCache do
     "XLF" => "Financials",
     "XLI" => "Industrials",
     "XLK" => "Technology",
-    "XLP" => "Consumer Staples",
+    "XLP" => "Staples",
     "XLRE" => "Real Estate",
     "XLU" => "Utilities",
     "XLV" => "Healthcare",
-    "XLY" => "Consumer Discretionary",
+    "XLY" => "Discretionary",
     "GLD" => "Gold"
   }
 

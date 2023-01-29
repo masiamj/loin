@@ -33,9 +33,9 @@ defmodule LoinWeb.Securities do
               </p>
             </div>
             <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
+              <p class="text-xs font-medium"><%= Map.get(@item.security, :symbol) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(@item.constituent, :weight_percentage) %>% weight)
+                <%= Map.get(@item.constituent, :weight_percentage) %>%
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ defmodule LoinWeb.Securities do
             <div class="flex flex-row items-center gap-1">
               <p class="text-sm font-medium"><%= Map.get(@item.sector_weight, :name) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(@item.sector_weight, :weight_percentage) %> weight)
+                <%= Map.get(@item.sector_weight, :weight_percentage) %>
               </p>
             </div>
           </div>
@@ -109,9 +109,9 @@ defmodule LoinWeb.Securities do
               </p>
             </div>
             <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
+              <p class="text-xs font-medium"><%= Map.get(@item.security, :symbol) %></p>
               <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                (<%= Map.get(@item.exposure, :etf_weight_percentage) %>% exposure)
+                (<%= Map.get(@item.exposure, :etf_weight_percentage) %>%)
               </p>
             </div>
           </div>
@@ -146,7 +146,7 @@ defmodule LoinWeb.Securities do
                 <%= Map.get(@item.security, :name) %>
               </p>
             </div>
-            <p class="text-sm font-medium"><%= Map.get(@item.security, :symbol) %></p>
+            <p class="text-xs font-medium"><%= Map.get(@item.security, :symbol) %></p>
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">

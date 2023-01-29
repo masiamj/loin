@@ -31,7 +31,7 @@ defmodule LoinWeb.HomeLive do
     ~H"""
     <div class="px-4 py-8 lg:py-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <LoinWeb.Cards.generic more_link="~p/s/SPY" title="S&P 500 trend">
+        <LoinWeb.Cards.generic more_link={~p"/s/SPY"} title="S&P 500 trend">
           <div
             class="h-56 w-full"
             id="sp500_chart"
@@ -41,7 +41,7 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link="~p/s/QQQ" title="Nasdaq trend">
+        <LoinWeb.Cards.generic more_link={~p"/s/QQQ"} title="Nasdaq trend">
           <div
             class="h-56 w-full"
             id="nasdaq_chart"

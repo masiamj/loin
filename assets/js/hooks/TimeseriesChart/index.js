@@ -1,7 +1,11 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
+import get from 'lodash/get'
+import minBy from 'lodash/minBy'
+import first from 'lodash/first'
+import isEqual from 'lodash/isEqual'
 
-const getColorForItem = ({ trend } = {}) => {
-  switch (trend) {
+const getColorForItem = (item) => {
+  switch (get(item, ['trend'], null)) {
     case null:
       return '#4b5563'
     case 'up':
@@ -14,7 +18,6 @@ const getColorForItem = ({ trend } = {}) => {
 }
 
 const calculateReturnPercentage = (last = {}, current = {}) => {
-  console.log({ last, current })
   if (last && last.close > 0) {
     return Math.round(((current.close - last.close) / last.close) * 100)
   }
@@ -22,28 +25,36 @@ const calculateReturnPercentage = (last = {}, current = {}) => {
   return null
 }
 
+const isImportantTrendChange = (item = {}) => {
+  switch (get(item, ['trend_change'], null)) {
+    case 'down_to_neutral':
+    case 'up_to_neutral':
+    case 'up_to_down':
+    case 'down_to_up':
+      return true
+    default:
+      return false
+  }
+
+}
+
 const getMarkers = (completeDataset = []) => {
-  const { list } = completeDataset.reduce((acc, item) => {
-    switch (item.trend_change) {
-      case 'down_to_up':
-      case 'neutral_to_up':
-        if (!acc.lastEntry) {
-          acc.list.push({ time: item.date, color: 'green', shape: 'arrowUp', text: `Enter`, position: 'belowBar' })
-          acc.lastEntry = item
-        }
-        return acc
-      case 'up_to_down':
-      case 'neutral_to_down':
-        if (acc.lastEntry) {
-          acc.list.push({ time: item.date, color: 'red', shape: 'arrowDown', text: `Exit ${calculateReturnPercentage(acc.lastEntry, item)}%`, position: 'aboveBar' })
-          acc.lastEntry = null
-          acc.lastExit = item
-        }
-        return acc
-      default:
-        return acc
+  const { list } = completeDataset.reduce((acc, current) => {
+    const latestItem = get(acc, ['latest'], {})
+    const latestTrendChange = get(latestItem, ['trend_change'], null)
+    const currentTrendChange = get(current, ['trend_change'], null)
+    const isOngoingTrend = isEqual(latestTrendChange, currentTrendChange)
+
+    if (!isOngoingTrend) {
+      if (isImportantTrendChange(current)) {
+        const returnPercentage = calculateReturnPercentage(latestItem, current)
+        acc.list.push({ time: current.date, color: '#64748b', shape: 'circle', text: `${returnPercentage}%`, position: 'aboveBar', size: 0 })
+      }
+      acc.latest = current
     }
-  }, { list: [], lastEntry: null, lastExit: null })
+
+    return acc
+  }, { list: [], latest: first(completeDataset) })
   return list
 }
 
@@ -110,8 +121,17 @@ export const TimeseriesChart = {
       value: volume
     }))
 
+    /**
+     * Create marker line
+     */
+    const { close: minimumClose } = minBy(data, 'close')
+    const markerData = data.map(({ date, trend }) => ({
+      color: getColorForItem({ trend }),
+      time: date,
+      value: minimumClose
+    }))
+
     const markers = getMarkers(data)
-    console.log(markers)
 
     /**
      * Handle changing chart data (clear and reset)
@@ -119,8 +139,10 @@ export const TimeseriesChart = {
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
       this.chartInstance.removeSeries(this.volumeSeries)
+      this.chartInstance.removeSeries(this.markerSeries)
       this.lineSeries = null
       this.volumeSeries = null
+      this.markerSeries = null
     }
 
     /**
@@ -128,7 +150,6 @@ export const TimeseriesChart = {
      */
     this.lineSeries = this.chartInstance.addLineSeries();
     this.lineSeries.setData(chartData);
-    this.lineSeries.setMarkers(markers)
 
     /**
      * Create custom volume histogram
@@ -139,12 +160,25 @@ export const TimeseriesChart = {
       },
       priceScaleId: '',
       scaleMargins: {
-        top: 0.8,
+        top: 0.9,
         bottom: 0,
       },
     });
 
     this.volumeSeries.setData(volumeData)
+
+    /**
+     * Creates custom marker series
+     */
+    this.markerSeries = this.chartInstance.addLineSeries({
+      baseLineVisible: false,
+      crosshairMarkerVisible: false,
+      lastValueVisible: false,
+      priceLineVisible: false,
+      lineWidth: 4
+    });
+    this.markerSeries.setData(markerData);
+    this.markerSeries.setMarkers(markers)
 
     /**
      * Scale to constraints
