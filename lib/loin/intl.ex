@@ -9,6 +9,21 @@ defmodule Loin.Intl do
     providers: [Cldr.Number]
 
   @doc """
+  Formats a date represented as a string.
+  """
+  def format_date(date_string) do
+    case date_string do
+      nil ->
+        "-"
+
+      value ->
+        date_string
+        |> Timex.parse!("%Y-%m-%d", :strftime)
+        |> Timex.format!("%b %d, %Y", :strftime)
+    end
+  end
+
+  @doc """
   Formats money in decimal form. 13.2342342 -> 13.23
   """
   def format_decimal(value) do

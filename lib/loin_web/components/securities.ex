@@ -205,13 +205,7 @@ defmodule LoinWeb.Securities do
             label="Headquarters"
             value={"#{@security.city}, #{@security.state}"}
           />
-          <.labeled_data_item
-            label="IPO Date"
-            value={
-              Timex.parse!(@security.ipo_date, "%Y-%m-%d", :strftime)
-              |> Timex.format!("%b %d, %Y", :strftime)
-            }
-          />
+          <.labeled_data_item label="IPO Date" value={Loin.Intl.format_date(@security.ipo_date)} />
           <.labeled_data_item
             label="Last dividend"
             value={Loin.Intl.format_money_decimal(@security.last_dividend)}
