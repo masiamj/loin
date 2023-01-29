@@ -17,7 +17,7 @@ defmodule Loin.Intl do
         "-"
 
       value ->
-        date_string
+        value
         |> Timex.parse!("%Y-%m-%d", :strftime)
         |> Timex.format!("%b %d, %Y", :strftime)
     end
