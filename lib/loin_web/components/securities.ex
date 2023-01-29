@@ -189,18 +189,42 @@ defmodule LoinWeb.Securities do
         </div>
       </div>
       <div class="px-4 py-2">
-      <.read_more content={@security.description} id="quote-security-description" />
-      <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
-      <.labeled_data_item label="Market cap" value={format_money_decimal @security.market_cap} />
-      <.labeled_data_item label="CEO" value={@security.ceo} />
-      <.labeled_data_item label="Full time employees" value={format_money_decimal @security.full_time_employees} />
-      <.labeled_data_item :if={is_binary(@security.city) and is_binary(@security.state)} label="Headquarters" value={"#{@security.city}, #{@security.state}"} />
-      <.labeled_data_item label="IPO Date" value={Timex.parse!(@security.ipo_date,"%Y-%m-%d", :strftime) |> Timex.format!("%b %d, %Y", :strftime)} />
-      <.labeled_data_item label="Last dividend" value={format_money_decimal @security.last_dividend} />
-      <.labeled_data_item label="Price-to-earnings (PE) Ratio" value={format_decimal @security.pe} />
-      <.labeled_data_item label="Earnings-per-share (EPS)" value={format_money_decimal @security.eps} />
-
-      </div>
+        <.read_more content={@security.description} id="quote-security-description" />
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+          <.labeled_data_item
+            label="Market cap"
+            value={Loin.Intl.format_money_decimal(@security.market_cap)}
+          />
+          <.labeled_data_item label="CEO" value={@security.ceo} />
+          <.labeled_data_item
+            label="Full time employees"
+            value={Loin.Intl.format_money_decimal(@security.full_time_employees)}
+          />
+          <.labeled_data_item
+            :if={is_binary(@security.city) and is_binary(@security.state)}
+            label="Headquarters"
+            value={"#{@security.city}, #{@security.state}"}
+          />
+          <.labeled_data_item
+            label="IPO Date"
+            value={
+              Timex.parse!(@security.ipo_date, "%Y-%m-%d", :strftime)
+              |> Timex.format!("%b %d, %Y", :strftime)
+            }
+          />
+          <.labeled_data_item
+            label="Last dividend"
+            value={Loin.Intl.format_money_decimal(@security.last_dividend)}
+          />
+          <.labeled_data_item
+            label="Price-to-earnings (PE) Ratio"
+            value={Loin.Intl.format_decimal(@security.pe)}
+          />
+          <.labeled_data_item
+            label="Earnings-per-share (EPS)"
+            value={Loin.Intl.format_money_decimal(@security.eps)}
+          />
+        </div>
       </div>
     </div>
     """
@@ -215,13 +239,19 @@ defmodule LoinWeb.Securities do
   end
 
   def industry_badge(assigns) do
-    value = assigns
-    |> Map.get(:security, %{})
-    |> Map.get(:industry)
+    value =
+      assigns
+      |> Map.get(:security, %{})
+      |> Map.get(:industry)
+
+    assigns = assign(assigns, :value, value)
 
     ~H"""
-    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium w-min-16 line-clamp-1" navigate={~p"/screener?industry=#{value}"}>
-      <%= value %>
+    <.link
+      class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium w-min-16 line-clamp-1"
+      navigate={~p"/"}
+    >
+      <%= @value %>
     </.link>
     """
   end
@@ -236,13 +266,16 @@ defmodule LoinWeb.Securities do
   end
 
   def sector_badge(assigns) do
-    value = assigns
-    |> Map.get(:security, %{})
-    |> Map.get(:sector)
+    value =
+      assigns
+      |> Map.get(:security, %{})
+      |> Map.get(:sector)
+
+    assigns = assign(assigns, :value, value)
 
     ~H"""
-    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium" navigate={~p"/screener?sector=#{value}"}>
-      <%= value %>
+    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium" navigate={~p"/"}>
+      <%= @value %>
     </.link>
     """
   end
@@ -265,7 +298,7 @@ defmodule LoinWeb.Securities do
   def security_change(assigns) do
     with raw_value <- Map.get(assigns.security, :change, 0.0),
          class <- class_for_value(raw_value),
-         value <- format_decimal(raw_value) do
+         value <- Loin.Intl.format_decimal(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)
@@ -282,7 +315,7 @@ defmodule LoinWeb.Securities do
   def security_change_percent(assigns) do
     with raw_value <- Map.get(assigns.security, :change_percent, nil),
          class <- class_for_value(raw_value),
-         value <- format_percent(raw_value) do
+         value <- Loin.Intl.format_percent(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)

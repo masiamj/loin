@@ -73,7 +73,7 @@ defmodule LoinWeb.Lists do
       assigns
       |> Map.get(:security, %{})
       |> Map.get(:price, 0)
-      |> format_money_decimal()
+      |> Loin.Intl.format_money_decimal()
 
     assigns = assign(assigns, :value, value)
 
@@ -87,7 +87,7 @@ defmodule LoinWeb.Lists do
   defp security_change(assigns) do
     with raw_value <- Map.get(assigns.security, :change, 0.0),
          class <- class_for_value(raw_value),
-         value <- format_decimal(raw_value) do
+         value <- Loin.Intl.format_decimal(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)
@@ -104,7 +104,7 @@ defmodule LoinWeb.Lists do
   defp security_change_percent(assigns) do
     with raw_value <- Map.get(assigns.security, :change_percent, nil),
          class <- class_for_value(raw_value),
-         value <- format_percent(raw_value) do
+         value <- Loin.Intl.format_percent(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)

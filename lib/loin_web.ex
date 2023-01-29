@@ -65,40 +65,6 @@ defmodule LoinWeb do
       def handle_event("unauthenticated-search-item-selected", %{"symbol" => symbol}, socket) do
         {:noreply, push_navigate(socket, to: ~p"/s/#{symbol}")}
       end
-
-      @doc """
-      Formats money in decimal form. 13.2342342 -> 13.23
-      """
-      def format_decimal(value) do
-        case value do
-          nil -> "-"
-          value -> Loin.Cldr.Number.to_string!(value, fractional_digits: 2)
-        end
-      end
-
-      @doc """
-      Formats money in decimal form. 13.2342342 -> $13.23
-      """
-      def format_money_decimal(value) when is_number(value) and value > 100_000 do
-        Loin.Cldr.Number.to_string!(value, format: :short, currency: "USD", fractional_digits: 2)
-      end
-
-      def format_money_decimal(value) do
-        case value do
-          nil -> "-"
-          value -> Loin.Cldr.Number.to_string!(value, currency: "USD")
-        end
-      end
-
-      @doc """
-      Formats a number as a percentage.
-      """
-      def format_percent(value) do
-        case value do
-          nil -> "-"
-          value -> Loin.Cldr.Number.to_string!(value / 100, format: :percent, fractional_digits: 2)
-        end
-      end
     end
   end
 

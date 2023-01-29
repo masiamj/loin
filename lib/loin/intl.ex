@@ -1,0 +1,47 @@
+defmodule Loin.Intl do
+  @moduledoc """
+  A module to call for CLDR-related functions.
+  See: https://github.com/elixir-cldr/cldr
+  """
+  use Cldr,
+    locales: ["en"],
+    default_locale: "en",
+    providers: [Cldr.Number]
+
+  @doc """
+  Formats money in decimal form. 13.2342342 -> 13.23
+  """
+  def format_decimal(value) do
+    case value do
+      nil -> "-"
+      value -> __MODULE__.Number.to_string!(value, fractional_digits: 2)
+    end
+  end
+
+  @doc """
+  Formats money in decimal form. 13.2342342 -> $13.23
+  """
+  def format_money_decimal(value) when is_number(value) and value > 100_000 do
+    __MODULE__.Number.to_string!(value, format: :short, currency: "USD", fractional_digits: 2)
+  end
+
+  def format_money_decimal(value) do
+    case value do
+      nil -> "-"
+      value -> __MODULE__.Number.to_string!(value, currency: "USD")
+    end
+  end
+
+  @doc """
+  Formats a number as a percentage.
+  """
+  def format_percent(value) do
+    case value do
+      nil ->
+        "-"
+
+      value ->
+        __MODULE__.Number.to_string!(value / 100, format: :percent, fractional_digits: 2)
+    end
+  end
+end

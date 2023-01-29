@@ -553,8 +553,21 @@ defmodule LoinWeb.CoreComponents do
       <p class="text-xs text-gray-500 line-clamp-2" id={"#{@id}-read-more-content"}>
         <%= @content %>
       </p>
-      <button class="bg-white text-xs text-blue-500" id={"#{@id}-show-more-trigger"} phx-click={expand_read_more(@id)}>Read more</button>
-      <button class="bg-white text-xs text-blue-500 mt-0.5" id={"#{@id}-show-less-trigger"} phx-click={collapse_read_more(@id)} phx-mounted={collapse_read_more(@id)}>Show less</button>
+      <button
+        class="bg-white text-xs text-blue-500"
+        id={"#{@id}-show-more-trigger"}
+        phx-click={expand_read_more(@id)}
+      >
+        Read more
+      </button>
+      <button
+        class="bg-white text-xs text-blue-500 mt-0.5"
+        id={"#{@id}-show-less-trigger"}
+        phx-click={collapse_read_more(@id)}
+        phx-mounted={collapse_read_more(@id)}
+      >
+        Show less
+      </button>
     </div>
     """
   end
