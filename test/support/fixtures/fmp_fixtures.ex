@@ -3,4 +3,5 @@ defmodule Loin.FMPFixtures do
   This module defines test helpers for creating
   entities via the `Loin.FMP` context.
   """
+
 end

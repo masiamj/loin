@@ -119,6 +119,38 @@ defmodule Loin.FMP.Transforms do
     })
   end
 
+  @doc """
+  Maps a raw TTM Ratio map to an application-level ttm_ratio.
+  """
+  def ttm_ratio(%{"symbol" => symbol} = item) when is_map(item) do
+    pe_ratio = Map.get(item, "peRatioTTM") |> string_to_number(:float)
+
+    earnings_yield =
+      case pe_ratio do
+        value when is_number(value) and value > 0 -> 1 / pe_ratio
+        _ -> nil
+      end
+
+    %{
+      cash_ratio: Map.get(item, "cashRatioTTM") |> string_to_number(:float),
+      current_ratio: Map.get(item, "currentRatioTTM") |> string_to_number(:float),
+      dividend_yield: Map.get(item, "dividendYielTTM") |> string_to_number(:float),
+      earnings_yield: earnings_yield,
+      net_profit_margin: Map.get(item, "netProfitMarginTTM") |> string_to_number(:float),
+      pe_ratio: pe_ratio,
+      peg_ratio: Map.get(item, "pegRatioTTM") |> string_to_number(:float),
+      price_to_book_ratio: Map.get(item, "priceToBookRatioTTM") |> string_to_number(:float),
+      price_to_sales_ratio: Map.get(item, "priceToSalesRatioTTM") |> string_to_number(:float),
+      quick_ratio: Map.get(item, "quickRatioTTM") |> string_to_number(:float),
+      return_on_assets: Map.get(item, "returnOnAssetsTTM") |> string_to_number(:float),
+      return_on_equity: Map.get(item, "returnOnEquityTTM") |> string_to_number(:float),
+      symbol: symbol
+    }
+    |> put_timestamps()
+  end
+
+  # Private
+
   defp string_to_number(nil, _any), do: nil
   defp string_to_number("", _any), do: nil
   defp string_to_number(value, :integer) when is_integer(value), do: value

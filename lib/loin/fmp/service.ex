@@ -22,6 +22,20 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches all the Ratios TTM for all securities (Stream).
+  """
+  def all_ttm_ratios() do
+    Logger.info("Starting all Ratios TTM stream...")
+
+    (@bulk_api_base_url <> "ratios-ttm-bulk" <> "?apikey=#{Loin.Config.fmp_api_key()}")
+    |> IO.inspect(label: "URL")
+    |> RemoteFileStreamer.stream()
+    |> CSV.decode!(escape_max_lines: 25, headers: true)
+    |> Stream.filter(&Utils.is_valid_ttm_ratio/1)
+    |> Stream.map(&Transforms.ttm_ratio/1)
+  end
+
+  @doc """
   Batch fetches historical prices for a list of securities.
   """
   def batch_historical_prices(symbols) when is_list(symbols) do
