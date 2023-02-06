@@ -7,7 +7,7 @@ defmodule Loin.FMP do
 
   import Ecto.Query, warn: false
   alias Loin.Repo
-  alias Loin.FMP.{DailyTrend, FMPSecurity}
+  alias Loin.FMP.{DailyTrend, FMPSecurity, Screener}
 
   @doc """
   Gets the most recent daily sector trends.
@@ -131,6 +131,13 @@ defmodule Loin.FMP do
       end)
 
     {:ok, entries}
+  end
+
+  @doc """
+  Queries against the screener view with dynamic params.
+  """
+  def filter_screener(params) do
+    Flop.validate_and_run(Screener, params, for: Screener)
   end
 
   # Private
