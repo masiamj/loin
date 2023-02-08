@@ -3,6 +3,137 @@ defmodule LoinWeb.ScreenerLive do
 
   alias Loin.{FMP, Intl}
 
+  @fields [
+    name: [label: "Name", op: :ilike_or, placeholder: "Search by name...", type: "search"],
+    daily_trends_symbol: [
+      label: "Symbol",
+      op: :ilike,
+      placeholder: "Search by ticker...",
+      type: "search"
+    ],
+    price_min: [label: "Minimum Price ($)", op: :>=, type: "number"],
+    price_max: [label: "Maximum Price ($)", op: :<=, type: "number"],
+    change_percent: [label: "Minimum change today (%)", op: :>=, type: "number"],
+    change_percent: [label: "Maximum change today (%)", op: :<=, type: "number"],
+    market_cap: [label: "Minimum market cap ($)", op: :>=, type: "number"],
+    market_cap: [label: "Maximum market cap ($)", op: :<=, type: "number"],
+    trend: [
+      label: "Trend",
+      options: [{"Uptrend", "up"}, {"Neutral", "neutral"}, {"Downtrend", "down"}],
+      prompt: "",
+      type: "select"
+    ],
+    trend_change: [
+      label: "Trend change today",
+      options: [
+        {"Neutral to Uptrend", "neutral_to_up"},
+        {"Neutral to Downtrend", "neutral_to_down"},
+        {"Uptrend to neutral", "up_to_neutral"},
+        {"Uptrend to downtrend", "up_to_down"},
+        {"Downtrend to Uptrend", "down_to_up"},
+        {"Downtrend to neutral", "down_to_neutral"}
+      ],
+      prompt: "",
+      type: "select"
+    ],
+    close_above_day_200_sma: [
+      label: "Close > 200D SMA",
+      options: [{"Yes", true}, {"No", false}],
+      prompt: "",
+      type: "select"
+    ],
+    close_above_day_50_sma: [
+      label: "Close > 50D SMA",
+      options: [{"Yes", true}, {"No", false}],
+      prompt: "",
+      type: "select"
+    ],
+    day_50_sma_above_day_200_sma: [
+      label: "50D SMA > 200D SMA",
+      options: [{"Yes", true}, {"No", false}],
+      prompt: "",
+      type: "select"
+    ],
+    sector: [
+      label: "Sector",
+      options: [
+        {"Communications", "Communication Services"},
+        {"Consumer Discretionary", "Consumer Cyclical"},
+        {"Consumer Staples", "Consumer Defensive"},
+        {"Energy", "Energy"},
+        {"Financials", "Financial Services"},
+        {"Healthcare", "Healthcare"},
+        {"Industrials", "Industrials"},
+        {"Materials", "Basic Materials"},
+        {"Real Estate", "Real Estate"},
+        {"Technology", "Technology"},
+        {"Utilities", "Utilities"}
+      ],
+      prompt: "",
+      type: "select"
+    ],
+    pe: [label: "Minimum PE Ratio ($)", op: :>=, type: "number"],
+    pe: [label: "Maximum PE Ratio ($)", op: :<=, type: "number"],
+    eps: [label: "Minimum EPS ($)", op: :>=, type: "number"],
+    eps: [label: "Maximum EPS ($)", op: :<=, type: "number"],
+    pe_ratio_ttm: [label: "Minimum PE Ratio (TTM)", op: :>=, type: "number"],
+    pe_ratio_ttm: [label: "Maximum PE Ratio (TTM)", op: :<=, type: "number"],
+    peg_ratio_ttm: [label: "Minimum PEG Ratio (TTM)", op: :>=, type: "number"],
+    peg_ratio_ttm: [label: "Maximum PEG Ratio (TTM)", op: :<=, type: "number"],
+    cash_ratio_ttm: [label: "Minimum Cash Ratio (TTM)", op: :>=, type: "number"],
+    cash_ratio_ttm: [label: "Maximum Cash Ratio (TTM)", op: :<=, type: "number"],
+    current_ratio_ttm: [label: "Minimum Current Ratio (TTM)", op: :>=, type: "number"],
+    current_ratio_ttm: [label: "Maximum Current Ratio (TTM)", op: :<=, type: "number"],
+    dividend_yield_ttm: [label: "Minimum Dividend Yield (TTM)", op: :>=, type: "number"],
+    dividend_yield_ttm: [label: "Maximum Dividend Yield (TTM)", op: :<=, type: "number"],
+    earnings_yield_ttm: [label: "Minimum Earnings Yield (TTM)", op: :>=, type: "number"],
+    earnings_yield_ttm: [label: "Maximum Earnings Yield (TTM)", op: :<=, type: "number"],
+    price_to_book_ratio_ttm: [
+      label: "Minimum Price to Book Ratio (TTM)",
+      op: :>=,
+      type: "number"
+    ],
+    price_to_book_ratio_ttm: [
+      label: "Maximum Price to Book Ratio (TTM)",
+      op: :<=,
+      type: "number"
+    ],
+    price_to_sales_ratio_ttm: [
+      label: "Minimum Price to Sales Ratio (TTM)",
+      op: :>=,
+      type: "number"
+    ],
+    price_to_sales_ratio_ttm: [
+      label: "Maximum Price to Sales Ratio (TTM)",
+      op: :>=,
+      type: "number"
+    ],
+    quick_ratio_ttm: [label: "Minimum Quick Ratio (TTM)", op: :>=, type: "number"],
+    quick_ratio_ttm: [label: "Maximum Quick Ratio (TTM)", op: :<=, type: "number"],
+    return_on_assets_ttm: [
+      label: "Minimum Return on Assets (TTM)",
+      op: :>=,
+      type: "number"
+    ],
+    return_on_assets_ttm: [
+      label: "Maximum Return on Assets (TTM)",
+      op: :<=,
+      type: "number"
+    ],
+    return_on_equity_ttm: [
+      label: "Minimum Return on Equity (TTM)",
+      op: :>=,
+      type: "number"
+    ],
+    return_on_equity_ttm: [
+      label: "Maximum Return on Equity (TTM)",
+      op: :<=,
+      type: "number"
+    ],
+    ipo_date: [label: "Minimum IPO date", op: :>=, type: "date"],
+    ipo_date: [label: "Maximum IPO date", op: :<=, type: "date"]
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     socket =
@@ -20,8 +151,13 @@ defmodule LoinWeb.ScreenerLive do
       <div class="flex flex-row flex-wrap">
         <div class="lg:h-[94vh] w-full lg:w-1/5 lg:overflow-y-scroll">
           <div class="flex flex-row items-center justify-between bg-gray-50 sticky top-0 p-4">
-            <p class="text-gray-500 text-sm">Screener filters</p>
-            <button>Reset filters</button>
+            <p class="text-gray-500 text-xs">Screener filters</p>
+            <button
+              class="text-blue-500 text-xs px-2 py-1 bg-white hover:bg-blue-50 rounded"
+              phx-click="reset-filter"
+            >
+              Reset filters
+            </button>
           </div>
           <.form
             :let={f}
@@ -29,140 +165,8 @@ defmodule LoinWeb.ScreenerLive do
             for={@meta}
             phx-change="update-filter"
           >
-            <Flop.Phoenix.filter_fields
-              :let={i}
-              form={f}
-              fields={[
-                name: [label: "Name", op: :ilike_or, placeholder: "Search by name...", type: "search"],
-                daily_trends_symbol: [
-                  label: "Symbol",
-                  op: :ilike,
-                  placeholder: "Search by ticker...",
-                  type: "search"
-                ],
-                price: [label: "Minimum Price ($)", op: :>=, type: "number"],
-                price: [label: "Maximum Price ($)", op: :<=, type: "number"],
-                change_percent: [label: "Minimum change today (%)", op: :>=, type: "number"],
-                change_percent: [label: "Maximum change today (%)", op: :<=, type: "number"],
-                market_cap: [label: "Minimum market cap ($)", op: :>=, type: "number"],
-                market_cap: [label: "Maximum market cap ($)", op: :<=, type: "number"],
-                trend: [
-                  label: "Trend",
-                  options: [{"Uptrend", "up"}, {"Neutral", "neutral"}, {"Downtrend", "down"}],
-                  prompt: "",
-                  type: "select"
-                ],
-                trend_change: [
-                  label: "Trend change today",
-                  options: [
-                    {"Neutral to Uptrend", "neutral_to_up"},
-                    {"Neutral to Downtrend", "neutral_to_down"},
-                    {"Uptrend to neutral", "up_to_neutral"},
-                    {"Uptrend to downtrend", "up_to_down"},
-                    {"Downtrend to Uptrend", "down_to_up"},
-                    {"Downtrend to neutral", "down_to_neutral"}
-                  ],
-                  prompt: "",
-                  type: "select"
-                ],
-                close_above_day_200_sma: [
-                  label: "Close > 200D SMA",
-                  options: [{"Yes", true}, {"No", false}],
-                  prompt: "",
-                  type: "select"
-                ],
-                close_above_day_50_sma: [
-                  label: "Close > 50D SMA",
-                  options: [{"Yes", true}, {"No", false}],
-                  prompt: "",
-                  type: "select"
-                ],
-                day_50_sma_above_day_200_sma: [
-                  label: "50D SMA > 200D SMA",
-                  options: [{"Yes", true}, {"No", false}],
-                  prompt: "",
-                  type: "select"
-                ],
-                sector: [
-                  label: "Sector",
-                  options: [
-                    {"Communications", "Communication Services"},
-                    {"Consumer Discretionary", "Consumer Cyclical"},
-                    {"Consumer Staples", "Consumer Defensive"},
-                    {"Energy", "Energy"},
-                    {"Financials", "Financial Services"},
-                    {"Healthcare", "Healthcare"},
-                    {"Industrials", "Industrials"},
-                    {"Materials", "Basic Materials"},
-                    {"Real Estate", "Real Estate"},
-                    {"Technology", "Technology"},
-                    {"Utilities", "Utilities"}
-                  ],
-                  prompt: "",
-                  type: "select"
-                ],
-                pe: [label: "Minimum PE Ratio ($)", op: :>=, type: "number"],
-                pe: [label: "Maximum PE Ratio ($)", op: :<=, type: "number"],
-                eps: [label: "Minimum EPS ($)", op: :>=, type: "number"],
-                eps: [label: "Maximum EPS ($)", op: :<=, type: "number"],
-                pe_ratio_ttm: [label: "Minimum PE Ratio (TTM)", op: :>=, type: "number"],
-                pe_ratio_ttm: [label: "Maximum PE Ratio (TTM)", op: :<=, type: "number"],
-                peg_ratio_ttm: [label: "Minimum PEG Ratio (TTM)", op: :>=, type: "number"],
-                peg_ratio_ttm: [label: "Maximum PEG Ratio (TTM)", op: :<=, type: "number"],
-                cash_ratio_ttm: [label: "Minimum Cash Ratio (TTM)", op: :>=, type: "number"],
-                cash_ratio_ttm: [label: "Maximum Cash Ratio (TTM)", op: :<=, type: "number"],
-                current_ratio_ttm: [label: "Minimum Current Ratio (TTM)", op: :>=, type: "number"],
-                current_ratio_ttm: [label: "Maximum Current Ratio (TTM)", op: :<=, type: "number"],
-                dividend_yield_ttm: [label: "Minimum Dividend Yield (TTM)", op: :>=, type: "number"],
-                dividend_yield_ttm: [label: "Maximum Dividend Yield (TTM)", op: :<=, type: "number"],
-                earnings_yield_ttm: [label: "Minimum Earnings Yield (TTM)", op: :>=, type: "number"],
-                earnings_yield_ttm: [label: "Maximum Earnings Yield (TTM)", op: :<=, type: "number"],
-                price_to_book_ratio_ttm: [
-                  label: "Minimum Price to Book Ratio (TTM)",
-                  op: :>=,
-                  type: "number"
-                ],
-                price_to_book_ratio_ttm: [
-                  label: "Maximum Price to Book Ratio (TTM)",
-                  op: :<=,
-                  type: "number"
-                ],
-                price_to_sales_ratio_ttm: [
-                  label: "Minimum Price to Sales Ratio (TTM)",
-                  op: :>=,
-                  type: "number"
-                ],
-                price_to_sales_ratio_ttm: [
-                  label: "Maximum Price to Sales Ratio (TTM)",
-                  op: :>=,
-                  type: "number"
-                ],
-                quick_ratio_ttm: [label: "Minimum Quick Ratio (TTM)", op: :>=, type: "number"],
-                quick_ratio_ttm: [label: "Maximum Quick Ratio (TTM)", op: :<=, type: "number"],
-                return_on_assets_ttm: [
-                  label: "Minimum Return on Assets (TTM)",
-                  op: :>=,
-                  type: "number"
-                ],
-                return_on_assets_ttm: [
-                  label: "Maximum Return on Assets (TTM)",
-                  op: :<=,
-                  type: "number"
-                ],
-                return_on_equity_ttm: [
-                  label: "Minimum Return on Equity (TTM)",
-                  op: :>=,
-                  type: "number"
-                ],
-                return_on_equity_ttm: [
-                  label: "Maximum Return on Equity (TTM)",
-                  op: :<=,
-                  type: "number"
-                ],
-                ipo_date: [label: "Minimum IPO date", op: :>=, type: "date"],
-                ipo_date: [label: "Maximum IPO date", op: :<=, type: "date"]
-              ]}
-            >
+            <Flop.Phoenix.filter_fields :let={i} form={f} fields={fields}>
+              <% IO.inspect(i) %>
               <.input
                 id={i.id}
                 name={i.name}
@@ -415,12 +419,13 @@ defmodule LoinWeb.ScreenerLive do
 
   @impl true
   def handle_event("update-filter", params, socket) do
+    IO.inspect(params, label: "Base params")
     {:noreply, push_patch(socket, to: ~p"/screener?#{params}")}
   end
 
   @impl true
   def handle_event("reset-filter", _, %{assigns: assigns} = socket) do
-    flop = assigns.meta.flop |> Flop.set_page(1) |> Flop.reset_filters()
+    flop = %Flop{} |> Flop.set_page(1) |> Flop.reset_filters()
     path = Flop.Phoenix.build_path(~p"/screener", flop, backend: assigns.meta.backend)
     {:noreply, push_patch(socket, to: path)}
   end
