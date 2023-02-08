@@ -9,7 +9,100 @@ defmodule Loin.FMP.Screener do
   @foreign_key_type :binary_id
   @derive {
     Flop.Schema,
-    filterable: [:close, :name], sortable: [:close, :name]
+    default_order: %{
+      order_by: [:name],
+      order_directions: [:asc]
+    },
+    filterable: [
+      # daily_trends
+      :close_above_day_200_sma,
+      :close_above_day_50_sma,
+      :day_50_sma_above_day_200_sma,
+      :previous_trend,
+      :daily_trends_symbol,
+      :trend,
+      :trend_change,
+
+      # fmp_securities
+      :change_percent,
+      :eps,
+      :ipo_date,
+      :market_cap,
+      :name,
+      :sector,
+
+      # ttm_ratios
+      :cash_ratio_ttm,
+      :current_ratio_ttm,
+      :dividend_yield_ttm,
+      :earnings_yield_ttm,
+      :net_profit_margin_ttm,
+      :pe_ratio_ttm,
+      :peg_ratio_ttm,
+      :price_to_book_ratio_ttm,
+      :price_to_sales_ratio_ttm,
+      :quick_ratio_ttm,
+      :return_on_assets_ttm,
+      :return_on_equity_ttm
+    ],
+    sortable: [
+      # daily_trends
+      :close,
+      :close_above_day_200_sma,
+      :close_above_day_50_sma,
+      :daily_trends_date,
+      :day_200_sma,
+      :day_50_sma,
+      :day_50_sma_above_day_200_sma,
+      :daily_trends_is_valid,
+      :previous_close,
+      :previous_close_above_day_200_sma,
+      :previous_close_above_day_50_sma,
+      :previous_day_200_sma,
+      :previous_day_50_sma,
+      :previous_day_50_sma_above_day_200_sma,
+      :previous_trend,
+      :daily_trends_symbol,
+      :trend,
+      :trend_change,
+
+      # fmp_securities
+      :ceo,
+      :change_value,
+      :change_percent,
+      :eps,
+      :exchange,
+      :exchange_short_name,
+      :full_time_employees,
+      :image,
+      :industry,
+      :ipo_date,
+      :is_etf,
+      :last_dividend,
+      :market_cap,
+      :name,
+      :pe,
+      :price,
+      :sector,
+      :fmp_securities_symbol,
+      :volume,
+      :website,
+
+      # ttm_ratios
+      :cash_ratio_ttm,
+      :current_ratio_ttm,
+      :dividend_yield_ttm,
+      :earnings_yield_ttm,
+      :net_profit_margin_ttm,
+      :pe_ratio_ttm,
+      :peg_ratio_ttm,
+      :price_to_book_ratio_ttm,
+      :price_to_sales_ratio_ttm,
+      :quick_ratio_ttm,
+      :return_on_assets_ttm,
+      :return_on_equity_ttm,
+      :ttm_ratios_symbol
+    ]
   }
   schema "screener" do
     # daily_trends
