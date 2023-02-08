@@ -20,7 +20,11 @@ defmodule LoinWeb.SecurityLive do
     ~H"""
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-0 divide-x lg:h-[94vh]">
-        <LoinWeb.Securities.quote_section security={@security} trend={@trend} />
+        <LoinWeb.Securities.quote_section
+          security={@security}
+          trend={@trend}
+          ttm_ratios={@ttm_ratios || %{}}
+        />
         <div
           class="h-[40vh] lg:h-[94vh] w-full col-span-2"
           data-timeseries={@timeseries_data}
@@ -60,36 +64,6 @@ defmodule LoinWeb.SecurityLive do
 
   # Private
 
-  defp collate_security_information(security) do
-    [
-      %{
-        title: "Market cap",
-        value: Map.get(security, :market_cap)
-      },
-      %{
-        title: "CEO",
-        value: Map.get(security, :ceo)
-      },
-      %{
-        title: "Full-time employees",
-        value: Map.get(security, :full_time_employees)
-      },
-      %{
-        title: "Headquarters",
-        value: "#{Map.get(security, :city)}, #{Map.get(security, :state)}"
-      },
-      %{
-        title: "EPS (TTM)",
-        value: Map.get(security, :eps)
-      },
-      %{
-        title: "PE Ratio",
-        value: Map.get(security, :pe)
-      }
-    ]
-    |> Enum.filter(fn %{value: value} -> value != nil end)
-  end
-
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do
     {:ok, etf_constituents} = ETFConstituentsCache.get_for_web(symbol)
     {:ok, etf_sector_weights} = ETFSectorWeightCache.get_for_web(symbol)
@@ -121,17 +95,17 @@ defmodule LoinWeb.SecurityLive do
     with {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
            FMP.get_securities_by_symbols([proper_symbol]),
          {:ok, {^proper_symbol, chart_data}} <- TimeseriesCache.get_encoded(proper_symbol),
+         {:ok, ttm_ratios} <- FMP.get_ttm_ratios_by_symbol(proper_symbol),
          is_etf <- Map.get(security, :is_etf),
-         extra_information <- fetch_more_relevant_information(security),
-         quote_information <- collate_security_information(security) do
+         extra_information <- fetch_more_relevant_information(security) do
       %{}
       |> Map.put(:is_etf, is_etf)
       |> Map.put(:symbol, proper_symbol)
       |> Map.put(:security, security)
       |> Map.put(:timeseries_data, chart_data)
       |> Map.put(:trend, trend)
+      |> Map.put(:ttm_ratios, ttm_ratios)
       |> Map.merge(extra_information)
-      |> Map.put(:quote_data, quote_information)
     else
       _ -> %{}
     end

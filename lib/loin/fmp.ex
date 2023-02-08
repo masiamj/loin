@@ -7,7 +7,25 @@ defmodule Loin.FMP do
 
   import Ecto.Query, warn: false
   alias Loin.Repo
-  alias Loin.FMP.{DailyTrend, FMPSecurity, Screener}
+  alias Loin.FMP.{DailyTrend, FMPSecurity, Screener, TTMRatio}
+
+  @doc """
+  Queries against the screener view with dynamic params.
+  """
+  def filter_screener(params \\ %{}) do
+    final_filters =
+      params
+      |> Map.get("filters", %{})
+      |> IO.inspect(label: "Initial filters")
+      |> Enum.filter(fn {_key, %{"value" => value}} -> value != "" end)
+      |> Enum.into(%{})
+      |> IO.inspect(label: "Final filters")
+
+    final_params = Map.put(params, "filters", final_filters)
+    IO.inspect(final_params, label: "Final params")
+
+    Flop.validate_and_run(Screener, final_params, for: Screener)
+  end
 
   @doc """
   Gets the most recent daily sector trends.
@@ -134,21 +152,17 @@ defmodule Loin.FMP do
   end
 
   @doc """
-  Queries against the screener view with dynamic params.
+  Gets the ttm_ratios for a specific security.
+
+  ## Examples
+
+      iex> get_ttm_ratios_by_symbol("AAPL")
+      {:ok, %{}}
+
   """
-  def filter_screener(params \\ %{}) do
-    final_filters =
-      params
-      |> Map.get("filters", %{})
-      |> IO.inspect(label: "Initial filters")
-      |> Enum.filter(fn {_key, %{"value" => value}} -> value != "" end)
-      |> Enum.into(%{})
-      |> IO.inspect(label: "Final filters")
-
-    final_params = Map.put(params, "filters", final_filters)
-    IO.inspect(final_params, label: "Final params")
-
-    Flop.validate_and_run(Screener, final_params, for: Screener)
+  def get_ttm_ratios_by_symbol(symbol) when is_binary(symbol) do
+    result = Repo.get_by(TTMRatio, symbol: symbol)
+    {:ok, result}
   end
 
   # Private

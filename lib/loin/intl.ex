@@ -69,4 +69,17 @@ defmodule Loin.Intl do
         __MODULE__.Number.to_string!(value / 100, format: :percent, fractional_digits: 2)
     end
   end
+
+  @doc """
+  Formats a number as a percentage, already in decimal form.
+  """
+  def format_percent_from_decimal(value) do
+    case value do
+      nil ->
+        "-"
+
+      value ->
+        __MODULE__.Number.to_string!(value, format: :percent, fractional_digits: 2)
+    end
+  end
 end

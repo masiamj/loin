@@ -140,6 +140,7 @@ defmodule LoinWeb.ScreenerLive do
       socket
       |> assign(:filtered_data, [])
       |> assign(:meta, %{})
+      |> assign(:form_fields, @fields)
 
     {:ok, socket}
   end
@@ -165,7 +166,7 @@ defmodule LoinWeb.ScreenerLive do
             for={@meta}
             phx-change="update-filter"
           >
-            <Flop.Phoenix.filter_fields :let={i} form={f} fields={fields}>
+            <Flop.Phoenix.filter_fields :let={i} form={f} fields={@form_fields}>
               <% IO.inspect(i) %>
               <.input
                 id={i.id}
@@ -195,12 +196,12 @@ defmodule LoinWeb.ScreenerLive do
             path={~p"/screener"}
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
-              <div class="flex flex-col">
+              <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
                 <span class="text-gray-500" style="font-size:10px;">
                   <%= item.fmp_securities_symbol %>
                 </span>
                 <span class="font-medium line-clamp-1"><%= item.name %></span>
-              </div>
+              </.link>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:close}>
               <%= Intl.format_money_decimal(item.price) %>
