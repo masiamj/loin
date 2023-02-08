@@ -1,4 +1,7 @@
 defmodule Loin.FMP.TTMRatio do
+  @moduledoc """
+  A representation of the ttm_ratio model.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

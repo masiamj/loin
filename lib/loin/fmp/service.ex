@@ -28,7 +28,6 @@ defmodule Loin.FMP.Service do
     Logger.info("Starting all Ratios TTM stream...")
 
     (@bulk_api_base_url <> "ratios-ttm-bulk" <> "?apikey=#{Loin.Config.fmp_api_key()}")
-    |> IO.inspect(label: "URL")
     |> RemoteFileStreamer.stream()
     |> CSV.decode!(escape_max_lines: 25, headers: true)
     |> Stream.filter(&Utils.is_valid_ttm_ratio/1)

@@ -167,7 +167,6 @@ defmodule LoinWeb.ScreenerLive do
             phx-change="update-filter"
           >
             <Flop.Phoenix.filter_fields :let={i} form={f} fields={@form_fields}>
-              <% IO.inspect(i) %>
               <.input
                 id={i.id}
                 name={i.name}
@@ -420,7 +419,6 @@ defmodule LoinWeb.ScreenerLive do
 
   @impl true
   def handle_event("update-filter", params, socket) do
-    IO.inspect(params, label: "Base params")
     {:noreply, push_patch(socket, to: ~p"/screener?#{params}")}
   end
 
