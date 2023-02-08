@@ -50,6 +50,7 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       live "/", HomeLive, :home
       live "/s/:symbol", SecurityLive, :show
+      live "/screener", ScreenerLive, :index
       live "/how-it-works", HowItWorksLive, :index
       live "/users/log_in", UserLoginLive, :new
       live "/users/register", UserRegistrationLive, :new

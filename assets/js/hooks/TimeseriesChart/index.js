@@ -1,6 +1,5 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
-import minBy from 'lodash/minBy'
 import first from 'lodash/first'
 import isEqual from 'lodash/isEqual'
 
@@ -113,22 +112,12 @@ export const TimeseriesChart = {
     }))
 
     /**
-     * Data for volume histogram
-     */
-    const volumeData = data.map(({ volume, date }) => ({
-      color: 'rgba(37,99,235, 0.4)',
-      time: date,
-      value: volume
-    }))
-
-    /**
      * Create marker line
      */
-    const { close: minimumClose } = minBy(data, 'close')
     const markerData = data.map(({ date, trend }) => ({
       color: getColorForItem({ trend }),
       time: date,
-      value: minimumClose
+      value: 0
     }))
 
     const markers = getMarkers(data)
@@ -138,10 +127,8 @@ export const TimeseriesChart = {
      */
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
-      this.chartInstance.removeSeries(this.volumeSeries)
-      this.chartInstance.removeSeries(this.markerSeries)
+      // this.chartInstance.removeSeries(this.markerSeries)
       this.lineSeries = null
-      this.volumeSeries = null
       this.markerSeries = null
     }
 
@@ -152,33 +139,17 @@ export const TimeseriesChart = {
     this.lineSeries.setData(chartData);
 
     /**
-     * Create custom volume histogram
-     */
-    this.volumeSeries = this.chartInstance.addHistogramSeries({
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-      scaleMargins: {
-        top: 0.9,
-        bottom: 0,
-      },
-    });
-
-    this.volumeSeries.setData(volumeData)
-
-    /**
      * Creates custom marker series
      */
-    this.markerSeries = this.chartInstance.addLineSeries({
-      baseLineVisible: false,
-      crosshairMarkerVisible: false,
-      lastValueVisible: false,
-      priceLineVisible: false,
-      lineWidth: 4
-    });
-    this.markerSeries.setData(markerData);
-    this.markerSeries.setMarkers(markers)
+    // this.markerSeries = this.chartInstance.addLineSeries({
+    //   baseLineVisible: false,
+    //   crosshairMarkerVisible: false,
+    //   lastValueVisible: false,
+    //   priceLineVisible: false,
+    //   lineWidth: 4
+    // });
+    // this.markerSeries.setData(markerData);
+    // this.markerSeries.setMarkers(markers)
 
     /**
      * Scale to constraints

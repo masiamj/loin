@@ -49,6 +49,17 @@ defmodule Loin.FMP.Utils do
   end
 
   @doc """
+  Verifies an item is a valid Ratios TTM map.
+  """
+  def is_valid_ttm_ratio(%{"symbol" => symbol}) do
+    case symbol do
+      nil -> false
+      "" -> false
+      _ -> true
+    end
+  end
+
+  @doc """
   Maps a list of items with a transform in a concurrent way.
   """
   def map(items, transform) when is_list(items) or is_map(items) do

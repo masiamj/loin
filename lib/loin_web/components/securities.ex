@@ -173,6 +173,7 @@ defmodule LoinWeb.Securities do
   """
   attr :security, :map, required: true
   attr :trend, :map, default: %{}
+  attr :ttm_ratios, :map, default: %{}
 
   def quote_section(assigns) do
     ~H"""
@@ -201,7 +202,7 @@ defmodule LoinWeb.Securities do
             value={Loin.Intl.format_money_decimal(@security.full_time_employees)}
           />
           <.labeled_data_item
-            :if={is_binary(@security.city) and is_binary(@security.state)}
+            :if={String.length(@security.city) > 0 and String.length(@security.state) > 0}
             label="Headquarters"
             value={"#{@security.city}, #{@security.state}"}
           />
@@ -217,6 +218,64 @@ defmodule LoinWeb.Securities do
           <.labeled_data_item
             label="Earnings-per-share (EPS)"
             value={Loin.Intl.format_money_decimal(@security.eps)}
+          />
+          <.labeled_data_item
+            label="Cash ratio (TTM)"
+            value={Map.get(@ttm_ratios, :cash_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Current ratio (TTM)"
+            value={Map.get(@ttm_ratios, :current_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Dividend yield (TTM)"
+            value={
+              Map.get(@ttm_ratios, :dividend_yield, nil) |> Loin.Intl.format_percent_from_decimal()
+            }
+          />
+          <.labeled_data_item
+            label="Earnings yield (TTM)"
+            value={
+              Map.get(@ttm_ratios, :earnings_yield, nil) |> Loin.Intl.format_percent_from_decimal()
+            }
+          />
+          <.labeled_data_item
+            label="Net profit margin (TTM)"
+            value={
+              Map.get(@ttm_ratios, :net_profit_margin, nil) |> Loin.Intl.format_percent_from_decimal()
+            }
+          />
+          <.labeled_data_item
+            label="PE ratio (TTM)"
+            value={Map.get(@ttm_ratios, :pe_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="PEG ratio (TTM)"
+            value={Map.get(@ttm_ratios, :peg_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Price-to-book ratio (TTM)"
+            value={Map.get(@ttm_ratios, :price_to_book_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Price-to-sales ratio (TTM)"
+            value={Map.get(@ttm_ratios, :price_to_sales_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Quick ratio (TTM)"
+            value={Map.get(@ttm_ratios, :quick_ratio, nil) |> Loin.Intl.format_decimal()}
+          />
+          <.labeled_data_item
+            label="Return on assets (TTM)"
+            value={
+              Map.get(@ttm_ratios, :return_on_assets, nil) |> Loin.Intl.format_percent_from_decimal()
+            }
+          />
+          <.labeled_data_item
+            label="Return on equity (TTM)"
+            value={
+              Map.get(@ttm_ratios, :return_on_equity, nil) |> Loin.Intl.format_percent_from_decimal()
+            }
           />
         </div>
       </div>

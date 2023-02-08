@@ -70,6 +70,12 @@ defmodule LoinWeb.HeaderComponents do
               </div>
             </div>
           </div>
+          <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
+            <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+              Screener
+            </.link>
+          </div>
+
           <%!-- <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
             <.link
               navigate={~p"/how-it-works"}
