@@ -7,6 +7,10 @@ defmodule Loin.FMP.Screener do
   @timestamps_opts [type: :utc_datetime_usec]
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {
+    Flop.Schema,
+    filterable: [:close, :name], sortable: [:close, :name]
+  }
   schema "screener" do
     # daily_trends
     field :close, :float

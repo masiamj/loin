@@ -127,7 +127,7 @@ export const TimeseriesChart = {
      */
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
-      this.chartInstance.removeSeries(this.markerSeries)
+      // this.chartInstance.removeSeries(this.markerSeries)
       this.lineSeries = null
       this.markerSeries = null
     }
@@ -141,15 +141,15 @@ export const TimeseriesChart = {
     /**
      * Creates custom marker series
      */
-    this.markerSeries = this.chartInstance.addLineSeries({
-      baseLineVisible: false,
-      crosshairMarkerVisible: false,
-      lastValueVisible: false,
-      priceLineVisible: false,
-      lineWidth: 4
-    });
-    this.markerSeries.setData(markerData);
-    this.markerSeries.setMarkers(markers)
+    // this.markerSeries = this.chartInstance.addLineSeries({
+    //   baseLineVisible: false,
+    //   crosshairMarkerVisible: false,
+    //   lastValueVisible: false,
+    //   priceLineVisible: false,
+    //   lineWidth: 4
+    // });
+    // this.markerSeries.setData(markerData);
+    // this.markerSeries.setMarkers(markers)
 
     /**
      * Scale to constraints
