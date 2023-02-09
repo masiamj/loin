@@ -17,7 +17,8 @@ defmodule Loin.MixProject do
         doctor: :test,
         sobelow: :test,
         "deps.audit": :test
-      ]
+      ],
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -49,10 +50,15 @@ defmodule Loin.MixProject do
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:ex_check, "~> 0.14.0", only: [:dev, :test], runtime: false},
+      {:ex_cldr, "~> 2.33"},
+      {:ex_cldr_numbers, "~> 2.29"},
+      {:ex_cldr_plugs, "~> 1.2"},
       {:ex_doc, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:external_service, "~> 1.1"},
+      {:familiar, "~> 0.1.1"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
+      {:flop_phoenix, "~> 0.17.2"},
       {:flow, "~> 1.2"},
       {:fun_with_flags, "~> 1.10"},
       {:fun_with_flags_ui, "~> 0.8.1"},
@@ -60,14 +66,17 @@ defmodule Loin.MixProject do
       {:heroicons, "~> 0.5"},
       {:indicado, "~> 0.0.4"},
       {:jason, "~> 1.2"},
+      {:kaffy, "~> 0.9.2"},
       {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:oban, "~> 2.13"},
+      {:oban_web, "~> 2.9", repo: "oban"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.18.3"},
       {:phoenix, "~> 1.7.0-rc.0", override: true},
+      {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
       {:remote_file_streamer, "~> 1.0"},
@@ -77,6 +86,7 @@ defmodule Loin.MixProject do
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:timex, "~> 3.0"},
       {:websockex, "~> 0.4.3"}
     ]
   end

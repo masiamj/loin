@@ -373,7 +373,7 @@ defmodule LoinWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-xs font-medium text-gray-600">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -537,6 +537,41 @@ defmodule LoinWeb.CoreComponents do
     """
   end
 
+  @doc """
+  Renders read-moreable text.
+
+  ## Examples
+
+      <.read_more content="Hello" />
+  """
+  attr :content, :string, required: true
+  attr :id, :string, required: true
+
+  def read_more(assigns) do
+    ~H"""
+    <div>
+      <p class="text-xs text-gray-500 line-clamp-2" id={"#{@id}-read-more-content"}>
+        <%= @content %>
+      </p>
+      <button
+        class="bg-white text-xs text-blue-500"
+        id={"#{@id}-show-more-trigger"}
+        phx-click={expand_read_more(@id)}
+      >
+        Read more
+      </button>
+      <button
+        class="bg-white text-xs text-blue-500 mt-0.5"
+        id={"#{@id}-show-less-trigger"}
+        phx-click={collapse_read_more(@id)}
+        phx-mounted={collapse_read_more(@id)}
+      >
+        Show less
+      </button>
+    </div>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do
@@ -580,6 +615,20 @@ defmodule LoinWeb.CoreComponents do
     |> hide("##{id}-container")
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.pop_focus()
+  end
+
+  def collapse_read_more(id) do
+    %JS{}
+    |> JS.add_class("line-clamp-2", to: "##{id}-read-more-content")
+    |> JS.hide(to: "##{id}-show-less-trigger")
+    |> JS.show(to: "##{id}-show-more-trigger")
+  end
+
+  def expand_read_more(id) do
+    %JS{}
+    |> JS.remove_class("line-clamp-2", to: "##{id}-read-more-content")
+    |> JS.hide(to: "##{id}-show-more-trigger")
+    |> JS.show(to: "##{id}-show-less-trigger")
   end
 
   @doc """

@@ -12,21 +12,15 @@
     </script>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js">
     </script>
+    <script src="https://kraaden.github.io/autocomplete/autocomplete.js">
+    </script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://kraaden.github.io/autocomplete/autocomplete.css"
+    />
   </head>
-  <body class="bg-gray-100">
-    <%= if @current_user do %>
-      <li>
-        <%= @current_user.email %>
-      </li>
-      <li>
-        <.link href={~p"/users/settings"}>Settings</.link>
-      </li>
-      <li>
-        <.link href={~p"/users/log_out"} method="delete">Log out</.link>
-      </li>
-    <% else %>
-      <LoinWeb.HeaderComponents.unauthenticated id="unauthenticated-header" />
-    <% end %>
+  <body class="">
     <div>
       <%= @inner_content %>
     </div>

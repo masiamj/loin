@@ -73,6 +73,35 @@ config :fun_with_flags, :cache_bust_notifications,
   adapter: FunWithFlags.Notifications.PhoenixPubSub,
   client: Loin.PubSub
 
+# Admin tooling configuration
+config :kaffy,
+  otp_app: :loin,
+  ecto_repo: Loin.Repo,
+  router: LoinWeb.Router
+
+config :loin, Oban,
+  repo: Loin.Repo,
+  plugins: [
+    # {Oban.Plugins.Pruner, max_age: 300},
+    Oban.Plugins.Gossip,
+    Oban.Web.Plugins.Stats,
+    {Oban.Plugins.Cron,
+     crontab: [
+       # 6:30PM Mon-Fri EST
+       {"30 23 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
+       # 12:30AM Mon-Fri EST
+       {"30 5 * * MON-FRI", Loin.Workers.DailyTrendPruner},
+       # 1:30AM Mon-Fri EST
+       {"30 6 * * MON-FRI", Loin.Workers.TTMRatiosPrimer},
+       # Every half hour between 6AM-6:30PM Mon-Fri EST
+       {"*/30 11-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
+     ]}
+  ],
+  queues: [default: 10]
+
+# Adds configuration for Flop sorting/data handling
+config :flop, repo: Loin.Repo
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

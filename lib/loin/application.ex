@@ -19,16 +19,32 @@ defmodule Loin.Application do
       {Phoenix.PubSub, name: Loin.PubSub},
       # Start Finch
       {Finch, name: Loin.Finch},
-      # Start cache for holdings of major indices
-      # {Loin.FMP.MajorIndexSymbolsCache, []},
+      # Cache ETF constituents
+      Supervisor.child_spec({Cachex, [name: :etf_constituents_cache, stats: true, warmers: []]},
+        id: :etf_constituents_cache
+      ),
+      # Cache ETF sector weights
+      Supervisor.child_spec({Cachex, [name: :etf_sector_weight_cache, stats: true, warmers: []]},
+        id: :etf_sector_weight_cache
+      ),
+      # Cache peers data
+      Supervisor.child_spec({Cachex, [name: :peers_cache, stats: true, warmers: []]},
+        id: :peers_cache
+      ),
+      # Cache the stock ETF exposure data
+      Supervisor.child_spec({Cachex, [name: :stock_etf_exposure_cache, stats: true, warmers: []]},
+        id: :stock_etf_exposure_cache
+      ),
       # Cache timeseries data
-      Supervisor.child_spec({Cachex, [name: :timeseries_data, stats: true, warmers: []]},
-        id: :timeseries_data
+      Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
+        id: :timeseries_cache
       ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
       # Realtime Quotes cache
-      {Loin.RealtimeQuotesCache, []}
+      {Loin.RealtimeQuotesCache, []},
+      # Start the Oban jobs processor
+      {Oban, oban_config()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -43,5 +59,9 @@ defmodule Loin.Application do
   def config_change(changed, _new, removed) do
     LoinWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_config() do
+    Application.fetch_env!(:loin, Oban)
   end
 end

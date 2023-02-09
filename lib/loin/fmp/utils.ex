@@ -3,6 +3,8 @@ defmodule Loin.FMP.Utils do
   A set of helper functions for dealing with data from FMP.
   """
 
+  @supported_exchanges MapSet.new(["NASDAQ", "NYSE", "AMEX", "OTC", "MUTUAL_FUND", "LSE", "ETF"])
+
   @doc """
   Creates indicators.
   """
@@ -33,17 +35,34 @@ defmodule Loin.FMP.Utils do
   @doc """
   Verifies a security is US-based and in USD
   """
-  def is_us_security(%{"country" => country, "currency" => currency}) do
-    case {country, currency} do
-      {"US", "USD"} -> true
+  def is_us_security(%{
+        "country" => country,
+        "currency" => currency,
+        "exchangeShortName" => exchange_short_name
+      }) do
+    is_in_supported_exchange = MapSet.member?(@supported_exchanges, exchange_short_name)
+
+    case {country, currency, is_in_supported_exchange} do
+      {"US", "USD", true} -> true
       _ -> false
+    end
+  end
+
+  @doc """
+  Verifies an item is a valid Ratios TTM map.
+  """
+  def is_valid_ttm_ratio(%{"symbol" => symbol}) do
+    case symbol do
+      nil -> false
+      "" -> false
+      _ -> true
     end
   end
 
   @doc """
   Maps a list of items with a transform in a concurrent way.
   """
-  def map(items, transform) when is_list(items) do
+  def map(items, transform) when is_list(items) or is_map(items) do
     items
     |> Flow.from_enumerable()
     |> Flow.partition()
@@ -92,10 +111,10 @@ defmodule Loin.FMP.Utils do
 
     trend =
       case truthy_flags_count do
-        0 -> :down
-        1 -> :down
-        2 -> :neutral
-        3 -> :up
+        0 -> "down"
+        1 -> "down"
+        2 -> "neutral"
+        3 -> "up"
       end
 
     Map.merge(flags, %{
@@ -106,6 +125,10 @@ defmodule Loin.FMP.Utils do
       truthy_flags_count: truthy_flags_count
     })
   end
+
+  defp calculate_smas(chronological_data)
+       when is_list(chronological_data) and length(chronological_data) < 200,
+       do: [[], []]
 
   defp calculate_smas(chronological_data) when is_list(chronological_data) do
     desired_list_length = length(chronological_data)
@@ -129,7 +152,7 @@ defmodule Loin.FMP.Utils do
     cond do
       is_nil(previous_trend) or is_nil(current_trend) -> nil
       previous_trend == current_trend -> nil
-      true -> Atom.to_string(previous_trend) <> "_to_" <> Atom.to_string(current_trend)
+      true -> previous_trend <> "_to_" <> current_trend
     end
   end
 

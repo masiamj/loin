@@ -3,123 +3,195 @@ defmodule Loin.FMP do
   The FMP context.
   """
 
+  require Logger
+
   import Ecto.Query, warn: false
   alias Loin.Repo
-
-  alias Loin.FMP.FMPSecurity
+  alias Loin.FMP.{DailyTrend, FMPSecurity, Screener, TTMRatio}
 
   @doc """
-  Returns the list of fmp_securities.
-
-  ## Examples
-
-      iex> list_fmp_securities()
-      [%FMPSecurity{}, ...]
-
+  Queries against the screener view with dynamic params.
   """
-  def list_fmp_securities do
-    Repo.all(FMPSecurity)
+  def filter_screener(params \\ %{}) do
+    final_filters =
+      params
+      |> Map.get("filters", %{})
+      |> Enum.filter(fn {_key, %{"value" => value}} -> value != "" end)
+      |> Enum.into(%{})
+
+    final_params = Map.put(params, "filters", final_filters)
+
+    Flop.validate_and_run(Screener, final_params, for: Screener)
   end
 
   @doc """
-  Gets a single fmp_security.
-
-  Raises `Ecto.NoResultsError` if the Fmp security does not exist.
+  Gets the most recent daily sector trends.
 
   ## Examples
 
-      iex> get_fmp_security!(123)
-      %FMPSecurity{}
-
-      iex> get_fmp_security!(456)
-      ** (Ecto.NoResultsError)
+      iex> get_daily_sector_trends
+      [%DailyTrend{}]
 
   """
-  def get_fmp_security!(id), do: Repo.get!(FMPSecurity, id)
-
-  @doc """
-  Creates a fmp_security.
-
-  ## Examples
-
-      iex> create_fmp_security(%{field: value})
-      {:ok, %FMPSecurity{}}
-
-      iex> create_fmp_security(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_fmp_security(attrs \\ %{}) do
-    %FMPSecurity{}
-    |> FMPSecurity.changeset(attrs)
-    |> Repo.insert()
+  def get_daily_sector_trends do
+    get_securities_by_symbols([
+      "GLD",
+      "XLB",
+      "XLC",
+      "XLE",
+      "XLF",
+      "XLI",
+      "XLK",
+      "XLP",
+      "XLRE",
+      "XLU",
+      "XLV",
+      "XLY"
+    ])
   end
 
   @doc """
-  Updates a fmp_security.
+  Gets many fmp_securities and daily_trends by their symbols.
 
   ## Examples
 
-      iex> update_fmp_security(fmp_security, %{field: new_value})
-      {:ok, %FMPSecurity{}}
-
-      iex> update_fmp_security(fmp_security, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> get_fmp_securities_by_symbols(["AAPL"])
+      {:ok, %{}}
 
   """
-  def update_fmp_security(%FMPSecurity{} = fmp_security, attrs) do
-    fmp_security
-    |> FMPSecurity.changeset(attrs)
-    |> Repo.update()
+  def get_securities_by_symbols([]), do: {:ok, %{}}
+
+  def get_securities_by_symbols(symbols) when is_list(symbols) do
+    {:ok, trends} =
+      latest_daily_trends_query()
+      |> filter_by_symbols(symbols)
+      |> query_into_map()
+
+    {:ok, securities} =
+      fmp_securities_query()
+      |> filter_by_symbols(symbols)
+      |> query_into_map()
+
+    entries =
+      Enum.into(securities, %{}, fn {symbol, security} ->
+        {symbol, %{security: security, trend: Map.get(trends, symbol, nil)}}
+      end)
+
+    {:ok, entries}
   end
 
   @doc """
-  Deletes a fmp_security.
+  Gets a list of combined fmp_securities and daily_trends.
+
+  Filters by securities with a specific trend, and returns them sorted by market_cap desc.
 
   ## Examples
 
-      iex> delete_fmp_security(fmp_security)
-      {:ok, %FMPSecurity{}}
-
-      iex> delete_fmp_security(fmp_security)
-      {:error, %Ecto.Changeset{}}
+      iex> get_securities_via_trend("up", 2)
+      [%{}, %{}]
 
   """
-  def delete_fmp_security(%FMPSecurity{} = fmp_security) do
-    Repo.delete(fmp_security)
-  end
+  def get_securities_via_trend(trend, limit_number \\ 50)
+      when trend in ["down", "up"] and is_integer(limit_number) do
+    trends_query =
+      latest_daily_trends_query()
+      |> filter_by_trend(trend)
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking fmp_security changes.
-
-  ## Examples
-
-      iex> change_fmp_security(fmp_security)
-      %Ecto.Changeset{data: %FMPSecurity{}}
-
-  """
-  def change_fmp_security(%FMPSecurity{} = fmp_security, attrs \\ %{}) do
-    FMPSecurity.changeset(fmp_security, attrs)
-  end
-
-  @doc """
-  Inserts many FMPSecurity records.
-  """
-  def insert_many_fmp_securities(entries \\ []) when is_list(entries) do
-    {num_affected, nil} =
-      Repo.insert_all(FMPSecurity, entries,
-        on_conflict: {:replace_all_except, [:id, :inserted_at, :symbol]},
-        conflict_target: [:symbol]
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(trends_query),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
       )
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{security: security} = item ->
+        {security.symbol, item}
+      end)
 
-    {:ok, num_affected}
+    {:ok, entries}
   end
 
-  def insert_all_profiles(num) do
-    Loin.FMP.Service.all_profiles_stream()
-    |> Stream.take(num)
-    |> Stream.chunk_every(10)
-    |> Stream.each(&insert_many_fmp_securities/1)
-    |> Stream.run()
+  @doc """
+  Gets a list of combined fmp_securities and daily_trends.
+
+  Filters by securities with a trend change, and returns them sorted by market_cap desc.
+
+  ## Examples
+
+      iex> get_securities_with_trend_change("up", 2)
+      [%{}, %{}]
+
+  """
+  def get_securities_with_trend_change(limit_number \\ 50)
+      when is_integer(limit_number) do
+    trends_query =
+      latest_daily_trends_query()
+      |> filter_by_has_trend_change()
+
+    entries =
+      from(fs in FMPSecurity,
+        join: dt in subquery(trends_query),
+        on: fs.symbol == dt.symbol,
+        where: not is_nil(fs.market_cap),
+        order_by: [desc: fs.market_cap],
+        limit: ^limit_number,
+        select: %{security: fs, trend: dt}
+      )
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{security: security} = item ->
+        {security.symbol, item}
+      end)
+
+    {:ok, entries}
+  end
+
+  @doc """
+  Gets the ttm_ratios for a specific security.
+
+  ## Examples
+
+      iex> get_ttm_ratios_by_symbol("AAPL")
+      {:ok, %{}}
+
+  """
+  def get_ttm_ratios_by_symbol(symbol) when is_binary(symbol) do
+    result = Repo.get_by(TTMRatio, symbol: symbol)
+    {:ok, result}
+  end
+
+  # Private
+
+  defp latest_daily_trends_query() do
+    from(dt in DailyTrend,
+      distinct: [asc: :symbol],
+      order_by: [desc: :date],
+      where: [is_valid: true]
+    )
+  end
+
+  defp fmp_securities_query() do
+    from(fs in FMPSecurity,
+      where: not is_nil(fs.market_cap),
+      order_by: [desc: fs.market_cap]
+    )
+  end
+
+  defp filter_by_symbols(query, symbols) when is_list(symbols),
+    do: where(query, [e], e.symbol in ^symbols)
+
+  defp filter_by_has_trend_change(query), do: where(query, [dt], not is_nil(dt.trend_change))
+
+  defp filter_by_trend(query, trend) when trend in ["up", "down"], do: where(query, trend: ^trend)
+
+  defp query_into_map(query) do
+    entries =
+      query
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
+
+    {:ok, entries}
   end
 end

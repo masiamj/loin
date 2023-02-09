@@ -1,0 +1,1 @@
+doppler run -- mix phx.server

@@ -3,3 +3,28 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+.autocomplete>div:hover {
+  @apply bg-gray-100 !important;
+}
+
+.autocomplete>div.selected {
+  @apply bg-blue-500 !important;
+  @apply text-white !important;
+}
+
+.screener-table-container {
+  overflow-x: auto;
+}
+
+tr>th:first-child,
+tr>td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1000;
+}
+
+tr>td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 900;
+}

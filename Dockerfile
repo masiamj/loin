@@ -33,9 +33,19 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+ENV OBAN_KEY_FINGERPRINT=$OBAN_KEY_FINGERPRINT
+ENV OBAN_LICENSE_KEY=$OBAN_LICENSE_KEY
 
 # install mix dependencies
 COPY mix.exs mix.lock ./
+
+# set up oban web repo
+RUN --mount=type=secret,id=OBAN_KEY_FINGERPRINT \
+  --mount=type=secret,id=OBAN_LICENSE_KEY \
+  mix hex.repo add oban https://getoban.pro/repo \
+  --fetch-public-key "$(cat /run/secrets/OBAN_KEY_FINGERPRINT)" \
+  --auth-key "$(cat /run/secrets/OBAN_LICENSE_KEY)"
+
 RUN mix deps.get --only $MIX_ENV
 RUN mkdir config
 

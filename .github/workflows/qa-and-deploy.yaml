@@ -15,6 +15,8 @@ jobs:
   code-quality:
     env:
       FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+      OBAN_KEY_FINGERPRINT: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+      OBAN_LICENSE_KEY: ${{ secrets.OBAN_LICENSE_KEY }}
       MIX_ENV: test
     name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest
@@ -54,6 +56,11 @@ jobs:
           restore-keys: |
             deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
             deps-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+      - name: Authorize Oban
+        run: |
+          mix hex.repo add oban https://getoban.pro/repo \
+          --fetch-public-key ${{secrets.OBAN_KEY_FINGERPRINT}} \
+          --auth-key ${{secrets.OBAN_LICENSE_KEY}}
       - name: Fetch deps
         run: mix deps.get
       - name: Remove application build
@@ -65,6 +72,8 @@ jobs:
   # Job to deploy to the production app on Fly.io (only if on master branch)
   deploy-to-production:
     env:
+      OBAN_KEY_FINGERPRINT: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+      OBAN_LICENSE_KEY: ${{ secrets.OBAN_LICENSE_KEY }}
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       MIX_ENV: prod
     if: github.ref == 'refs/heads/master'
@@ -77,20 +86,7 @@ jobs:
       - name: Setup Fly.io CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy
-        run: ./scripts/deploy-to-production.sh
-  # Job to deploy to the staging app on Fly.io (only if on staging branch)
-  deploy-to-staging:
-    env:
-      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      MIX_ENV: prod
-    if: github.ref == 'refs/heads/staging'
-    name: Deploy app to staging environment
-    needs: code-quality
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Setup Fly.io CLI
-        uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Deploy
-        run: ./scripts/deploy-to-staging.sh
+        run: |
+          flyctl deploy -a loin -c ./fly.production.toml --remote-only \
+          --build-secret OBAN_LICENSE_KEY=${{ secrets.OBAN_LICENSE_KEY }} \
+          --build-secret OBAN_KEY_FINGERPRINT=${{ secrets.OBAN_KEY_FINGERPRINT }}

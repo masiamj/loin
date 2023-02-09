@@ -1,4 +1,4 @@
-defmodule Loin.RealtimeQuotesCache do
+defmodule Loin.RealtimeQuotesClient do
   @url "wss://websockets.financialmodelingprep.com"
 
   require Logger

@@ -2,6 +2,7 @@ defmodule Loin.FMP.Service do
   @moduledoc """
   This is the module for communicating with Financial Modeling Prep.
   """
+  require Logger
   alias Loin.FMP.{Transforms, Utils}
 
   @api_base_url "https://financialmodelingprep.com/api/v3/"
@@ -11,7 +12,9 @@ defmodule Loin.FMP.Service do
   Fetches all the profiles for all securities (Stream).
   """
   def all_profiles_stream() do
-    (@bulk_api_base_url <> "/profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
+    Logger.info("Starting all profiles stream...")
+
+    (@bulk_api_base_url <> "profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
     |> RemoteFileStreamer.stream()
     |> CSV.decode!(escape_max_lines: 25, headers: true)
     |> Stream.filter(&Utils.is_us_security/1)
@@ -19,53 +22,48 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches all the Ratios TTM for all securities (Stream).
+  """
+  def all_ttm_ratios() do
+    Logger.info("Starting all Ratios TTM stream...")
+
+    (@bulk_api_base_url <> "ratios-ttm-bulk" <> "?apikey=#{Loin.Config.fmp_api_key()}")
+    |> RemoteFileStreamer.stream()
+    |> CSV.decode!(escape_max_lines: 25, headers: true)
+    |> Stream.filter(&Utils.is_valid_ttm_ratio/1)
+    |> Stream.map(&Transforms.ttm_ratio/1)
+  end
+
+  @doc """
   Batch fetches historical prices for a list of securities.
   """
   def batch_historical_prices(symbols) when is_list(symbols) do
     joined_symbols = Enum.join(symbols, ",")
+    Logger.info("Batch requesting historical data for #{joined_symbols}")
 
-    data =
+    result =
       "/historical-price-full/#{joined_symbols}"
       |> create_request()
       |> Req.get!()
       |> handle_response()
-      |> then(fn response ->
-        case response do
-          %{"historicalStockList" => historical_stock_list} -> historical_stock_list
-          %{"symbol" => _symbol} = item -> [item]
-        end
-      end)
-      |> Utils.map(&Transforms.historical_prices/1)
-      |> Utils.map(&Utils.create_indicators/1)
+      |> handle_historical_data_response()
+      |> Utils.map(fn {symbol, data} -> {symbol, Transforms.historical_prices(data)} end)
+      |> Utils.map(fn {symbol, data} -> {symbol, Utils.create_indicators(data)} end)
+      |> Enum.into(%{})
 
-    Enum.zip_reduce([symbols, data], %{}, fn [symbol, data], acc ->
-      Map.merge(acc, %{symbol => data})
-    end)
-  end
+    Logger.info(
+      "Got batch historical data result map for symbols #{Map.keys(result) |> Enum.join(", ")}"
+    )
 
-  @doc """
-  Fetches all Dow Jones constituents.
-  """
-  def dow_jones_companies() do
-    "/dowjones_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Dow Jones companies
-  """
-  def dow_jones_companies_symbols() do
-    dow_jones_companies()
-    |> create_set_of_symbols()
+    result
   end
 
   @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
+    Logger.info("Requesting ETF exposure for symbol #{symbol}")
+
     "/etf-stock-exposure/#{symbol}"
     |> create_request()
     |> Req.get!()
@@ -77,6 +75,8 @@ defmodule Loin.FMP.Service do
   Fetches the holdings of a specific ETF.
   """
   def etf_holdings(symbol) when is_binary(symbol) do
+    Logger.info("Requesting ETF holdings for symbol #{symbol}")
+
     "/etf-holder/#{symbol}"
     |> create_request()
     |> Req.get!()
@@ -88,6 +88,8 @@ defmodule Loin.FMP.Service do
   Fetches the sector exposures of an ETF.
   """
   def etf_sector_weights(symbol) when is_binary(symbol) do
+    Logger.info("Requesting ETF sector exposure for symbol #{symbol}")
+
     "/etf-sector-weightings/#{symbol}"
     |> create_request()
     |> Req.get!()
@@ -96,28 +98,11 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches a list of Nasdaq constituents.
-  """
-  def nasdaq_companies() do
-    "/nasdaq_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
-  Fetches symbols for all Nasdaq companies
-  """
-  def nasdaq_companies_symbols() do
-    nasdaq_companies()
-    |> create_set_of_symbols()
-  end
-
-  @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
+    Logger.info("Requesting peers for symbol #{symbol}")
+
     "/stock_peers"
     |> create_request_v4(%{symbol: symbol})
     |> Req.get!()
@@ -126,32 +111,24 @@ defmodule Loin.FMP.Service do
     |> List.flatten()
   end
 
-  @doc """
-  Fetches a list of S&P 500 constituents.
-  """
-  def sp500_companies() do
-    "/sp500_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
+  def batch_quotes(symbols) when is_list(symbols) do
+    joined_symbols = Enum.map_join(symbols, ",", &String.upcase/1)
+    Logger.info("Batch requesting quotes for #{joined_symbols}")
+
+    result =
+      "/quote/#{joined_symbols}"
+      |> create_request()
+      |> Req.get!()
+      |> handle_response()
+      |> Utils.map(&Transforms.quote/1)
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
+
+    Logger.info("Got batch quotes result map for symbols #{Map.keys(result) |> Enum.join(", ")}")
+
+    result
   end
 
-  @doc """
-  Fetches symbols for all S&P 500 companies
-  """
-  def sp500_companies_symbols() do
-    sp500_companies()
-    |> create_set_of_symbols()
-  end
-
-  # Private helpers
-
-  defp create_set_of_symbols(companies) when is_list(companies) do
-    companies
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> MapSet.new()
-  end
+  # Private
 
   defp create_request(path, params \\ %{}) do
     params = Map.put(params, "apikey", Loin.Config.fmp_api_key())
@@ -163,10 +140,29 @@ defmodule Loin.FMP.Service do
     Req.new(base_url: @bulk_api_base_url, url: path, params: params)
   end
 
-  defp handle_response(%Req.Response{status: status, body: body}) do
+  defp handle_response(%Req.Response{status: status, body: body} = response) do
     cond do
-      status in [200] -> body
-      status in [400, 401, 403, 404, 500] -> {:error, Map.get(body, "error")}
+      status in [200] ->
+        body
+
+      status in [400, 401, 403, 404, 500] ->
+        Logger.error("Failed request to FMP: #{response}")
+        {:error, Map.get(body, "error")}
+    end
+  end
+
+  defp handle_historical_data_response(response) do
+    case response do
+      %{"historical" => historical, "symbol" => symbol} ->
+        Map.put(%{}, symbol, historical)
+
+      %{"historicalStockList" => stock_list} ->
+        Enum.into(stock_list, %{}, fn %{"historical" => historical, "symbol" => symbol} ->
+          {symbol, historical}
+        end)
+
+      %{} ->
+        %{}
     end
   end
 end
