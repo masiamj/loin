@@ -7,7 +7,7 @@ defmodule Loin.FMP do
 
   import Ecto.Query, warn: false
   alias Loin.Repo
-  alias Loin.FMP.{DailyTrend, FMPSecurity, Screener, TTMRatio}
+  alias Loin.FMP.{Screener}
 
   @doc """
   Queries against the screener view with dynamic params.
@@ -29,11 +29,11 @@ defmodule Loin.FMP do
 
   ## Examples
 
-      iex> get_daily_sector_trends
-      [%DailyTrend{}]
+      iex> get_sector_etfs
+      {:ok, %{}}
 
   """
-  def get_daily_sector_trends do
+  def get_sector_etfs do
     get_securities_by_symbols([
       "GLD",
       "XLB",
@@ -61,23 +61,14 @@ defmodule Loin.FMP do
   """
   def get_securities_by_symbols([]), do: {:ok, %{}}
 
-  def get_securities_by_symbols(symbols) when is_list(symbols) do
-    {:ok, trends} =
-      latest_daily_trends_query()
-      |> filter_by_symbols(symbols)
-      |> query_into_map()
+  def get_securities_by_symbols(symbols) do
+    items =
+      base_screener_query()
+      |> where([s], s.symbol in ^symbols)
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
 
-    {:ok, securities} =
-      fmp_securities_query()
-      |> filter_by_symbols(symbols)
-      |> query_into_map()
-
-    entries =
-      Enum.into(securities, %{}, fn {symbol, security} ->
-        {symbol, %{security: security, trend: Map.get(trends, symbol, nil)}}
-      end)
-
-    {:ok, entries}
+    {:ok, items}
   end
 
   @doc """
@@ -93,25 +84,14 @@ defmodule Loin.FMP do
   """
   def get_securities_via_trend(trend, limit_number \\ 50)
       when trend in ["down", "up"] and is_integer(limit_number) do
-    trends_query =
-      latest_daily_trends_query()
-      |> filter_by_trend(trend)
-
-    entries =
-      from(fs in FMPSecurity,
-        join: dt in subquery(trends_query),
-        on: fs.symbol == dt.symbol,
-        where: not is_nil(fs.market_cap),
-        order_by: [desc: fs.market_cap],
-        limit: ^limit_number,
-        select: %{security: fs, trend: dt}
-      )
+    items =
+      base_screener_query()
+      |> where(trend: ^trend)
+      |> limit(^limit_number)
       |> Repo.all()
-      |> Enum.into(%{}, fn %{security: security} = item ->
-        {security.symbol, item}
-      end)
+      |> key_by_symbol()
 
-    {:ok, entries}
+    {:ok, items}
   end
 
   @doc """
@@ -127,71 +107,26 @@ defmodule Loin.FMP do
   """
   def get_securities_with_trend_change(limit_number \\ 50)
       when is_integer(limit_number) do
-    trends_query =
-      latest_daily_trends_query()
-      |> filter_by_has_trend_change()
-
-    entries =
-      from(fs in FMPSecurity,
-        join: dt in subquery(trends_query),
-        on: fs.symbol == dt.symbol,
-        where: not is_nil(fs.market_cap),
-        order_by: [desc: fs.market_cap],
-        limit: ^limit_number,
-        select: %{security: fs, trend: dt}
-      )
+    items =
+      base_screener_query()
+      |> where([s], not is_nil(s.trend_change))
+      |> limit(^limit_number)
       |> Repo.all()
-      |> Enum.into(%{}, fn %{security: security} = item ->
-        {security.symbol, item}
-      end)
+      |> key_by_symbol()
 
-    {:ok, entries}
-  end
-
-  @doc """
-  Gets the ttm_ratios for a specific security.
-
-  ## Examples
-
-      iex> get_ttm_ratios_by_symbol("AAPL")
-      {:ok, %{}}
-
-  """
-  def get_ttm_ratios_by_symbol(symbol) when is_binary(symbol) do
-    result = Repo.get_by(TTMRatio, symbol: symbol)
-    {:ok, result}
+    {:ok, items}
   end
 
   # Private
 
-  defp latest_daily_trends_query() do
-    from(dt in DailyTrend,
-      distinct: [asc: :symbol],
-      order_by: [desc: :date],
-      where: [is_valid: true]
+  defp base_screener_query do
+    from(s in Screener,
+      where: not is_nil(s.market_cap),
+      order_by: [desc: s.market_cap]
     )
   end
 
-  defp fmp_securities_query() do
-    from(fs in FMPSecurity,
-      where: not is_nil(fs.market_cap),
-      order_by: [desc: fs.market_cap]
-    )
-  end
-
-  defp filter_by_symbols(query, symbols) when is_list(symbols),
-    do: where(query, [e], e.symbol in ^symbols)
-
-  defp filter_by_has_trend_change(query), do: where(query, [dt], not is_nil(dt.trend_change))
-
-  defp filter_by_trend(query, trend) when trend in ["up", "down"], do: where(query, trend: ^trend)
-
-  defp query_into_map(query) do
-    entries =
-      query
-      |> Repo.all()
-      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
-
-    {:ok, entries}
+  defp key_by_symbol(items) when is_list(items) do
+    Enum.into(items, %{}, fn %{symbol: symbol} = item -> {symbol, item} end)
   end
 end

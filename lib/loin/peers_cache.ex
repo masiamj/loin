@@ -53,7 +53,7 @@ defmodule Loin.PeersCache do
     results =
       result_map
       |> Map.values()
-      |> Enum.sort_by(& &1.security.market_cap, :desc)
+      |> Enum.sort_by(& &1.market_cap, :desc)
 
     {:ok, results}
   end

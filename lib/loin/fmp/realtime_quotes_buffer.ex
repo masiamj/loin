@@ -19,14 +19,22 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
 
   @impl true
   def handle_cast({:put, {symbol, latest_price}}, state) do
-    state = Map.update(state, :buffer, %{}, fn buffer -> Map.put(buffer, symbol, latest_price) end)
+    state =
+      Map.update(state, :buffer, %{}, fn buffer -> Map.put(buffer, symbol, latest_price) end)
+
     {:noreply, state}
   end
 
   @impl true
   def handle_info(:flush, %{buffer: buffer} = _state) do
-    symbols = Map.keys(buffer)
-    Logger.info("Flushing RealtimeQuotesBuffer... processing symbols #{Enum.join(symbols, ", ")}")
+    Enum.each(buffer, fn {symbol, price} ->
+      Phoenix.PubSub.broadcast(
+        Loin.PubSub,
+        "realtime_quotes",
+        {:realtime_quote, {symbol, %{price: price}}}
+      )
+    end)
+
     schedule_flush()
     {:noreply, %{buffer: %{}}}
   end
@@ -39,7 +47,7 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
 
   # Private
 
-  def schedule_flush(from_now_ms \\ 5000) do
+  def schedule_flush(from_now_ms \\ 1000) do
     Process.send_after(self(), :flush, from_now_ms)
   end
 end

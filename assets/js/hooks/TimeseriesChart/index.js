@@ -1,7 +1,5 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
-import first from 'lodash/first'
-import isEqual from 'lodash/isEqual'
 
 const getColorForItem = (item) => {
   switch (get(item, ['trend'], null)) {
@@ -14,47 +12,6 @@ const getColorForItem = (item) => {
     case 'neutral':
       return '#ca8a04'
   }
-}
-
-const calculateReturnPercentage = (last = {}, current = {}) => {
-  if (last && last.close > 0) {
-    return Math.round(((current.close - last.close) / last.close) * 100)
-  }
-
-  return null
-}
-
-const isImportantTrendChange = (item = {}) => {
-  switch (get(item, ['trend_change'], null)) {
-    case 'down_to_neutral':
-    case 'up_to_neutral':
-    case 'up_to_down':
-    case 'down_to_up':
-      return true
-    default:
-      return false
-  }
-
-}
-
-const getMarkers = (completeDataset = []) => {
-  const { list } = completeDataset.reduce((acc, current) => {
-    const latestItem = get(acc, ['latest'], {})
-    const latestTrendChange = get(latestItem, ['trend_change'], null)
-    const currentTrendChange = get(current, ['trend_change'], null)
-    const isOngoingTrend = isEqual(latestTrendChange, currentTrendChange)
-
-    if (!isOngoingTrend) {
-      if (isImportantTrendChange(current)) {
-        const returnPercentage = calculateReturnPercentage(latestItem, current)
-        acc.list.push({ time: current.date, color: '#64748b', shape: 'circle', text: `${returnPercentage}%`, position: 'aboveBar', size: 0 })
-      }
-      acc.latest = current
-    }
-
-    return acc
-  }, { list: [], latest: first(completeDataset) })
-  return list
 }
 
 export const TimeseriesChart = {
@@ -100,7 +57,6 @@ export const TimeseriesChart = {
   },
   renderChart() {
     const data = this.getTimeseriesData()
-    console.log(data)
 
     /**
      * Data for price line
@@ -113,24 +69,11 @@ export const TimeseriesChart = {
 
 
     /**
-     * Create marker line
-     */
-    // const markerData = data.map(({ date, trend }) => ({
-    //   color: getColorForItem({ trend }),
-    //   time: date,
-    //   value: 0
-    // }))
-
-    // const markers = getMarkers(data)
-
-    /**
-     * Handle changing chart data (clear and reset)
-     */
+    * Handle changing chart data (clear and reset)
+    */
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
-      // this.chartInstance.removeSeries(this.markerSeries)
       this.lineSeries = null
-      this.markerSeries = null
     }
 
     /**
@@ -140,22 +83,8 @@ export const TimeseriesChart = {
     this.lineSeries.setData(chartData);
 
     /**
-     * Creates custom marker series
-     */
-    // this.markerSeries = this.chartInstance.addLineSeries({
-    //   baseLineVisible: false,
-    //   crosshairMarkerVisible: false,
-    //   lastValueVisible: false,
-    //   priceLineVisible: false,
-    //   lineWidth: 4
-    // });
-    // this.markerSeries.setData(markerData);
-    // this.markerSeries.setMarkers(markers)
-
-    /**
      * Scale to constraints
      */
-
     this.chartInstance.timeScale().setVisibleRange({
       from: (new Date("2021/09/01")).getTime() / 1000,
       to: (new Date()).getTime() / 1000,

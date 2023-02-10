@@ -20,11 +20,7 @@ defmodule LoinWeb.SecurityLive do
     ~H"""
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-0 divide-x lg:h-[94vh]">
-        <LoinWeb.Securities.quote_section
-          security={@security}
-          trend={@trend}
-          ttm_ratios={@ttm_ratios || %{}}
-        />
+        <LoinWeb.Securities.quote_section security={@security} />
         <div
           class="h-[40vh] lg:h-[94vh] w-full col-span-2"
           data-timeseries={@timeseries_data}
@@ -92,10 +88,8 @@ defmodule LoinWeb.SecurityLive do
   defp mount_impl(symbol) do
     proper_symbol = String.upcase(symbol)
 
-    with {:ok, %{^proper_symbol => %{security: security, trend: trend}}} <-
-           FMP.get_securities_by_symbols([proper_symbol]),
+    with {:ok, %{^proper_symbol => security}} <- FMP.get_securities_by_symbols([proper_symbol]),
          {:ok, {^proper_symbol, chart_data}} <- TimeseriesCache.get_encoded(proper_symbol),
-         {:ok, ttm_ratios} <- FMP.get_ttm_ratios_by_symbol(proper_symbol),
          is_etf <- Map.get(security, :is_etf),
          extra_information <- fetch_more_relevant_information(security) do
       %{}
@@ -103,8 +97,6 @@ defmodule LoinWeb.SecurityLive do
       |> Map.put(:symbol, proper_symbol)
       |> Map.put(:security, security)
       |> Map.put(:timeseries_data, chart_data)
-      |> Map.put(:trend, trend)
-      |> Map.put(:ttm_ratios, ttm_ratios)
       |> Map.merge(extra_information)
     else
       _ -> %{}

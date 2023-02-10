@@ -1,4 +1,8 @@
 defmodule Loin.FMP.RealtimeQuotesClient do
+  @moduledoc """
+  Client for real-time websocket connections for FMP trades.
+  """
+
   @url "wss://websockets.financialmodelingprep.com"
 
   require Logger

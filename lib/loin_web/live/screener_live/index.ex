@@ -196,10 +196,10 @@ defmodule LoinWeb.ScreenerLive do
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
               <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
-                <span class="text-gray-500" style="font-size:10px;">
-                  <%= item.fmp_securities_symbol %>
+                <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
+                  <%= item.name %>
                 </span>
-                <span class="font-medium line-clamp-1"><%= item.name %></span>
+                <span class="font-medium line-clamp-1"><%= item.fmp_securities_symbol %></span>
               </.link>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:close}>
@@ -265,7 +265,9 @@ defmodule LoinWeb.ScreenerLive do
               <%= item.sector %>
             </:col>
             <:col :let={item} col_style="min-width:120px;" label="Industry" field={:industry}>
-              <%= item.industry %>
+              <span class="line-clamp-2">
+                <%= item.industry %>
+              </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="PE Ratio" field={:pe}>
               <%= Intl.format_decimal(item.pe) %>

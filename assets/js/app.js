@@ -40,3 +40,15 @@ liveSocket.enableDebug()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+/**
+ * Handles incoming event from backend to trigger an animation on realtime_quotes
+ */
+window.addEventListener(`phx:flash-as-new`, (e) => {
+  const el = document.getElementById(e.detail.id)
+  if (el) {
+    const animationFn = el.getAttribute('data-animate')
+    if (animationFn) {
+      liveSocket.execJS(el, animationFn)
+    }
+  }
+})
