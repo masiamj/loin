@@ -21,8 +21,8 @@ defmodule Loin.FMP.Screener do
       :close_above_day_200_sma,
       :close_above_day_50_sma,
       :daily_trends_date,
-      :day_200_sma,
-      :day_50_sma,
+      :daily_trends_day_200_sma,
+      :daily_trends_day_50_sma,
       :day_50_sma_above_day_200_sma,
       :daily_trends_id,
       :daily_trends_inserted_at,
@@ -54,9 +54,17 @@ defmodule Loin.FMP.Screener do
       :eps,
       :exchange_short_name,
       :exchange,
+      :fmp_securities_day_200_sma,
+      :fmp_securities_day_50_sma,
+      :fmp_securities_day_high,
+      :fmp_securities_day_low,
       :fmp_securities_id,
+      :fmp_securities_open,
+      :fmp_securities_previous_close,
       :fmp_securities_symbol,
       :fmp_securities_updated_at,
+      :fmp_securities_year_high,
+      :fmp_securities_year_low,
       :full_time_employees,
       :image,
       :industry,
@@ -100,8 +108,8 @@ defmodule Loin.FMP.Screener do
       :close_above_day_200_sma,
       :close_above_day_50_sma,
       :daily_trends_date,
-      :day_200_sma,
-      :day_50_sma,
+      :daily_trends_day_200_sma,
+      :daily_trends_day_50_sma,
       :day_50_sma_above_day_200_sma,
       :daily_trends_id,
       :daily_trends_inserted_at,
@@ -133,9 +141,17 @@ defmodule Loin.FMP.Screener do
       :eps,
       :exchange_short_name,
       :exchange,
+      :fmp_securities_day_200_sma,
+      :fmp_securities_day_50_sma,
+      :fmp_securities_day_high,
+      :fmp_securities_day_low,
       :fmp_securities_id,
+      :fmp_securities_open,
+      :fmp_securities_previous_close,
       :fmp_securities_symbol,
       :fmp_securities_updated_at,
+      :fmp_securities_year_high,
+      :fmp_securities_year_low,
       :full_time_employees,
       :image,
       :industry,
@@ -186,9 +202,9 @@ defmodule Loin.FMP.Screener do
     field :daily_trends_symbol, :string
     field :daily_trends_updated_at, :utc_datetime_usec
     field :daily_trends_volume, :float
-    field :day_200_sma, :float
+    field :daily_trends_day_200_sma, :float
     field :day_50_sma_above_day_200_sma, :boolean, default: false
-    field :day_50_sma, :float
+    field :daily_trends_day_50_sma, :float
     field :previous_close_above_day_200_sma, :boolean, default: false
     field :previous_close_above_day_50_sma, :boolean, default: false
     field :daily_trends_previous_close, :float
@@ -213,9 +229,17 @@ defmodule Loin.FMP.Screener do
     field :eps, :float
     field :exchange_short_name, :string
     field :exchange, :string
+    field :fmp_securities_day_200_sma, :float
+    field :fmp_securities_day_50_sma, :float
+    field :fmp_securities_day_high, :float
+    field :fmp_securities_day_low, :float
     field :fmp_securities_id, :string
+    field :fmp_securities_open, :float
+    field :fmp_securities_previous_close, :float
     field :fmp_securities_symbol, :string
     field :fmp_securities_updated_at, :utc_datetime_usec
+    field :fmp_securities_year_high, :float
+    field :fmp_securities_year_low, :float
     field :full_time_employees, :integer
     field :image, :string
     field :industry, :string

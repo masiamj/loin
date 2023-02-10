@@ -17,6 +17,10 @@ defmodule Loin.FMP.FMPSecurity do
     field :city, :string
     field :country, :string
     field :currency, :string
+    field :day_200_sma, :float
+    field :day_50_sma, :float
+    field :day_high, :float
+    field :day_low, :float
     field :description, :string
     field :eps, :float
     field :exchange, :string
@@ -29,7 +33,9 @@ defmodule Loin.FMP.FMPSecurity do
     field :last_dividend, :float
     field :market_cap, :integer
     field :name, :string
+    field :open, :float
     field :pe, :float
+    field :previous_close, :float
     field :price, :float
     field :sector, :string
     field :state, :string
@@ -37,6 +43,8 @@ defmodule Loin.FMP.FMPSecurity do
     field :volume, :integer
     field :volume_avg, :integer
     field :website, :string
+    field :year_high, :float
+    field :year_low, :float
 
     timestamps()
   end

@@ -9,17 +9,14 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   use WebSockex
 
   def start_link(_opts) do
-    Logger.info("Starting RealtimeQuotesClient...")
     WebSockex.start_link(@url, __MODULE__, %{})
   end
 
   def handle_cast({:send_message, message}, state) do
-    Logger.info("Sending RealtimeQuotesClient message: #{message}")
     {:reply, {:text, message}, state}
   end
 
   def handle_connect(_connection, state) do
-    Logger.info("RealtimeQuotesClient connected to FMP")
     login()
     {:ok, state}
   end
@@ -43,14 +40,12 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   end
 
   defp handle_frame_content(%{"event" => "login"}, state) do
-    Logger.info("RealtimeQuotesClient authenticated successfully")
     subscribe_to_all()
     {:ok, state}
   end
 
   defp handle_frame_content(%{"lp" => latest_price, "s" => symbol, "type" => "T"} = _trade, state) do
     proper_symbol = String.upcase(symbol)
-    # Logger.info("Processed realtime quote for #{proper_symbol}: #{latest_price}")
     Loin.FMP.RealtimeQuotesBuffer.put({proper_symbol, latest_price})
     {:ok, state}
   end

@@ -27,11 +27,31 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
 
   @impl true
   def handle_info(:flush, %{buffer: buffer} = _state) do
-    Enum.each(buffer, fn {symbol, price} ->
+    {:ok, securities_map} =
+      buffer
+      |> Map.keys()
+      |> Loin.FMP.get_securities_by_symbols()
+
+    buffer
+    |> Flow.from_enumerable()
+    |> Flow.partition()
+    |> Flow.map(fn {symbol, price} ->
+      existing_security = Map.get(securities_map, symbol, %{})
+      previous_close = Map.get(existing_security, :fmp_securities_previous_close)
+
+      {symbol,
+       %{
+         price: price,
+         change_value: price - previous_close,
+         change_percent: (price - previous_close) / previous_close
+       }}
+    end)
+    |> Enum.to_list()
+    |> Enum.each(fn {symbol, computation} ->
       Phoenix.PubSub.broadcast(
         Loin.PubSub,
         "realtime_quotes",
-        {:realtime_quote, {symbol, %{price: price}}}
+        {:realtime_quote, {symbol, computation}}
       )
     end)
 
