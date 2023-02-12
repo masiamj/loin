@@ -5,6 +5,7 @@ defmodule LoinWeb.UserResetPasswordLive do
 
   def render(assigns) do
     ~H"""
+    <div class="flex flex-col py-24 mx-auto max-w-sm min-h-[94vh]">
     <.header>Reset Password</.header>
 
     <.simple_form
@@ -35,6 +36,7 @@ defmodule LoinWeb.UserResetPasswordLive do
       |
       <.link href={~p"/users/log_in"}>Log in</.link>
     </p>
+    </div>
     """
   end
 

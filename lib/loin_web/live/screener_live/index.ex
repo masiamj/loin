@@ -11,8 +11,8 @@ defmodule LoinWeb.ScreenerLive do
       placeholder: "Search by ticker...",
       type: "search"
     ],
-    price_min: [label: "Minimum Price ($)", op: :>=, type: "number"],
-    price_max: [label: "Maximum Price ($)", op: :<=, type: "number"],
+    price: [label: "Minimum Price ($)", op: :>=, type: "number"],
+    price: [label: "Maximum Price ($)", op: :<=, type: "number"],
     change_percent: [label: "Minimum change today (%)", op: :>=, type: "number"],
     change_percent: [label: "Maximum change today (%)", op: :<=, type: "number"],
     market_cap: [label: "Minimum market cap ($)", op: :>=, type: "number"],
