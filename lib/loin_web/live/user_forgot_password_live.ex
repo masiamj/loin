@@ -5,7 +5,7 @@ defmodule LoinWeb.UserForgotPasswordLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="flex flex-col py-24 mx-auto max-w-sm min-h-[94vh]">
       <.header class="text-center">
         Forgot your password?
         <:subtitle>We'll send a password reset link to your inbox</:subtitle>

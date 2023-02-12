@@ -6,7 +6,7 @@ defmodule LoinWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="flex flex-col py-24 mx-auto max-w-sm min-h-[94vh]">
       <.header class="text-center">
         Register for an account
         <:subtitle>
@@ -14,7 +14,7 @@ defmodule LoinWeb.UserRegistrationLive do
           <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
             Sign in
           </.link>
-          to your account now.
+          now.
         </:subtitle>
       </.header>
 
@@ -29,10 +29,6 @@ defmodule LoinWeb.UserRegistrationLive do
         method="post"
         as={:user}
       >
-        <.error :if={@changeset.action == :insert}>
-          Oops, something went wrong! Please check the errors below.
-        </.error>
-
         <.input field={{f, :email}} type="email" label="Email" required />
         <.input field={{f, :password}} type="password" label="Password" required />
 

@@ -3,15 +3,15 @@ defmodule LoinWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="flex flex-col py-24 mx-auto max-w-sm min-h-[94vh]">
       <.header class="text-center">
-        Sign in to account
+        Sign in to your account
         <:subtitle>
           Don't have an account?
           <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
             Sign up
           </.link>
-          for an account now.
+          now.
         </:subtitle>
       </.header>
 
@@ -28,7 +28,7 @@ defmodule LoinWeb.UserLoginLive do
 
         <:actions :let={f}>
           <.input field={{f, :remember_me}} type="checkbox" label="Keep me logged in" />
-          <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
+          <.link href={~p"/users/reset_password"} class="text-sm text-zinc-600">
             Forgot your password?
           </.link>
         </:actions>

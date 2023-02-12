@@ -74,6 +74,20 @@ defmodule LoinWeb.HeaderComponents do
             <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Screener
             </.link>
+            <.link navigate={~p"/users/log_in"} class="relative group">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
+              </div>
+              <button class="relative px-3 py-1 bg-gray-50 rounded-md text-gray-500">
+                Log in
+              </button>
+            </.link>
+            <.link navigate={~p"/users/register"} class="relative group">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
+              </div>
+              <button class="relative px-3 py-1 bg-black rounded-md text-white">
+                Sign up
+              </button>
+            </.link>
           </div>
 
           <%!-- <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
@@ -82,12 +96,6 @@ defmodule LoinWeb.HeaderComponents do
               class="relative px-2 py-1 text-gray-500 hover:text-black"
             >
               How it works
-            </.link>
-            <.link
-              navigate={~p"/users/log_in"}
-              class="relative px-2 py-1 text-gray-500 hover:text-black"
-            >
-              Screener
             </.link>
             <.link navigate={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
