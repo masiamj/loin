@@ -13,15 +13,7 @@ defmodule Loin.FMP do
   Queries against the screener view with dynamic params.
   """
   def filter_screener(params \\ %{}) do
-    final_filters =
-      params
-      |> Map.get("filters", %{})
-      |> Enum.filter(fn {_key, %{"value" => value}} -> value != "" end)
-      |> Enum.into(%{})
-
-    final_params = Map.put(params, "filters", final_filters)
-
-    Flop.validate_and_run(Screener, final_params, for: Screener)
+    Flop.validate_and_run(Screener, params, for: Screener)
   end
 
   @doc """
