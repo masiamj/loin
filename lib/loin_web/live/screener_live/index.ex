@@ -254,11 +254,11 @@ defmodule LoinWeb.ScreenerLive do
             >
               <%= boolean_content(item.day_50_sma_above_day_200_sma) %>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="200D SMA" field={:day_200_sma}>
-              <%= Intl.format_money_decimal(item.day_200_sma) %>
+            <:col :let={item} col_style="min-width:100px;" label="200D SMA" field={:fmp_securities_day_200_sma}>
+              <%= Intl.format_money_decimal(item.fmp_securities_day_200_sma) %>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="50D SMA" field={:day_50_sma}>
-              <%= Intl.format_money_decimal(item.day_50_sma) %>
+            <:col :let={item} col_style="min-width:100px;" label="50D SMA" field={:fmp_securities_day_50_sma}>
+              <%= Intl.format_money_decimal(item.fmp_securities_day_50_sma) %>
             </:col>
 
             <:col :let={item} col_style="min-width:120px;" label="Sector" field={:sector}>
