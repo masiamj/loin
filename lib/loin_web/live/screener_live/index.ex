@@ -111,7 +111,7 @@ defmodule LoinWeb.ScreenerLive do
       label: "Maximum Return on Equity (TTM)",
       op: :<=,
       type: "number"
-    ],
+    ]
   ]
 
   @impl true
@@ -322,7 +322,6 @@ defmodule LoinWeb.ScreenerLive do
             >
               <%= Intl.format_percent(item.return_on_equity_ttm) %>
             </:col>
-
           </Flop.Phoenix.table>
 
           <Flop.Phoenix.pagination
@@ -372,6 +371,7 @@ defmodule LoinWeb.ScreenerLive do
   @impl Phoenix.LiveView
   def handle_params(params, _, socket) do
     IO.inspect(params, label: "handle_params")
+
     case FMP.filter_screener(params) do
       {:ok, {results, meta}} ->
         {:noreply, assign(socket, %{filtered_data: results, meta: meta})}
