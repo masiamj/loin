@@ -26,8 +26,8 @@ defmodule LoinWeb.Router do
     # use Kaffy.Routes, scope: "/admin", pipe_through: [:browser, :developers]
 
     pipe_through [:browser, :developers]
-    use Kaffy.Routes, scope: "/admin"
     # Admin portal
+    use Kaffy.Routes, scope: "/admin"
     # Phoenix LiveDashboard
     live_dashboard "/dashboard", metrics: LoinWeb.Telemetry
     # Oban web dashboard
@@ -42,16 +42,12 @@ defmodule LoinWeb.Router do
     forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
   end
 
-  ## Authentication routes
+  ## Unauthentication routes
   scope "/", LoinWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
       on_mount: [{LoinWeb.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/", HomeLive, :home
-      live "/s/:symbol", SecurityLive, :show
-      live "/screener", ScreenerLive, :index
-      live "/how-it-works", HowItWorksLive, :index
       live "/users/log_in", UserLoginLive, :new
       live "/users/register", UserRegistrationLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
@@ -61,6 +57,7 @@ defmodule LoinWeb.Router do
     post "/users/log_in", UserSessionController, :create
   end
 
+  ## Authenticated routes
   scope "/", LoinWeb do
     pipe_through [:browser, :require_authenticated_user]
 
@@ -71,6 +68,7 @@ defmodule LoinWeb.Router do
     end
   end
 
+  ## Maybe authenticated routes
   scope "/", LoinWeb do
     pipe_through [:browser]
 
@@ -80,6 +78,18 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.UserAuth, :mount_current_user}] do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
+    end
+  end
+
+  ## Public routes
+  scope "/", LoinWeb do
+    pipe_through [:browser]
+
+    live_session :public,
+      on_mount: [{LoinWeb.UserAuth, :mount_current_user}] do
+      live "/", HomeLive, :home
+      live "/s/:symbol", SecurityLive, :show
+      live "/screener", ScreenerLive, :index
     end
   end
 end

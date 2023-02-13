@@ -86,7 +86,8 @@ defmodule Loin.MixProject do
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:websockex, "~> 0.4.3"}
     ]
   end
 

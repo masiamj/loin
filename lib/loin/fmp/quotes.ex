@@ -80,7 +80,24 @@ defmodule Loin.FMP.Quotes do
       Repo.insert_all(FMPSecurity, entries,
         on_conflict:
           {:replace,
-           [:change, :change_percent, :eps, :market_cap, :pe, :price, :volume, :volume_avg]},
+           [
+             :change,
+             :change_percent,
+             :day_200_sma,
+             :day_50_sma,
+             :day_high,
+             :day_low,
+             :eps,
+             :market_cap,
+             :open,
+             :pe,
+             :previous_close,
+             :price,
+             :volume,
+             :volume_avg,
+             :year_high,
+             :year_low
+           ]},
         conflict_target: [:symbol]
       )
 

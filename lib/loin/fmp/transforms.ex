@@ -66,12 +66,20 @@ defmodule Loin.FMP.Transforms do
     %{
       change: Map.get(security, "change") |> string_to_number(:float),
       change_percent: Map.get(security, "changesPercentage") |> string_to_number(:float),
+      day_200_sma: Map.get(security, "priceAvg200") |> string_to_number(:float),
+      day_50_sma: Map.get(security, "priceAvg50") |> string_to_number(:float),
+      day_high: Map.get(security, "dayHigh") |> string_to_number(:float),
+      day_low: Map.get(security, "dayLow") |> string_to_number(:float),
       eps: Map.get(security, "eps") |> string_to_number(:float),
       market_cap: Map.get(security, "marketCap") |> string_to_number(:integer),
+      open: Map.get(security, "open") |> string_to_number(:float),
       pe: Map.get(security, "pe") |> string_to_number(:float),
+      previous_close: Map.get(security, "previousClose") |> string_to_number(:float),
       price: Map.get(security, "price") |> string_to_number(:float),
       volume: Map.get(security, "volume") |> string_to_number(:integer),
       volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
+      year_high: Map.get(security, "yearHigh") |> string_to_number(:float),
+      year_low: Map.get(security, "yearLow") |> string_to_number(:float),
       symbol: Map.get(security, "symbol")
     }
     |> put_timestamps()

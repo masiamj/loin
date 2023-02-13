@@ -41,6 +41,10 @@ defmodule Loin.Application do
       ),
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
+      # Realtime Quotes buffer
+      # {Loin.FMP.RealtimeQuotesBuffer, []},
+      # # Realtime Quotes cache
+      # {Loin.FMP.RealtimeQuotesClient, []},
       # Start the Oban jobs processor
       {Oban, oban_config()}
     ]

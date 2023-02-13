@@ -11,6 +11,10 @@ defmodule Loin.Repo.Migrations.CreateFmpSecurities do
       add :city, :string
       add :country, :string
       add :currency, :string
+      add :day_200_sma, :float
+      add :day_50_sma, :float
+      add :day_high, :float
+      add :day_low, :float
       add :description, :text
       add :eps, :float
       add :exchange, :string
@@ -23,7 +27,9 @@ defmodule Loin.Repo.Migrations.CreateFmpSecurities do
       add :last_dividend, :float
       add :market_cap, :bigint
       add :name, :string
+      add :open, :float
       add :pe, :float
+      add :previous_close, :float
       add :price, :float
       add :sector, :string
       add :state, :string
@@ -31,6 +37,8 @@ defmodule Loin.Repo.Migrations.CreateFmpSecurities do
       add :volume, :integer
       add :volume_avg, :integer
       add :website, :string
+      add :year_high, :float
+      add :year_low, :float
 
       timestamps(autogenerate: {DateTime, :utc_now, []}, type: :timestamptz)
     end

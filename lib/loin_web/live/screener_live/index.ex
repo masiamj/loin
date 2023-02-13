@@ -11,8 +11,8 @@ defmodule LoinWeb.ScreenerLive do
       placeholder: "Search by ticker...",
       type: "search"
     ],
-    price_min: [label: "Minimum Price ($)", op: :>=, type: "number"],
-    price_max: [label: "Maximum Price ($)", op: :<=, type: "number"],
+    price: [label: "Minimum Price ($)", op: :>=, type: "number"],
+    price: [label: "Maximum Price ($)", op: :<=, type: "number"],
     change_percent: [label: "Minimum change today (%)", op: :>=, type: "number"],
     change_percent: [label: "Maximum change today (%)", op: :<=, type: "number"],
     market_cap: [label: "Minimum market cap ($)", op: :>=, type: "number"],
@@ -196,13 +196,13 @@ defmodule LoinWeb.ScreenerLive do
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
               <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
-                <span class="text-gray-500" style="font-size:10px;">
-                  <%= item.fmp_securities_symbol %>
+                <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
+                  <%= item.name %>
                 </span>
-                <span class="font-medium line-clamp-1"><%= item.name %></span>
+                <span class="font-medium line-clamp-1"><%= item.fmp_securities_symbol %></span>
               </.link>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:close}>
+            <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:price}>
               <%= Intl.format_money_decimal(item.price) %>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Change" field={:change_value}>
@@ -254,18 +254,30 @@ defmodule LoinWeb.ScreenerLive do
             >
               <%= boolean_content(item.day_50_sma_above_day_200_sma) %>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="200D SMA" field={:day_200_sma}>
-              <%= Intl.format_money_decimal(item.day_200_sma) %>
+            <:col
+              :let={item}
+              col_style="min-width:100px;"
+              label="200D SMA"
+              field={:fmp_securities_day_200_sma}
+            >
+              <%= Intl.format_money_decimal(item.fmp_securities_day_200_sma) %>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="50D SMA" field={:day_50_sma}>
-              <%= Intl.format_money_decimal(item.day_50_sma) %>
+            <:col
+              :let={item}
+              col_style="min-width:100px;"
+              label="50D SMA"
+              field={:fmp_securities_day_50_sma}
+            >
+              <%= Intl.format_money_decimal(item.fmp_securities_day_50_sma) %>
             </:col>
 
             <:col :let={item} col_style="min-width:120px;" label="Sector" field={:sector}>
               <%= item.sector %>
             </:col>
             <:col :let={item} col_style="min-width:120px;" label="Industry" field={:industry}>
-              <%= item.industry %>
+              <span class="line-clamp-2">
+                <%= item.industry %>
+              </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="PE Ratio" field={:pe}>
               <%= Intl.format_decimal(item.pe) %>

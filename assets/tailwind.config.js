@@ -12,12 +12,18 @@ module.exports = {
   theme: {
     extend: {
       animation: {
+        "flash-as-new": 'flash-as-new 0.5s linear 1 forwards',
         tilt: 'tilt 10s infinite linear',
       },
       colors: {
         brand: "#FD4F00",
       },
       keyframes: {
+        "flash-as-new": {
+          '0%': { background: 'white' },
+          '25%': { background: '#fef9c3' },
+          '100%': { background: 'white' },
+        },
         tilt: {
           '0%, 50%, 100%': {
             transform: 'rotate(0deg)',
