@@ -175,7 +175,7 @@ defmodule LoinWeb.ScreenerLive do
             path={~p"/screener"}
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
-              <.link class="flex flex-col" patch={~p"/s/AAPL"}>
+              <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
                 <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
                   <%= item.name %>
                 </span>

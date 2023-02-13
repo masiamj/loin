@@ -298,7 +298,7 @@ defmodule LoinWeb.Securities do
 
   def sector_badge(assigns) do
     ~H"""
-    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium" navigate={~p"/"}>
+    <.link class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium line-clamp-1" navigate={~p"/"}>
       <%= @value %>
     </.link>
     """
