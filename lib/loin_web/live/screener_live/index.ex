@@ -40,7 +40,7 @@ defmodule LoinWeb.ScreenerLive do
       label: "Sector",
       options: [
         {"Communications", "Communication Services"},
-        {"Consumer Discretionary", "Consumer Cyclical"},
+        {"Consumer Cyclical", "Consumer Cyclical"},
         {"Consumer Staples", "Consumer Defensive"},
         {"Energy", "Energy"},
         {"Financials", "Financial Services"},
@@ -210,12 +210,6 @@ defmodule LoinWeb.ScreenerLive do
             <:col :let={item} col_style="min-width:120px;" label="Sector" field={:sector}>
               <%= item.sector %>
             </:col>
-            <:col :let={item} col_style="min-width:100px;" label="PE Ratio" field={:pe}>
-              <%= Intl.format_decimal(item.pe) %>
-            </:col>
-            <:col :let={item} col_style="min-width:100px;" label="EPS" field={:eps}>
-              <%= Intl.format_money_decimal(item.eps) %>
-            </:col>
             <:col
               :let={item}
               col_style="min-width:100px;"
@@ -223,6 +217,9 @@ defmodule LoinWeb.ScreenerLive do
               field={:full_time_employees}
             >
               <%= Intl.format_decimal(item.full_time_employees, :short) %>
+            </:col>
+            <:col :let={item} col_style="min-width:100px;" label="EPS" field={:eps}>
+              <%= Intl.format_money_decimal(item.eps) %>
             </:col>
             <:col
               :let={item}
@@ -235,27 +232,10 @@ defmodule LoinWeb.ScreenerLive do
             <:col
               :let={item}
               col_style="min-width:100px;"
-              label="PE Growth Ratio (TTM)"
+              label="PEG Ratio (TTM)"
               field={:peg_ratio_ttm}
             >
               <%= Intl.format_decimal(item.peg_ratio_ttm) %>
-            </:col>
-
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="Cash Ratio (TTM)"
-              field={:cash_ratio_ttm}
-            >
-              <%= Intl.format_decimal(item.cash_ratio_ttm) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="Current Ratio (TTM)"
-              field={:current_ratio_ttm}
-            >
-              <%= Intl.format_decimal(item.current_ratio_ttm) %>
             </:col>
             <:col
               :let={item}
@@ -263,7 +243,7 @@ defmodule LoinWeb.ScreenerLive do
               label="Dividend Yield (TTM)"
               field={:dividend_yield_ttm}
             >
-              <%= Intl.format_percent(item.dividend_yield_ttm) %>
+              <%= Intl.format_percent_from_decimal(item.dividend_yield_ttm) %>
             </:col>
             <:col
               :let={item}
@@ -271,7 +251,7 @@ defmodule LoinWeb.ScreenerLive do
               label="Earnings Yield (TTM)"
               field={:earnings_yield_ttm}
             >
-              <%= Intl.format_percent(item.earnings_yield_ttm) %>
+              <%= Intl.format_percent_from_decimal(item.earnings_yield_ttm) %>
             </:col>
             <:col
               :let={item}
@@ -279,9 +259,8 @@ defmodule LoinWeb.ScreenerLive do
               label="Net Profit Margin (TTM)"
               field={:net_profit_margin_ttm}
             >
-              <%= Intl.format_percent(item.net_profit_margin_ttm) %>
+              <%= Intl.format_percent_from_decimal(item.net_profit_margin_ttm) %>
             </:col>
-
             <:col
               :let={item}
               col_style="min-width:100px;"
@@ -301,18 +280,10 @@ defmodule LoinWeb.ScreenerLive do
             <:col
               :let={item}
               col_style="min-width:100px;"
-              label="Quick Ratio (TTM)"
-              field={:quick_ratio_ttm}
-            >
-              <%= Intl.format_decimal(item.quick_ratio_ttm) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
               label="Return on Assets (TTM)"
               field={:return_on_assets_ttm}
             >
-              <%= Intl.format_percent(item.return_on_assets_ttm) %>
+              <%= Intl.format_percent_from_decimal(item.return_on_assets_ttm) %>
             </:col>
             <:col
               :let={item}
@@ -320,7 +291,7 @@ defmodule LoinWeb.ScreenerLive do
               label="Return on Equity (TTM)"
               field={:return_on_equity_ttm}
             >
-              <%= Intl.format_percent(item.return_on_equity_ttm) %>
+              <%= Intl.format_percent_from_decimal(item.return_on_equity_ttm) %>
             </:col>
           </Flop.Phoenix.table>
 

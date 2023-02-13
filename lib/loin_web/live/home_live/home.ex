@@ -59,10 +59,13 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link="~p/screener?type=etf" title="Sector trends">
+        <LoinWeb.Cards.generic title="Sector trends">
           <LoinWeb.SectorTrends.heatmap trends={@sectors} />
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link="~p/screener?trend=up" title="Uptrends">
+        <LoinWeb.Cards.generic
+          more_link={~p"/screener?filters[8][field]=trend&filters[8][value]=up"}
+          title="Uptrends"
+        >
           <%= for {symbol, item} <- @uptrends do %>
             <LoinWeb.Securities.generic_security
               id={symbol}
@@ -71,7 +74,10 @@ defmodule LoinWeb.HomeLive do
             />
           <% end %>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link="~p/screener?trend=down" title="Downtrends">
+        <LoinWeb.Cards.generic
+          more_link={~p"/screener?filters[8][field]=trend&filters[8][value]=down"}
+          title="Downtrends"
+        >
           <ul>
             <%= for {symbol, item} <- @downtrends do %>
               <LoinWeb.Securities.generic_security
@@ -82,7 +88,10 @@ defmodule LoinWeb.HomeLive do
             <% end %>
           </ul>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link="~p/screener?trend_change=all" title="Trend changes">
+        <LoinWeb.Cards.generic
+          more_link={~p"/screener?filters[9][field]=trend_change&filters[9][value]=neutral_to_up"}
+          title="Trend changes"
+        >
           <ul>
             <%= for {symbol, item} <- @trend_changes do %>
               <LoinWeb.Securities.generic_security

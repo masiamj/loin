@@ -300,7 +300,7 @@ defmodule LoinWeb.Securities do
     ~H"""
     <.link
       class="px-2 py-0.5 bg-blue-100 text-blue-500 text-xs rounded font-medium line-clamp-1"
-      navigate={~p"/"}
+      navigate={~p"/screener?filters[10][field]=sector&filters[10][value]=#{@value}"}
     >
       <%= @value %>
     </.link>
