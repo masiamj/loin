@@ -370,8 +370,6 @@ defmodule LoinWeb.ScreenerLive do
 
   @impl Phoenix.LiveView
   def handle_params(params, _, socket) do
-    IO.inspect(params, label: "handle_params")
-
     case FMP.filter_screener(params) do
       {:ok, {results, meta}} ->
         {:noreply, assign(socket, %{filtered_data: results, meta: meta})}
