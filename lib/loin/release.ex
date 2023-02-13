@@ -16,6 +16,9 @@ defmodule Loin.Release do
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
+
+    # The command to rollback all migrations
+    # {:ok, _, _} = Ecto.Migrator.with_repo(Loin.Repo, &Ecto.Migrator.run(&1, :down, to: :all))
   end
 
   defp repos do

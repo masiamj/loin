@@ -36,24 +36,6 @@ defmodule LoinWeb.ScreenerLive do
       prompt: "",
       type: "select"
     ],
-    close_above_day_200_sma: [
-      label: "Close > 200D SMA",
-      options: [{"Yes", true}, {"No", false}],
-      prompt: "",
-      type: "select"
-    ],
-    close_above_day_50_sma: [
-      label: "Close > 50D SMA",
-      options: [{"Yes", true}, {"No", false}],
-      prompt: "",
-      type: "select"
-    ],
-    day_50_sma_above_day_200_sma: [
-      label: "50D SMA > 200D SMA",
-      options: [{"Yes", true}, {"No", false}],
-      prompt: "",
-      type: "select"
-    ],
     sector: [
       label: "Sector",
       options: [
@@ -154,7 +136,7 @@ defmodule LoinWeb.ScreenerLive do
           <div class="flex flex-row items-center justify-between bg-gray-50 sticky top-0 p-4">
             <p class="text-gray-500 text-xs">Screener filters</p>
             <button
-              class="text-blue-500 text-xs px-2 py-1 bg-white hover:bg-blue-50 rounded"
+              class="text-blue-500 text-xs px-2 py-1 bg-gray-50 hover:bg-blue-50 rounded"
               phx-click="reset-filter"
             >
               Reset filters
