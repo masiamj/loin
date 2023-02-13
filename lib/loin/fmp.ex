@@ -13,7 +13,10 @@ defmodule Loin.FMP do
   Queries against the screener view with dynamic params.
   """
   def filter_screener(params \\ %{}) do
-    Flop.validate_and_run(Screener, params, for: Screener)
+    Screener
+    |> where([s], s.market_cap > 0)
+    |> where([s], s.price > 0.01)
+    |> Flop.validate_and_run(params, for: Screener)
   end
 
   @doc """
@@ -114,6 +117,7 @@ defmodule Loin.FMP do
   defp base_screener_query do
     from(s in Screener,
       where: not is_nil(s.market_cap),
+      where: s.market_cap > 0,
       order_by: [desc: s.market_cap]
     )
   end

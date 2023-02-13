@@ -10,8 +10,8 @@ defmodule Loin.FMP.Screener do
   @derive {
     Flop.Schema,
     default_order: %{
-      order_by: [:symbol],
-      order_directions: [:asc]
+      order_by: [:market_cap],
+      order_directions: [:desc]
     },
     filterable: [
       :symbol,

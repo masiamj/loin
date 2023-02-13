@@ -112,8 +112,6 @@ defmodule LoinWeb.ScreenerLive do
       op: :<=,
       type: "number"
     ],
-    ipo_date: [label: "Minimum IPO date", op: :>=, type: "date"],
-    ipo_date: [label: "Maximum IPO date", op: :<=, type: "date"]
   ]
 
   @impl true
@@ -177,7 +175,7 @@ defmodule LoinWeb.ScreenerLive do
             path={~p"/screener"}
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
-              <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
+              <.link class="flex flex-col" patch={~p"/s/AAPL"}>
                 <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
                   <%= item.name %>
                 </span>
@@ -203,69 +201,28 @@ defmodule LoinWeb.ScreenerLive do
             <:col :let={item} col_style="min-width:120px;" label="Trend" field={:trend}>
               <.trend_badge trend={item.trend} />
             </:col>
-            <:col :let={item} col_style="min-width:120px;" label="Trend at" field={:daily_trends_date}>
-              <%= item.daily_trends_date %>
-            </:col>
             <:col :let={item} col_style="min-width:120px;" label="Prev trend" field={:previous_trend}>
               <.trend_badge trend={item.previous_trend} />
             </:col>
             <:col :let={item} col_style="min-width:120px;" label="Trend change" field={:trend_change}>
               <.trend_change_badge trend_change={item.trend_change} />
             </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="Price > 200D"
-              field={:close_above_day_200_sma}
-            >
-              <%= boolean_content(item.close_above_day_200_sma) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="Price > 50D"
-              field={:close_above_day_50_sma}
-            >
-              <%= boolean_content(item.close_above_day_50_sma) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="50D SMA > 200D SMA"
-              field={:day_50_sma_above_day_200_sma}
-            >
-              <%= boolean_content(item.day_50_sma_above_day_200_sma) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="200D SMA"
-              field={:fmp_securities_day_200_sma}
-            >
-              <%= Intl.format_money_decimal(item.fmp_securities_day_200_sma) %>
-            </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="50D SMA"
-              field={:fmp_securities_day_50_sma}
-            >
-              <%= Intl.format_money_decimal(item.fmp_securities_day_50_sma) %>
-            </:col>
-
             <:col :let={item} col_style="min-width:120px;" label="Sector" field={:sector}>
               <%= item.sector %>
-            </:col>
-            <:col :let={item} col_style="min-width:120px;" label="Industry" field={:industry}>
-              <span class="line-clamp-2">
-                <%= item.industry %>
-              </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="PE Ratio" field={:pe}>
               <%= Intl.format_decimal(item.pe) %>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="EPS" field={:eps}>
               <%= Intl.format_money_decimal(item.eps) %>
+            </:col>
+            <:col
+              :let={item}
+              col_style="min-width:100px;"
+              label="Employees"
+              field={:full_time_employees}
+            >
+              <%= Intl.format_decimal(item.full_time_employees, :short) %>
             </:col>
             <:col
               :let={item}
@@ -365,18 +322,7 @@ defmodule LoinWeb.ScreenerLive do
             >
               <%= Intl.format_percent(item.return_on_equity_ttm) %>
             </:col>
-            <:col
-              :let={item}
-              col_style="min-width:100px;"
-              label="Employees"
-              field={:full_time_employees}
-            >
-              <%= Intl.format_decimal(item.full_time_employees, :short) %>
-            </:col>
 
-            <:col :let={item} col_style="min-width:100px;" label="IPO Date" field={:ipo_date}>
-              <%= Intl.format_date(item.ipo_date) %>
-            </:col>
           </Flop.Phoenix.table>
 
           <Flop.Phoenix.pagination
@@ -425,6 +371,7 @@ defmodule LoinWeb.ScreenerLive do
 
   @impl Phoenix.LiveView
   def handle_params(params, _, socket) do
+    IO.inspect(params, label: "handle_params")
     case FMP.filter_screener(params) do
       {:ok, {results, meta}} ->
         {:noreply, assign(socket, %{filtered_data: results, meta: meta})}
@@ -435,14 +382,6 @@ defmodule LoinWeb.ScreenerLive do
   end
 
   # Private
-
-  defp boolean_content(value) do
-    case value do
-      true -> "✅"
-      false -> "❌"
-      _ -> "-"
-    end
-  end
 
   defp class_for_value(value) do
     case value do
