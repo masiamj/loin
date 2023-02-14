@@ -334,16 +334,9 @@ defmodule LoinWeb.Securities do
   end
 
   def security_price(assigns) do
-    value =
-      assigns
-      |> Map.get(:security, %{})
-      |> Map.get(:price, "0")
-
-    assigns = assign(assigns, :value, value)
-
     ~H"""
     <span class="font-medium text-gray-700">
-      <%= @value %>
+      <%= Loin.Intl.format_money_decimal(@security.price) %>
     </span>
     """
   end
@@ -351,7 +344,7 @@ defmodule LoinWeb.Securities do
   def security_change(assigns) do
     with raw_value <- Map.get(assigns.security, :change, 0.0),
          class <- class_for_value(raw_value),
-         value <- Loin.Intl.format_decimal(raw_value) do
+         value <- Loin.Intl.format_money_decimal(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)

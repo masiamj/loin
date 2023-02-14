@@ -31,7 +31,7 @@ defmodule LoinWeb.HeaderComponents do
           <div class="lg:hidden">
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              class="inline-flex items-center justify-center rounded-md bg-gray-50 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
               aria-expanded="false"
               phx-click={show_mobile_menu()}
             >
@@ -74,7 +74,14 @@ defmodule LoinWeb.HeaderComponents do
             <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Screener
             </.link>
-            <.link navigate={~p"/users/log_in"} class="relative group">
+            <.link navigate={~p"/authenticate"} class="relative group">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
+              </div>
+              <button class="relative px-3 py-1 bg-black rounded-md text-white">
+                Log in
+              </button>
+            </.link>
+            <%!-- <.link navigate={~p"/users/log_in"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200">
               </div>
               <button class="relative px-3 py-1 bg-gray-50 rounded-md text-gray-500">
@@ -87,7 +94,7 @@ defmodule LoinWeb.HeaderComponents do
               <button class="relative px-3 py-1 bg-black rounded-md text-white">
                 Sign up
               </button>
-            </.link>
+            </.link> --%>
           </div>
 
           <%!-- <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
@@ -113,7 +120,7 @@ defmodule LoinWeb.HeaderComponents do
             </.link>
           </div> --%>
         </div>
-        <div class="relative block lg:hidden w-full bg-white px-4 h-[6vh]">
+        <div class="relative block lg:hidden w-full bg-gray-50 px-4 h-[6vh]">
           <input
             type="text"
             id="mobile-unauthenticated-header-search"
@@ -122,7 +129,7 @@ defmodule LoinWeb.HeaderComponents do
             phx-hook="StockSearcher"
           />
           <div class="absolute inset-y-0 right-0 flex items-center pr-6">
-            <Heroicons.magnifying_glass class="h-5 w-5 stroke-gray-400" />
+            <Heroicons.magnifying_glass class="h-5 w-5 stroke-gray-400 -mt-3" />
           </div>
         </div>
       </div>
