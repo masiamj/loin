@@ -90,6 +90,15 @@ defmodule LoinWeb.Router do
       live "/", HomeLive, :home
       live "/s/:symbol", SecurityLive, :show
       live "/screener", ScreenerLive, :index
+      live "/authenticate", AuthenticateLive, :index
     end
   end
+
+  # Identities
+  # live "/identities", IdentityLive.Index, :index
+  # live "/identities/new", IdentityLive.Index, :new
+  # live "/identities/:id/edit", IdentityLive.Index, :edit
+
+  # live "/identities/:id", IdentityLive.Show, :show
+  # live "/identities/:id/show/edit", IdentityLive.Show, :edit
 end

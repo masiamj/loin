@@ -82,6 +82,7 @@ defmodule Loin.Accounts.User do
 
   defp maybe_validate_unique_email(changeset, opts) do
     message = "An account with this email already exists. Please log in instead."
+
     if Keyword.get(opts, :validate_email, true) do
       changeset
       |> unsafe_validate_unique(:email, Loin.Repo, message: message)

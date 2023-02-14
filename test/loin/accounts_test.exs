@@ -505,4 +505,75 @@ defmodule Loin.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "identities" do
+    alias Loin.Accounts.Identity
+
+    import Loin.AccountsFixtures
+
+    @invalid_attrs %{email: nil, first_name: nil, image_url: nil, last_name: nil}
+
+    test "list_identities/0 returns all identities" do
+      identity = identity_fixture()
+      assert Accounts.list_identities() == [identity]
+    end
+
+    test "get_identity!/1 returns the identity with given id" do
+      identity = identity_fixture()
+      assert Accounts.get_identity!(identity.id) == identity
+    end
+
+    test "create_identity/1 with valid data creates a identity" do
+      valid_attrs = %{
+        email: "some email",
+        first_name: "some first_name",
+        image_url: "some image_url",
+        last_name: "some last_name"
+      }
+
+      assert {:ok, %Identity{} = identity} = Accounts.create_identity(valid_attrs)
+      assert identity.email == "some email"
+      assert identity.first_name == "some first_name"
+      assert identity.image_url == "some image_url"
+      assert identity.last_name == "some last_name"
+    end
+
+    test "create_identity/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_identity(@invalid_attrs)
+    end
+
+    test "update_identity/2 with valid data updates the identity" do
+      identity = identity_fixture()
+
+      update_attrs = %{
+        email: "some updated email",
+        first_name: "some updated first_name",
+        image_url: "some updated image_url",
+        last_name: "some updated last_name"
+      }
+
+      assert {:ok, %Identity{} = identity} = Accounts.update_identity(identity, update_attrs)
+      assert identity.email == "some updated email"
+      assert identity.first_name == "some updated first_name"
+      assert identity.image_url == "some updated image_url"
+      assert identity.last_name == "some updated last_name"
+    end
+
+    test "update_identity/2 with invalid data returns error changeset" do
+      identity = identity_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_identity(identity, @invalid_attrs)
+      assert identity == Accounts.get_identity!(identity.id)
+    end
+
+    test "delete_identity/1 deletes the identity" do
+      identity = identity_fixture()
+      assert {:ok, %Identity{}} = Accounts.delete_identity(identity)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_identity!(identity.id) end
+    end
+
+    test "change_identity/1 returns a identity changeset" do
+      identity = identity_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_identity(identity)
+    end
+  end
 end

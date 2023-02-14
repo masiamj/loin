@@ -6,36 +6,36 @@ defmodule LoinWeb.UserResetPasswordLive do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col py-24 mx-auto max-w-sm min-h-[94vh]">
-    <.header>Reset Password</.header>
+      <.header>Reset Password</.header>
 
-    <.simple_form
-      :let={f}
-      for={@changeset}
-      id="reset_password_form"
-      phx-submit="reset_password"
-      phx-change="validate"
-    >
-      <.error :if={@changeset.action == :insert}>
-        Oops, something went wrong! Please check the errors below.
-      </.error>
+      <.simple_form
+        :let={f}
+        for={@changeset}
+        id="reset_password_form"
+        phx-submit="reset_password"
+        phx-change="validate"
+      >
+        <.error :if={@changeset.action == :insert}>
+          Oops, something went wrong! Please check the errors below.
+        </.error>
 
-      <.input field={{f, :password}} type="password" label="New password" required />
-      <.input
-        field={{f, :password_confirmation}}
-        type="password"
-        label="Confirm new password"
-        required
-      />
-      <:actions>
-        <.button phx-disable-with="Resetting...">Reset Password</.button>
-      </:actions>
-    </.simple_form>
+        <.input field={{f, :password}} type="password" label="New password" required />
+        <.input
+          field={{f, :password_confirmation}}
+          type="password"
+          label="Confirm new password"
+          required
+        />
+        <:actions>
+          <.button phx-disable-with="Resetting...">Reset Password</.button>
+        </:actions>
+      </.simple_form>
 
-    <p>
-      <.link href={~p"/users/register"}>Register</.link>
-      |
-      <.link href={~p"/users/log_in"}>Log in</.link>
-    </p>
+      <p>
+        <.link href={~p"/users/register"}>Register</.link>
+        |
+        <.link href={~p"/users/log_in"}>Log in</.link>
+      </p>
     </div>
     """
   end

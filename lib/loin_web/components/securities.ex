@@ -327,7 +327,7 @@ defmodule LoinWeb.Securities do
   def security_change(assigns) do
     with raw_value <- Map.get(assigns, :value, nil),
          class <- class_for_value(raw_value),
-         value <- Loin.Intl.format_decimal(raw_value) do
+         value <- Loin.Intl.format_money_decimal(raw_value) do
       assigns =
         assigns
         |> assign(:class, class)
