@@ -389,6 +389,15 @@ defmodule Loin.Accounts do
   """
   def get_identity!(id), do: Repo.get!(Identity, id)
 
+  @doc """
+  Changes an identity.
+  """
+  def update_identity(identity \\ %Identity{}, attrs \\ %{}) do
+    identity
+    |> Identity.changeset(attrs)
+    |> Repo.update()
+  end
+
   ## Identity registration.
 
   @doc """
@@ -414,12 +423,12 @@ defmodule Loin.Accounts do
 
   ## Examples
 
-      iex> change_identity_registration(identity)
+      iex> change_identity(identity)
       %Ecto.Changeset{data: %Identity{}}
 
   """
-  def change_identity_registration(%Identity{} = identity, attrs \\ %{}) do
-    Identity.registration_changeset(identity, attrs)
+  def change_identity(%Identity{} = identity, attrs \\ %{}) do
+    Identity.changeset(identity, attrs)
   end
 
   ## Session

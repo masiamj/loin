@@ -18,6 +18,15 @@ defmodule Loin.Accounts.Identity do
   end
 
   @doc """
+  A changeset to update an identity.
+  """
+  def changeset(identity, attrs) do
+    identity
+    |> cast(attrs, [:first_name, :last_name])
+    |> validate_required([:first_name, :last_name], message: "Required")
+  end
+
+  @doc """
   A changeset to create an identity.
   """
   def registration_changeset(identity, attrs) do

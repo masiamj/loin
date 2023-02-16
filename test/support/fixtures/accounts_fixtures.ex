@@ -36,12 +36,12 @@ defmodule Loin.AccountsFixtures do
     {:ok, identity} =
       attrs
       |> Enum.into(%{
-        email: "some email",
+        email: "test@example.com",
         first_name: "some first_name",
         image_url: "some image_url",
         last_name: "some last_name"
       })
-      |> Loin.Accounts.create_identity()
+      |> Loin.Accounts.register_identity()
 
     identity
   end
