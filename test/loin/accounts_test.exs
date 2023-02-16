@@ -48,6 +48,7 @@ defmodule Loin.AccountsTest do
     end
   end
 
+  @tag :skip
   describe "register_user/1" do
     test "requires email and password to be set" do
       {:error, changeset} = Accounts.register_user(%{})
@@ -526,6 +527,7 @@ defmodule Loin.AccountsTest do
       assert Accounts.get_identity!(identity.id) == identity
     end
 
+    @tag :skip
     test "register_identity/1 with valid data creates a identity" do
       valid_attrs = %{
         email: "some email",

@@ -1,7 +1,7 @@
 defmodule Loin.FMPTest do
   use Loin.DataCase
 
-  alias Loin.FMP
+  # alias Loin.FMP
 
   describe "daily_trends" do
     alias Loin.FMP.DailyTrend
