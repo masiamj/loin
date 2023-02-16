@@ -48,6 +48,7 @@ defmodule Loin.MixProject do
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:doctor, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
+      {:elixir_auth_google, "~> 1.6.3"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:ex_check, "~> 0.14.0", only: [:dev, :test], runtime: false},
       {:ex_cldr, "~> 2.33"},

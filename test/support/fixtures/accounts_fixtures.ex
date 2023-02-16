@@ -28,4 +28,21 @@ defmodule Loin.AccountsFixtures do
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token
   end
+
+  @doc """
+  Generate a identity.
+  """
+  def identity_fixture(attrs \\ %{}) do
+    {:ok, identity} =
+      attrs
+      |> Enum.into(%{
+        email: "test@example.com",
+        first_name: "some first_name",
+        image_url: "some image_url",
+        last_name: "some last_name"
+      })
+      |> Loin.Accounts.register_identity()
+
+    identity
+  end
 end

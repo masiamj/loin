@@ -6,7 +6,7 @@ defmodule Loin.Accounts do
   import Ecto.Query, warn: false
   alias Loin.Repo
 
-  alias Loin.Accounts.{User, UserToken, UserNotifier}
+  alias Loin.Accounts.{User, Identity, UserToken, IdentityToken, UserNotifier}
 
   ## Database getters
 
@@ -349,5 +349,112 @@ defmodule Loin.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  # ========================================
+  # ========================================
+  # Identities
+  # ========================================
+  # ========================================
+
+  @doc """
+  Gets an identity by email.
+
+  ## Examples
+
+      iex> get_identity_by_email("foo@example.com")
+      %User{}
+
+      iex> get_identity_by_email("unknown@example.com")
+      nil
+
+  """
+  def get_identity_by_email(email) when is_binary(email) do
+    Repo.get_by(Identity, email: email)
+  end
+
+  @doc """
+  Gets a single identity.
+
+  Raises `Ecto.NoResultsError` if the Identity does not exist.
+
+  ## Examples
+
+      iex> get_identity!(123)
+      %Identity{}
+
+      iex> get_identity!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_identity!(id), do: Repo.get!(Identity, id)
+
+  @doc """
+  Changes an identity.
+  """
+  def update_identity(identity \\ %Identity{}, attrs \\ %{}) do
+    identity
+    |> Identity.changeset(attrs)
+    |> Repo.update()
+  end
+
+  ## Identity registration.
+
+  @doc """
+  Registers an identity.
+
+  ## Examples
+
+      iex> register_identity(%{field: value})
+      {:ok, %Identity{}}
+
+      iex> register_identity(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def register_identity(attrs) do
+    %Identity{}
+    |> Identity.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking identity changes.
+
+  ## Examples
+
+      iex> change_identity(identity)
+      %Ecto.Changeset{data: %Identity{}}
+
+  """
+  def change_identity(%Identity{} = identity, attrs \\ %{}) do
+    Identity.changeset(identity, attrs)
+  end
+
+  ## Session
+
+  @doc """
+  Generates a session token.
+  """
+  def generate_identity_session_token(identity) do
+    {token, identity_token} = IdentityToken.build_session_token(identity)
+    Repo.insert!(identity_token)
+    token
+  end
+
+  @doc """
+  Gets the identity with the given signed token.
+  """
+  def get_identity_by_session_token(token) do
+    {:ok, query} = IdentityToken.verify_session_token_query(token)
+    Repo.one(query)
+  end
+
+  @doc """
+  Deletes the signed token with the given context.
+  """
+  def delete_identity_session_token(token) do
+    Repo.delete_all(IdentityToken, where: [token: token])
+    :ok
   end
 end

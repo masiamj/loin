@@ -49,8 +49,8 @@ defmodule Loin.Accounts.User do
 
   defp validate_email(changeset, opts) do
     changeset
-    |> validate_required([:email])
-    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
+    |> validate_required([:email], message: "Email is required")
+    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "Enter a valid email")
     |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)
   end
@@ -81,10 +81,12 @@ defmodule Loin.Accounts.User do
   end
 
   defp maybe_validate_unique_email(changeset, opts) do
+    message = "An account with this email already exists. Please log in instead."
+
     if Keyword.get(opts, :validate_email, true) do
       changeset
-      |> unsafe_validate_unique(:email, Loin.Repo)
-      |> unique_constraint(:email)
+      |> unsafe_validate_unique(:email, Loin.Repo, message: message)
+      |> unique_constraint(:email, message: message)
     else
       changeset
     end

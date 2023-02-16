@@ -191,7 +191,7 @@ defmodule LoinWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 bg-white mt-10">
+      <div class="space-y-4 bg-white mt-10">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -386,7 +386,7 @@ defmodule LoinWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
+    <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm text-rose-600">
       <Heroicons.exclamation_circle mini class="mt-0.5 h-5 w-5 flex-none fill-rose-500" />
       <%= render_slot(@inner_block) %>
     </p>

@@ -1,6 +1,6 @@
-defmodule LoinWeb.UserAuth do
+defmodule LoinWeb.IdentityAuth do
   @moduledoc """
-  Adds utility functions and plugs for user authentication.
+  Adds utility functions and plugs for identity authentication.
   """
 
   use LoinWeb, :verified_routes
@@ -12,13 +12,13 @@ defmodule LoinWeb.UserAuth do
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
-  # the token expiry itself in UserToken.
+  # the token expiry itself in IdentityToken.
   @max_age 60 * 60 * 24 * 60
-  @remember_me_cookie "_loin_web_user_remember_me"
+  @remember_me_cookie "_loin_web_identity_remember_me"
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
-  Logs the user in.
+  Logs the identity in.
 
   It renews the session ID and clears the whole session
   to avoid fixation attacks. See the renew_session
@@ -29,8 +29,8 @@ defmodule LoinWeb.UserAuth do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
-  def log_in_user(conn, user, params \\ %{}) do
-    token = Accounts.generate_user_session_token(user)
+  def log_in_identity(conn, identity, params \\ %{}) do
+    token = Accounts.generate_identity_session_token(identity)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
@@ -70,13 +70,13 @@ defmodule LoinWeb.UserAuth do
   end
 
   @doc """
-  Logs the user out.
+  Logs the identity out.
 
   It clears all session data for safety. See renew_session.
   """
-  def log_out_user(conn) do
-    user_token = get_session(conn, :user_token)
-    user_token && Accounts.delete_user_session_token(user_token)
+  def log_out_identity(conn) do
+    identity_token = get_session(conn, :identity_token)
+    identity_token && Accounts.delete_identity_session_token(identity_token)
 
     if live_socket_id = get_session(conn, :live_socket_id) do
       LoinWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
@@ -89,17 +89,17 @@ defmodule LoinWeb.UserAuth do
   end
 
   @doc """
-  Authenticates the user by looking into the session
+  Authenticates the identity by looking into the session
   and remember me token.
   """
-  def fetch_current_user(conn, _opts) do
-    {user_token, conn} = ensure_user_token(conn)
-    user = user_token && Accounts.get_user_by_session_token(user_token)
-    assign(conn, :current_user, user)
+  def fetch_current_identity(conn, _opts) do
+    {identity_token, conn} = ensure_identity_token(conn)
+    identity = identity_token && Accounts.get_identity_by_session_token(identity_token)
+    assign(conn, :current_identity, identity)
   end
 
-  defp ensure_user_token(conn) do
-    if token = get_session(conn, :user_token) do
+  defp ensure_identity_token(conn) do
+    if token = get_session(conn, :identity_token) do
       {token, conn}
     else
       conn = fetch_cookies(conn, signed: [@remember_me_cookie])
@@ -113,88 +113,86 @@ defmodule LoinWeb.UserAuth do
   end
 
   @doc """
-  Handles mounting and authenticating the current_user in LiveViews.
+  Handles mounting and authenticating the current_identity in LiveViews.
 
   ## `on_mount` arguments
 
-    * `:mount_current_user` - Assigns current_user
-      to socket assigns based on user_token, or nil if
-      there's no user_token or no matching user.
+    * `:mount_current_identity` - Assigns current_identity
+      to socket assigns based on identity_token, or nil if
+      there's no identity_token or no matching identity.
 
-    * `:ensure_authenticated` - Authenticates the user from the session,
-      and assigns the current_user to socket assigns based
-      on user_token.
-      Redirects to login page if there's no logged user.
+    * `:ensure_authenticated` - Authenticates the identity from the session,
+      and assigns the current_identity to socket assigns based
+      on identity_token.
+      Redirects to login page if there's no logged identity.
 
-    * `:redirect_if_user_is_authenticated` - Authenticates the user from the session.
-      Redirects to signed_in_path if there's a logged user.
+    * `:redirect_if_identity_is_authenticated` - Authenticates the identity from the session.
+      Redirects to signed_in_path if there's a logged identity.
 
   ## Examples
 
   Use the `on_mount` lifecycle macro in LiveViews to mount or authenticate
-  the current_user:
+  the current_identity:
 
       defmodule LoinWeb.PageLive do
         use LoinWeb, :live_view
 
-        on_mount {LoinWeb.UserAuth, :mount_current_user}
+        on_mount {LoinWeb.IdentityAuth, :mount_current_identity}
         ...
       end
 
   Or use the `live_session` of your router to invoke the on_mount callback:
 
-      live_session :authenticated, on_mount: [{LoinWeb.UserAuth, :ensure_authenticated}] do
+      live_session :authenticated, on_mount: [{LoinWeb.IdentityAuth, :ensure_authenticated}] do
         live "/profile", ProfileLive, :index
       end
   """
-  def on_mount(:mount_current_user, _params, session, socket) do
-    {:cont, mount_current_user(session, socket)}
+  def on_mount(:mount_current_identity, _params, session, socket) do
+    {:cont, mount_current_identity(session, socket)}
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do
-    socket = mount_current_user(session, socket)
+    socket = mount_current_identity(session, socket)
 
-    if socket.assigns.current_user do
+    if socket.assigns.current_identity do
       {:cont, socket}
     else
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/")
-
-      # |> Phoenix.LiveView.redirect(to: ~p"/users/log_in")
+        |> Phoenix.LiveView.redirect(to: ~p"/auth")
 
       {:halt, socket}
     end
   end
 
-  def on_mount(:redirect_if_user_is_authenticated, _params, session, socket) do
-    socket = mount_current_user(session, socket)
+  def on_mount(:redirect_if_identity_is_authenticated, _params, session, socket) do
+    socket = mount_current_identity(session, socket)
 
-    if socket.assigns.current_user do
+    if socket.assigns.current_identity do
       {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
     else
       {:cont, socket}
     end
   end
 
-  defp mount_current_user(session, socket) do
+  defp mount_current_identity(session, socket) do
     case session do
-      %{"user_token" => user_token} ->
-        Phoenix.Component.assign_new(socket, :current_user, fn ->
-          Accounts.get_user_by_session_token(user_token)
+      %{"identity_token" => identity_token} ->
+        Phoenix.Component.assign_new(socket, :current_identity, fn ->
+          Accounts.get_identity_by_session_token(identity_token)
         end)
 
       %{} ->
-        Phoenix.Component.assign_new(socket, :current_user, fn -> nil end)
+        Phoenix.Component.assign_new(socket, :current_identity, fn -> nil end)
     end
   end
 
   @doc """
-  Used for routes that require the user to not be authenticated.
+  Used for routes that require the identity to not be authenticated.
   """
-  def redirect_if_user_is_authenticated(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def redirect_if_identity_is_authenticated(conn, _opts) do
+    if conn.assigns[:current_identity] do
       conn
       |> redirect(to: signed_in_path(conn))
       |> halt()
@@ -204,28 +202,27 @@ defmodule LoinWeb.UserAuth do
   end
 
   @doc """
-  Used for routes that require the user to be authenticated.
+  Used for routes that require the identity to be authenticated.
 
-  If you want to enforce the user email is confirmed before
+  If you want to enforce the identity email is confirmed before
   they use the application at all, here would be a good place.
   """
-  def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def require_authenticated_identity(conn, _opts) do
+    if conn.assigns[:current_identity] do
       conn
     else
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/")
-      # |> redirect(to: ~p"/users/log_in")
+      |> redirect(to: ~p"/auth")
       |> halt()
     end
   end
 
   defp put_token_in_session(conn, token) do
     conn
-    |> put_session(:user_token, token)
-    |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
+    |> put_session(:identity_token, token)
+    |> put_session(:live_socket_id, "identities_sessions:#{Base.url_encode64(token)}")
   end
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do
