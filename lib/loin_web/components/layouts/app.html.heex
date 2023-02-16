@@ -1,7 +1,7 @@
 <main>
-  <%= if @current_user do %>
+  <%= if @current_identity do %>
     <li>
-      <%= @current_user.email %>
+      <%= @current_identity.email %>
     </li>
     <li>
       <.link href={~p"/users/settings"}>Settings</.link>
