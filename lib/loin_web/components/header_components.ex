@@ -74,7 +74,7 @@ defmodule LoinWeb.HeaderComponents do
             <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Screener
             </.link>
-            <.link navigate={~p"/authenticate"} class="relative group">
+            <.link navigate={~p"/auth"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
               </div>
               <button class="relative px-3 py-1 bg-black rounded-md text-white">

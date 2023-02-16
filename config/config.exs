@@ -102,6 +102,10 @@ config :loin, Oban,
 # Adds configuration for Flop sorting/data handling
 config :flop, repo: Loin.Repo
 
+# Configures Google OAuth
+config :elixir_auth_google,
+  google_scope: "email profile"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
