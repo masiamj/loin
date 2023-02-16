@@ -1,2 +1,3 @@
-ExUnit.start()
+# ExUnit.start()
+ExUnit.start(exclude: [:skip])
 Ecto.Adapters.SQL.Sandbox.mode(Loin.Repo, :manual)

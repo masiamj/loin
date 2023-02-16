@@ -28,7 +28,6 @@ defmodule LoinWeb.HeaderComponents do
           <.link href={~p"/"} class="font-bold lg:w-1/3">
             Trenderloin
           </.link>
-          <%!-- <.link href={~p"/identities/log_out"} method="delete">Log out</.link> --%>
           <div class="lg:hidden">
             <button
               type="button"
@@ -72,11 +71,11 @@ defmodule LoinWeb.HeaderComponents do
             </div>
           </div>
           <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
-            <.link navigate={~p"/watchlist"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+            <.link navigate={~p"/auth"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Watchlist
             </.link>
             <.link
-              navigate={~p"/how-it-works"}
+              navigate={~p"/auth"}
               class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
             >
               How it works
@@ -135,10 +134,10 @@ defmodule LoinWeb.HeaderComponents do
             </div>
             <div class="mt-4">
               <nav class="grid gap-y-1">
-                <.link navigate={~p"/watchlist"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/auth"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Watchlist
                 </.link>
-                <.link navigate={~p"/how-it-works"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/auth"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   How it works
                 </.link>
                 <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">
@@ -218,10 +217,7 @@ defmodule LoinWeb.HeaderComponents do
             </div>
           </div>
           <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
-            <.link
-              navigate={~p"/how-it-works"}
-              class="relative px-2 py-1 text-gray-500 hover:text-black"
-            >
+            <.link navigate={~p"/auth"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               How it works
             </.link>
             <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
@@ -282,7 +278,7 @@ defmodule LoinWeb.HeaderComponents do
             </div>
             <div class="mt-4">
               <nav class="grid gap-y-1">
-                <.link navigate={~p"/how-it-works"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link navigate={~p"/auth"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   How it works
                 </.link>
                 <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">

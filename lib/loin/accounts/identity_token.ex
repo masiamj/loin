@@ -5,7 +5,7 @@ defmodule Loin.Accounts.IdentityToken do
 
   use Ecto.Schema
   import Ecto.Query
-  alias Loin.Accounts.{Identity, IdentityToken}
+  alias Loin.Accounts.{IdentityToken}
 
   @rand_size 32
 

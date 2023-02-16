@@ -16,7 +16,6 @@ defmodule LoinWeb.AuthenticateController do
   def google_callback(conn, %{"code" => code}) do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
-    IO.inspect(profile, label: "Profile")
     authenticate_or_register(conn, profile)
   end
 
