@@ -5,7 +5,7 @@ defmodule Loin.Accounts.IdentityToken do
 
   use Ecto.Schema
   import Ecto.Query
-  alias Loin.Accounts.IdentityToken
+  alias Loin.Accounts.{Identity, IdentityToken}
 
   @rand_size 32
 
@@ -57,7 +57,7 @@ defmodule Loin.Accounts.IdentityToken do
   """
   def verify_session_token_query(token) do
     query =
-      from identity_token in Identity,
+      from identity_token in IdentityToken,
         join: identity in assoc(identity_token, :identity),
         where: identity_token.inserted_at > ago(@session_validity_in_days, "day"),
         where: identity_token.token == ^token,

@@ -67,6 +67,8 @@ defmodule LoinWeb.Router do
   scope "/", LoinWeb do
     pipe_through [:browser, :require_authenticated_identity]
 
+    delete "/identities/log_out", AuthenticateController, :delete
+
     # live_session :require_authenticated_user, on_mount: [{LoinWeb.UserAuth, :ensure_authenticated}] do
     #   live "/account", AccountLive, :index
     #   live "/watchlist", WatchlistLive, :index
