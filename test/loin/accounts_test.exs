@@ -575,4 +575,58 @@ defmodule Loin.AccountsTest do
       assert %Ecto.Changeset{} = Accounts.change_identity(identity)
     end
   end
+
+  # describe "identity_securities" do
+  #   alias Loin.Accounts.IdentitySecurity
+
+  #   import Loin.AccountsFixtures
+
+  #   @invalid_attrs %{symbol: nil}
+
+  #   test "list_identity_securities/0 returns all identity_securities" do
+  #     identity_security = identity_security_fixture()
+  #     assert Accounts.list_identity_securities() == [identity_security]
+  #   end
+
+  #   test "get_identity_security!/1 returns the identity_security with given id" do
+  #     identity_security = identity_security_fixture()
+  #     assert Accounts.get_identity_security!(identity_security.id) == identity_security
+  #   end
+
+  #   test "create_identity_security/1 with valid data creates a identity_security" do
+  #     valid_attrs = %{symbol: "some symbol"}
+
+  #     assert {:ok, %IdentitySecurity{} = identity_security} = Accounts.create_identity_security(valid_attrs)
+  #     assert identity_security.symbol == "some symbol"
+  #   end
+
+  #   test "create_identity_security/1 with invalid data returns error changeset" do
+  #     assert {:error, %Ecto.Changeset{}} = Accounts.create_identity_security(@invalid_attrs)
+  #   end
+
+  #   test "update_identity_security/2 with valid data updates the identity_security" do
+  #     identity_security = identity_security_fixture()
+  #     update_attrs = %{symbol: "some updated symbol"}
+
+  #     assert {:ok, %IdentitySecurity{} = identity_security} = Accounts.update_identity_security(identity_security, update_attrs)
+  #     assert identity_security.symbol == "some updated symbol"
+  #   end
+
+  #   test "update_identity_security/2 with invalid data returns error changeset" do
+  #     identity_security = identity_security_fixture()
+  #     assert {:error, %Ecto.Changeset{}} = Accounts.update_identity_security(identity_security, @invalid_attrs)
+  #     assert identity_security == Accounts.get_identity_security!(identity_security.id)
+  #   end
+
+  #   test "delete_identity_security/1 deletes the identity_security" do
+  #     identity_security = identity_security_fixture()
+  #     assert {:ok, %IdentitySecurity{}} = Accounts.delete_identity_security(identity_security)
+  #     assert_raise Ecto.NoResultsError, fn -> Accounts.get_identity_security!(identity_security.id) end
+  #   end
+
+  #   test "change_identity_security/1 returns a identity_security changeset" do
+  #     identity_security = identity_security_fixture()
+  #     assert %Ecto.Changeset{} = Accounts.change_identity_security(identity_security)
+  #   end
+  # end
 end

@@ -2,6 +2,7 @@ defmodule LoinWeb.SecurityLive do
   use LoinWeb, :live_view
 
   alias Loin.{
+    Accounts,
     ETFConstituentsCache,
     ETFSectorWeightCache,
     FMP,
@@ -19,17 +20,41 @@ defmodule LoinWeb.SecurityLive do
   def render(assigns) do
     ~H"""
     <div>
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-0 divide-x lg:h-[94vh]">
-        <LoinWeb.Securities.quote_section security={@security} />
+      <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
+        <div class="grid grid-cols-1 col-span-3 lg:max-h-[94vh]">
+          <LoinWeb.Securities.security_quote is_in_watchlist={@is_in_watchlist} security={@security} />
+          <div class="lg:overflow-y-scroll">
+            <LoinWeb.Securities.quote_section security={@security} />
+            <div class="hidden lg:block">
+              <ul>
+                <%= for %{data: data, title: title} <- @sections do %>
+                  <li :if={length(data) > 0}>
+                    <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
+                      <%= title %> (<%= length(data) %>)
+                    </p>
+                    <ul>
+                      <%= for item <- data do %>
+                        <li class="border-b-[1px]">
+                          <LoinWeb.Securities.generic_security item={item} />
+                        </li>
+                      <% end %>
+                    </ul>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div
-          class="h-[40vh] lg:h-[94vh] w-full col-span-2"
+          class="h-[40vh] lg:h-[94vh] w-full col-span-7"
           data-timeseries={@timeseries_data}
           id="timeseries_chart"
           phx-hook="TimeseriesChart"
           phx-update="ignore"
         >
         </div>
-        <div class="lg:h-[94vh] lg:overflow-y-scroll">
+        <div class="block lg:hidden">
           <ul>
             <%= for %{data: data, title: title} <- @sections do %>
               <li :if={length(data) > 0}>
@@ -53,8 +78,38 @@ defmodule LoinWeb.SecurityLive do
   end
 
   @impl true
+  def handle_event(
+        "toggle-identity-security",
+        _params,
+        %{assigns: %{current_identity: nil}} = socket
+      ) do
+    {:noreply, push_navigate(socket, to: "/auth")}
+  end
+
+  @impl true
+  def handle_event("toggle-identity-security", _params, socket) do
+    case socket.assigns.is_in_watchlist do
+      true ->
+        Accounts.delete_identity_security_by_identity_and_symbol(
+          socket.assigns.current_identity,
+          socket.assigns.symbol
+        )
+
+        {:noreply, assign(socket, :is_in_watchlist, false)}
+
+      false ->
+        Accounts.create_identity_security(%{
+          identity_id: socket.assigns.current_identity.id,
+          symbol: socket.assigns.symbol
+        })
+
+        {:noreply, assign(socket, :is_in_watchlist, true)}
+    end
+  end
+
+  @impl true
   def handle_params(%{"symbol" => symbol}, _url, socket) do
-    mount_data = mount_impl(symbol)
+    mount_data = mount_impl(symbol, socket.assigns.current_identity)
     {:noreply, assign(socket, mount_data)}
   end
 
@@ -85,15 +140,18 @@ defmodule LoinWeb.SecurityLive do
     end
   end
 
-  defp mount_impl(symbol) do
+  defp mount_impl(symbol, identity) do
     proper_symbol = String.upcase(symbol)
 
     with {:ok, %{^proper_symbol => security}} <- FMP.get_securities_by_symbols([proper_symbol]),
          {:ok, {^proper_symbol, chart_data}} <- TimeseriesCache.get_encoded(proper_symbol),
          is_etf <- Map.get(security, :is_etf),
+         {:ok, identity_security} <-
+           Accounts.get_identity_security_by_identity_and_symbol(identity, proper_symbol),
          extra_information <- fetch_more_relevant_information(security) do
       %{}
       |> Map.put(:is_etf, is_etf)
+      |> Map.put(:is_in_watchlist, is_map(identity_security))
       |> Map.put(:symbol, proper_symbol)
       |> Map.put(:security, security)
       |> Map.put(:timeseries_data, chart_data)
