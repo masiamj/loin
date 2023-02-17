@@ -83,7 +83,7 @@ defmodule LoinWeb.SecurityLive do
         _params,
         %{assigns: %{current_identity: nil}} = socket
       ) do
-    push_navigate(socket, to: "/auth")
+    {:noreply, push_navigate(socket, to: "/auth")}
   end
 
   @impl true

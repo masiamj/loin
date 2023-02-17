@@ -137,6 +137,44 @@ defmodule LoinWeb.Securities do
     """
   end
 
+  def generic_security(%{watchlist: true} = assigns) do
+    ~H"""
+    <div
+      class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200"
+      data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
+      id={@id}
+      role="button"
+      phx-click="select-security"
+      phx-value-symbol={Map.get(@item, :symbol)}
+    >
+      <div class="flex flex-row items-center justify-between space-x-2 h-11">
+        <div class="flex flex-col w-2/5">
+          <div class="flex flex-row items-center gap-1">
+            <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+              <%= Map.get(@item, :name) %>
+            </p>
+          </div>
+          <p class="text-xs font-medium"><%= Map.get(@item, :symbol) %></p>
+        </div>
+        <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+          <span class="w-1/2">
+            <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
+          </span>
+          <span class="w-1/4">
+            <.security_change_percent value={@item.change_percent} />
+          </span>
+          <span class="hidden lg:block w-1/4">
+            <.security_change value={@item.change_value} />
+          </span>
+        </div>
+        <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+          <.trend_badge value={@item.trend} />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def generic_security(assigns) do
     ~H"""
     <.link patch={~p"/s/#{@item.symbol}"}>
@@ -317,6 +355,34 @@ defmodule LoinWeb.Securities do
         >
           Unfollow
         </button>
+      </div>
+      <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
+        <.security_price value={@security.price} />
+        <.security_change_percent value={@security.change_percent} />
+        <.security_change value={@security.change_value} />
+        <.trend_badge value={@security.trend} />
+        <.sector_badge value={@security.sector} />
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a quote section for a specific security.
+  """
+  attr :security, :map, required: true
+
+  def watchlist_security_quote(assigns) do
+    ~H"""
+    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
+      <div class="flex flex-row items-start justify-between space-x-4">
+        <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        <.link
+          navigate={~p"/s/#{@security.symbol}"}
+          class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
+        >
+          See more
+        </.link>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
         <.security_price value={@security.price} />

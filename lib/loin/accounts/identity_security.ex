@@ -1,4 +1,7 @@
 defmodule Loin.Accounts.IdentitySecurity do
+  @moduledoc """
+  The schema for a security in a user's watchlist.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

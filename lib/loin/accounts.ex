@@ -507,14 +507,12 @@ defmodule Loin.Accounts do
   end
 
   def get_watchlist_securities_by_identity(%{id: identity_id} = _identity) do
-    results =
-      from(identity_security in IdentitySecurity,
-        where: identity_security.identity_id == ^identity_id,
-        select: identity_security.symbol
-      )
-      |> Repo.all()
-
-    {:ok, results}
+    from(identity_security in IdentitySecurity,
+      where: identity_security.identity_id == ^identity_id,
+      select: identity_security.symbol
+    )
+    |> Repo.all()
+    |> Loin.FMP.get_securities_by_symbols()
   end
 
   @doc """

@@ -46,9 +46,6 @@ defmodule Loin.AccountsFixtures do
     identity
   end
 
-  @doc """
-  Generate a identity_security.
-  """
   # def identity_security_fixture(attrs \\ %{}) do
   #   {:ok, identity_security} =
   #     attrs
