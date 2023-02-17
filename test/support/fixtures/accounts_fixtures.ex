@@ -45,4 +45,18 @@ defmodule Loin.AccountsFixtures do
 
     identity
   end
+
+  @doc """
+  Generate a identity_security.
+  """
+  # def identity_security_fixture(attrs \\ %{}) do
+  #   {:ok, identity_security} =
+  #     attrs
+  #     |> Enum.into(%{
+  #       symbol: "some symbol"
+  #     })
+  #     |> Loin.Accounts.create_identity_security()
+
+  #   identity_security
+  # end
 end

@@ -13,6 +13,7 @@ defmodule Loin.Accounts.Identity do
     field :first_name, :string
     field :image_url, :string
     field :last_name, :string
+    has_many :watchlist_securities, Loin.Accounts.IdentitySecurity
 
     timestamps()
   end

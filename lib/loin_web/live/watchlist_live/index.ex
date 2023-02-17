@@ -1,4 +1,4 @@
-defmodule LoinWeb.SecurityLive do
+defmodule LoinWeb.WatchlistLive do
   use LoinWeb, :live_view
 
   alias Loin.{
@@ -20,9 +20,9 @@ defmodule LoinWeb.SecurityLive do
   def render(assigns) do
     ~H"""
     <div>
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
-        <div class="grid grid-cols-1 col-span-3 lg:max-h-[94vh]">
-          <LoinWeb.Securities.security_quote is_in_watchlist={@is_in_watchlist} security={@security} />
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
+        <div class="grid grid-cols-1 col-span-1 lg:max-h-[94vh]">
+          <LoinWeb.Securities.security_quote security={@security} />
           <div class="lg:overflow-y-scroll">
             <LoinWeb.Securities.quote_section security={@security} />
             <div class="hidden lg:block">
@@ -45,9 +45,8 @@ defmodule LoinWeb.SecurityLive do
             </div>
           </div>
         </div>
-
         <div
-          class="h-[40vh] lg:h-[94vh] w-full col-span-7"
+          class="h-[40vh] lg:h-[94vh] w-full col-span-3"
           data-timeseries={@timeseries_data}
           id="timeseries_chart"
           phx-hook="TimeseriesChart"
@@ -99,7 +98,7 @@ defmodule LoinWeb.SecurityLive do
 
       false ->
         Accounts.create_identity_security(%{
-          identity_id: socket.assigns.current_identity.id,
+          identity: socket.assigns.current_identity,
           symbol: socket.assigns.symbol
         })
 

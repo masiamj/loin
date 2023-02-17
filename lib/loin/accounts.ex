@@ -457,4 +457,84 @@ defmodule Loin.Accounts do
     Repo.delete_all(IdentityToken, where: [token: token])
     :ok
   end
+
+  alias Loin.Accounts.IdentitySecurity
+
+  @doc """
+  Gets a identity_security by identity and symbol.
+
+  ## Examples
+
+      iex> get_identity_security_by_identity_and_symbol(identity, symbol)
+      {:ok, %IdentitySecurity{}}
+
+      iex> get_identity_security_by_identity_and_symbol(identity_symbol)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def get_identity_security_by_identity_and_symbol(nil, symbol) when is_binary(symbol) do
+    {:ok, nil}
+  end
+
+  def get_identity_security_by_identity_and_symbol(%{id: identity_id} = _identity, symbol)
+      when is_binary(symbol) do
+    result =
+      from(identity_security in IdentitySecurity,
+        where: identity_security.identity_id == ^identity_id,
+        where: identity_security.symbol == ^symbol
+      )
+      |> Repo.one()
+
+    {:ok, result}
+  end
+
+  @doc """
+  Creates a identity_security.
+
+  ## Examples
+
+      iex> create_identity_security(%{field: value})
+      {:ok, %IdentitySecurity{}}
+
+      iex> create_identity_security(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_identity_security(attrs \\ %{}) do
+    %IdentitySecurity{}
+    |> IdentitySecurity.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_watchlist_securities_by_identity(%{id: identity_id} = _identity) do
+    results =
+      from(identity_security in IdentitySecurity,
+        where: identity_security.identity_id == ^identity_id,
+        select: identity_security.symbol
+      )
+      |> Repo.all()
+
+    {:ok, results}
+  end
+
+  @doc """
+  Deletes a identity_security by identity and symbol.
+
+  ## Examples
+
+      iex> delete_identity_security_by_identity_and_symbol(identity, symbol)
+      {:ok, %IdentitySecurity{}}
+
+      iex> delete_identity_security_by_identity_and_symbol(identity_symbol)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_identity_security_by_identity_and_symbol(%{id: identity_id} = _identity, symbol)
+      when is_binary(symbol) do
+    from(identity_security in IdentitySecurity,
+      where: identity_security.identity_id == ^identity_id,
+      where: identity_security.symbol == ^symbol
+    )
+    |> Repo.delete_all()
+  end
 end
