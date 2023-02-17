@@ -22,6 +22,7 @@ defmodule LoinWeb.Securities do
   attr :id, :string, default: ""
   attr :item, :map, required: true
   attr :realtime_update, :map, default: %{}
+  attr :watchlist, :boolean, default: false
 
   def generic_security(%{item: %{constituent: _constituent}} = assigns) do
     ~H"""
