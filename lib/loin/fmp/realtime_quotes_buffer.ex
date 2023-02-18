@@ -27,33 +27,15 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
 
   @impl true
   def handle_info(:flush, %{buffer: buffer} = _state) do
-    {:ok, securities_map} =
-      buffer
-      |> Map.keys()
-      |> Loin.FMP.get_securities_by_symbols()
+    {:ok, securities_map} = get_securities_map(buffer)
 
     buffer
     |> Flow.from_enumerable()
     |> Flow.partition()
-    |> Flow.map(fn {symbol, price} ->
-      existing_security = Map.get(securities_map, symbol, %{})
-      previous_close = Map.get(existing_security, :fmp_securities_previous_close)
-
-      {symbol,
-       %{
-         price: price,
-         change_value: price - previous_close,
-         change_percent: (price - previous_close) / previous_close
-       }}
-    end)
+    |> Flow.map(&raw_event_to_derived_price_information(Map.get(securities_map, symbol, nil), &1))
+    |> Flow.filter(fn {_symbol, result} -> is_map(result) end)
     |> Enum.to_list()
-    |> Enum.each(fn {symbol, computation} ->
-      Phoenix.PubSub.broadcast(
-        Loin.PubSub,
-        "realtime_quotes",
-        {:realtime_quote, {symbol, computation}}
-      )
-    end)
+    |> Enum.each(&publish_realtime_quote/1)
 
     schedule_flush()
     {:noreply, %{buffer: %{}}}
@@ -67,7 +49,38 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
 
   # Private
 
-  def schedule_flush(from_now_ms \\ 1000) do
+  defp compute_derived_price_information(existing_security, price)
+       when is_map(existing_security) and is_number(price) do
+    previous_close = Map.get(existing_security, :fmp_securities_previous_close, price)
+
+    %{
+      price: price,
+      change_value: price - previous_close,
+      change_percent: (price - previous_close) / previous_close
+    }
+  end
+
+  defp compute_derived_price_information(_existing_security, _price), do: nil
+
+  defp get_securities_map(buffer) when is_map(buffer) do
+    buffer
+    |> Map.keys()
+    |> Loin.FMP.get_securities_by_symbols()
+  end
+
+  defp raw_event_to_derived_price_information(existing_security, {_symbol, price} = _raw_event) do
+    {symbol, compute_derived_price_information(existing_security, price)}
+  end
+
+  defp publish_realtime_quote({symbol, derived_price_information}) do
+    Phoenix.PubSub.broadcast(
+      Loin.PubSub,
+      "realtime_quotes",
+      {:realtime_quote, {symbol, derived_price_information}}
+    )
+  end
+
+  defp schedule_flush(from_now_ms \\ 1000) do
     Process.send_after(self(), :flush, from_now_ms)
   end
 end
