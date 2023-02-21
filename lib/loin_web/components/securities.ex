@@ -159,7 +159,7 @@ defmodule LoinWeb.Securities do
         </div>
         <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
           <span class="w-1/2">
-            <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
+            <.security_price value={@item.price} />
           </span>
           <span class="w-1/4">
             <.security_change_percent value={@item.change_percent} />
@@ -199,10 +199,12 @@ defmodule LoinWeb.Securities do
               <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent value={@item.change_percent} />
+              <.security_change_percent value={
+                Map.get(@realtime_update, :change_percent, @item.change_percent)
+              } />
             </span>
             <span class="hidden lg:block w-1/4">
-              <.security_change value={@item.change_value} />
+              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">

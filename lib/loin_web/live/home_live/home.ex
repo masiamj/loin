@@ -12,10 +12,6 @@ defmodule LoinWeb.HomeLive do
          {:ok, uptrends} <- FMP.get_securities_via_trend("up", 10),
          realtime_symbols <-
            extract_realtime_symbols([downtrends, sectors, trend_changes, uptrends]) do
-      if connected?(socket) do
-        subscribe_to_realtime_updates()
-      end
-
       socket =
         socket
         |> assign(:chart_data, chart_data)
@@ -26,6 +22,8 @@ defmodule LoinWeb.HomeLive do
         |> assign(:page_title, "Stock market trends, sector trends")
         |> assign(:realtime_symbols, realtime_symbols)
         |> assign(:realtime_updates, %{})
+
+      Process.send_after(self(), :setup_realtime_updates, 3000)
 
       {:ok, socket}
     else
@@ -108,6 +106,15 @@ defmodule LoinWeb.HomeLive do
   end
 
   @impl true
+  def handle_info(:setup_realtime_updates, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info(
         {:realtime_quote, {symbol, item}},
         %{assigns: %{realtime_symbols: realtime_symbols}} = socket
@@ -131,9 +138,5 @@ defmodule LoinWeb.HomeLive do
     |> Enum.flat_map(&Map.keys/1)
     |> Enum.concat(["SPY", "QQQ"])
     |> MapSet.new()
-  end
-
-  defp subscribe_to_realtime_updates() do
-    Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
   end
 end
