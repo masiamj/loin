@@ -32,7 +32,9 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
     buffer
     |> Flow.from_enumerable()
     |> Flow.partition()
-    |> Flow.map(&raw_event_to_derived_price_information(Map.get(securities_map, symbol, nil), &1))
+    |> Flow.map(fn {symbol, price} ->
+      {symbol, compute_derived_price_information(Map.get(securities_map, symbol, nil), price)}
+    end)
     |> Flow.filter(fn {_symbol, result} -> is_map(result) end)
     |> Enum.to_list()
     |> Enum.each(&publish_realtime_quote/1)
@@ -66,10 +68,6 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
     buffer
     |> Map.keys()
     |> Loin.FMP.get_securities_by_symbols()
-  end
-
-  defp raw_event_to_derived_price_information(existing_security, {_symbol, price} = _raw_event) do
-    {symbol, compute_derived_price_information(existing_security, price)}
   end
 
   defp publish_realtime_quote({symbol, derived_price_information}) do
