@@ -9,6 +9,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   use WebSockex
 
   def start_link(_opts) do
+    Logger.info("Starting RealtimeQuotesClient...")
     WebSockex.start_link(@url, __MODULE__, %{})
   end
 
@@ -37,6 +38,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
 
   def terminate(reason, state) do
     Logger.error("RealtimeQuotesClient terminated because #{reason}, #{state}")
+    :ok
   end
 
   defp handle_frame_content(%{"event" => "login"}, state) do

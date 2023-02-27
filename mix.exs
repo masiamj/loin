@@ -43,6 +43,7 @@ defmodule Loin.MixProject do
     [
       {:bcrypt_elixir, "~> 3.0"},
       {:cachex, "~> 3.4"},
+      {:conditional_child, "~> 0.1.1"},
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:csv, "~> 3.0"},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
@@ -71,6 +72,7 @@ defmodule Loin.MixProject do
       {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:oban, "~> 2.13"},
       {:oban_web, "~> 2.9", repo: "oban"},
+      {:open_hours, "~> 0.1.0", override: true},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
@@ -82,6 +84,7 @@ defmodule Loin.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:remote_file_streamer, "~> 1.0"},
       {:req, "~> 0.3.3"},
+      {:singleton, "~> 1.3"},
       {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},

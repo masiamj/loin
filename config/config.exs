@@ -106,6 +106,11 @@ config :flop, repo: Loin.Repo
 config :elixir_auth_google,
   google_scope: "email profile"
 
+# Configures the Singleton application
+# See: https://github.com/arjan/singleton#troubleshooting
+config :singleton,
+  dynamic_supervisor: [max_restarts: 100]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
