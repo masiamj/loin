@@ -1,4 +1,7 @@
 defmodule LoinWeb.Embeds.Chart do
+  @moduledoc """
+  This page represents a full-screen embeddable chart.
+  """
   use LoinWeb, :live_view
 
   alias Loin.{
