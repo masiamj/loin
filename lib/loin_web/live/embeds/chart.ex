@@ -16,7 +16,7 @@ defmodule LoinWeb.Embeds.Chart do
       |> assign(:timeseries_data, chart_data)
       |> assign(:realtime_update, nil)
 
-    publish()
+    Process.send_after(self(), :setup_realtime_updates, 2000)
 
     {:ok, socket, layout: {LoinWeb.Layouts, :root}}
   end
@@ -45,16 +45,29 @@ defmodule LoinWeb.Embeds.Chart do
   end
 
   @impl true
-  def handle_info(:realtime_quote, socket) do
-    socket =
-      socket
-      |> assign(:realtime_update, %{price: Enum.random(200..220)} |> Jason.encode!())
+  def handle_info(:setup_realtime_updates, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
 
-    publish()
     {:noreply, socket}
   end
 
-  def publish() do
-    Process.send_after(self(), :realtime_quote, 1000)
+  @impl true
+  def handle_info(
+        {:realtime_quote, {symbol, item}},
+        %{assigns: %{symbol: proper_symbol}} = socket
+      ) do
+    case proper_symbol == symbol do
+      true ->
+        socket =
+          socket
+          |> assign(:realtime_update, Jason.encode!(item))
+
+        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+
+      false ->
+        {:noreply, socket}
+    end
   end
 end

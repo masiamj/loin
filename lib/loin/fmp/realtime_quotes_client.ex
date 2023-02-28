@@ -8,9 +8,16 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   require Logger
   use WebSockex
 
+  @spec start_link(any) :: {:error, any} | {:ok, pid}
   def start_link(_opts) do
     Logger.info("Starting RealtimeQuotesClient...")
-    WebSockex.start_link(@url, __MODULE__, %{})
+
+    WebSockex.start_link(@url, __MODULE__, %{}, [
+      {:async, true},
+      # {:debug, [:trace]},
+      {:name, {:global, :realtime_quotes_client}},
+      {:handle_initial_conn_failure, true}
+    ])
   end
 
   def handle_cast({:send_message, message}, state) do
@@ -18,6 +25,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   end
 
   def handle_connect(_connection, state) do
+    Logger.info("RealtimeQuotesClient connected...")
     login()
     {:ok, state}
   end
@@ -34,6 +42,8 @@ defmodule Loin.FMP.RealtimeQuotesClient do
     message
     |> Jason.decode!()
     |> handle_frame_content(state)
+
+    {:ok, state}
   end
 
   def terminate(reason, state) do
@@ -42,6 +52,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
   end
 
   defp handle_frame_content(%{"event" => "login"}, state) do
+    Logger.info("RealtimeQuotesClient authenticated...")
     subscribe_to_all()
     {:ok, state}
   end

@@ -44,6 +44,7 @@ defmodule LoinWeb.HomeLive do
             data-timeseries={Map.get(@chart_data, "SPY", [])}
             phx-hook="TimeseriesChart"
             phx-update="ignore"
+            data-realtime-update={Map.get(@realtime_updates, "SPY", %{}) |> Jason.encode!()}
           >
           </div>
         </LoinWeb.Cards.generic>
@@ -54,6 +55,7 @@ defmodule LoinWeb.HomeLive do
             data-timeseries={Map.get(@chart_data, "QQQ", [])}
             phx-hook="TimeseriesChart"
             phx-update="ignore"
+            data-realtime-update={Map.get(@realtime_updates, "QQQ", %{}) |> Jason.encode!()}
           >
           </div>
         </LoinWeb.Cards.generic>

@@ -58,7 +58,7 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
     %{
       price: price,
       change_value: price - previous_close,
-      change_percent: (price - previous_close) / previous_close
+      change_percent: (price - previous_close) / previous_close * 100
     }
   end
 

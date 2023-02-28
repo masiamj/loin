@@ -108,6 +108,6 @@ defmodule LoinWeb.Router do
   scope "/embed", LoinWeb do
     pipe_through [:browser]
 
-    live ":symbol/chart", Embeds.Chart
+    live "/:symbol/chart", Embeds.Chart
   end
 end

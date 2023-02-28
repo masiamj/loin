@@ -1,5 +1,6 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
+import update from 'lodash/update'
 
 const getColorForItem = (item) => {
   switch (get(item, ['trend'], null)) {
@@ -38,28 +39,20 @@ export const TimeseriesChart = {
       timeScale: {
         borderVisible: false
       },
-      // watermark: {
-      //   visible: true,
-      //   fontSize: 18,
-      //   horzAlign: 'top',
-      //   vertAlign: 'left',
-      //   color: 'rgba(58,130,246,0.5)',
-      //   text: 'TrendFlares',
-      // },
     })
   },
   getTimeseriesData() {
     this.hasRealtimeUpdate = false
     const serializedData = this.el.dataset.timeseries || '[]'
-    const deserializedData = JSON.parse(serializedData)
+    let deserializedData = JSON.parse(serializedData)
 
     const serializedRealtimeUpdate = this.el.dataset['realtimeUpdate'] || '{}'
     const deserializedRealtimeUpdate = JSON.parse(serializedRealtimeUpdate)
 
     if (get(deserializedRealtimeUpdate, 'price', false)) {
       this.hasRealtimeUpdate = true
-      const dateString = (new Date()).toISOString().split('T')[0]
-      deserializedData.push({ close: deserializedRealtimeUpdate.price, date: dateString, trend: 'now' })
+      // const dateString = (new Date()).toISOString().split('T')[0]
+      return update(deserializedData, deserializedData.length - 1, (value = {}) => ({ ...value, close: deserializedRealtimeUpdate.price, trend: 'now' }))
     }
 
     return deserializedData

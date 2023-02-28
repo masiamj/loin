@@ -8,14 +8,17 @@ defmodule LoinWeb.WatchlistLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    # Fetches a user's identity securities
     {:ok, securities} =
       Accounts.get_watchlist_securities_by_identity(socket.assigns.current_identity)
 
+    # Create assigns depending on if a user has securities in their watchlist
     case Enum.empty?(securities) do
       true ->
         {:ok, assign(socket, :is_empty, true)}
 
       false ->
+        # Extracts the first (default) security from their watchlist to show
         first_key =
           securities
           |> Map.keys()
@@ -23,6 +26,7 @@ defmodule LoinWeb.WatchlistLive do
 
         security = Map.get(securities, first_key)
 
+        # Fetches the timeseries information for that security
         {:ok, {_, chart_data}} = TimeseriesCache.get_encoded(security.symbol)
 
         socket =
@@ -31,6 +35,10 @@ defmodule LoinWeb.WatchlistLive do
           |> assign(:security, security)
           |> assign(:securities, securities)
           |> assign(:timeseries_data, chart_data)
+          |> assign(:realtime_symbols, extract_realtime_symbols(securities))
+          |> assign(:realtime_updates, %{})
+
+        Process.send_after(self(), :setup_realtime_updates, 3000)
 
         {:ok, socket}
     end
@@ -63,16 +71,24 @@ defmodule LoinWeb.WatchlistLive do
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
         <div class="col-span-3">
-          <LoinWeb.Securities.watchlist_security_quote security={@security} />
+          <LoinWeb.Securities.watchlist_security_quote
+            realtime_update={Map.get(@realtime_updates, @symbol, %{})}
+            security={@security}
+          />
           <div class="hidden lg:block lg:overflow-y-scroll">
             <%!-- <LoinWeb.Securities.quote_section security={@security} /> --%>
             <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
               Your watchlist (<%= length(Map.keys(@securities)) %>)
             </p>
             <ul>
-              <%= for {_symbol, item} <- @securities do %>
+              <%= for {symbol, item} <- @securities do %>
                 <li class="border-b-[1px]">
-                  <LoinWeb.Securities.generic_security item={item} watchlist />
+                  <LoinWeb.Securities.generic_security
+                    id={item.symbol}
+                    item={item}
+                    watchlist
+                    realtime_update={Map.get(@realtime_updates, symbol, %{})}
+                  />
                 </li>
               <% end %>
             </ul>
@@ -92,9 +108,14 @@ defmodule LoinWeb.WatchlistLive do
             Your watchlist (<%= length(Map.keys(@securities)) %>)
           </p>
           <ul>
-            <%= for {_symbol, item} <- @securities do %>
+            <%= for {symbol, item} <- @securities do %>
               <li class="border-b-[1px]">
-                <LoinWeb.Securities.generic_security item={item} />
+                <LoinWeb.Securities.generic_security
+                  id={item.symbol}
+                  item={item}
+                  watchlist
+                  realtime_update={Map.get(@realtime_updates, symbol, %{})}
+                />
               </li>
             <% end %>
           </ul>
@@ -126,5 +147,37 @@ defmodule LoinWeb.WatchlistLive do
       |> assign(:timeseries_data, chart_data)
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:setup_realtime_updates, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(
+        {:realtime_quote, {symbol, item}},
+        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
+      ) do
+    case MapSet.member?(realtime_symbols, symbol) do
+      true ->
+        socket =
+          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+
+        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+
+      false ->
+        {:noreply, socket}
+    end
+  end
+
+  defp extract_realtime_symbols(securities) when is_map(securities) do
+    securities
+    |> Map.keys()
+    |> MapSet.new()
   end
 end

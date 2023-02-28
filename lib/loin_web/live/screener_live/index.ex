@@ -121,6 +121,10 @@ defmodule LoinWeb.ScreenerLive do
       |> assign(:filtered_data, [])
       |> assign(:meta, %{})
       |> assign(:form_fields, @fields)
+      |> assign(:realtime_symbols, [])
+      |> assign(:realtime_updates, %{})
+
+    Process.send_after(self(), :setup_realtime_updates, 3000)
 
     {:ok, socket}
   end
@@ -167,7 +171,7 @@ defmodule LoinWeb.ScreenerLive do
               container: true,
               container_attrs: [class: "w-full screener-table-container lg:h-[88vh]"],
               table_attrs: [class: "min-w-full border-separate", style: "border-spacing: 0"],
-              tbody_td_attrs: [class: "px-2 py-0.5 bg-white border-b border-gray-200 text-xs"],
+              tbody_td_attrs: [class: "px-2 bg-white border-b border-gray-200 text-xs"],
               thead_th_attrs: [
                 class: "bg-gray-100 sticky top-0 px-2 py-2 text-left text-xs font-medium"
               ]
@@ -175,24 +179,50 @@ defmodule LoinWeb.ScreenerLive do
             path={~p"/screener"}
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
-              <.link class="flex flex-col" patch={~p"/s/#{item.fmp_securities_symbol}"}>
-                <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
-                  <%= item.name %>
-                </span>
-                <span class="font-medium line-clamp-1"><%= item.fmp_securities_symbol %></span>
+              <.link patch={~p"/s/#{item.fmp_securities_symbol}"}>
+                <div
+                  class="flex flex-col py-0.5 -ml-2 pl-2"
+                  data-animate={
+                    JS.transition(%JS{}, "animate-flash-as-new",
+                      to: "##{item.fmp_securities_symbol}",
+                      time: 500
+                    )
+                  }
+                  id={item.fmp_securities_symbol}
+                  role="button"
+                >
+                  <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
+                    <%= item.name %>
+                  </span>
+                  <span class="font-medium line-clamp-1"><%= item.fmp_securities_symbol %></span>
+                </div>
               </.link>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:price}>
-              <%= Intl.format_money_decimal(item.price) %>
+              <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
+              |> Map.get(:price)
+              |> Intl.format_money_decimal() %>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Change" field={:change_value}>
-              <span class={class_for_value(item.change_value)}>
-                <%= Intl.format_money_decimal(item.change_value) %>
+              <span class={
+                Map.get(@realtime_updates, item.fmp_securities_symbol, item)
+                |> Map.get(:change_value)
+                |> class_for_value()
+              }>
+                <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
+                |> Map.get(:change_value)
+                |> Intl.format_money_decimal() %>
               </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Change %" field={:change_percent}>
-              <span class={class_for_value(item.change_percent)}>
-                <%= Intl.format_percent(item.change_percent) %>
+              <span class={
+                Map.get(@realtime_updates, item.fmp_securities_symbol, item)
+                |> Map.get(:change_percent)
+                |> class_for_value()
+              }>
+                <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
+                |> Map.get(:change_percent)
+                |> Intl.format_percent() %>
               </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Market cap" field={:market_cap}>
@@ -339,11 +369,43 @@ defmodule LoinWeb.ScreenerLive do
     {:noreply, push_patch(socket, to: path)}
   end
 
+  @impl true
+  def handle_info(:setup_realtime_updates, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(
+        {:realtime_quote, {symbol, item}},
+        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
+      ) do
+    case MapSet.member?(realtime_symbols, symbol) do
+      true ->
+        socket =
+          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+
+        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+
+      false ->
+        {:noreply, socket}
+    end
+  end
+
   @impl Phoenix.LiveView
   def handle_params(params, _, socket) do
     case FMP.filter_screener(params) do
       {:ok, {results, meta}} ->
-        {:noreply, assign(socket, %{filtered_data: results, meta: meta})}
+        socket =
+          socket
+          |> assign(:filtered_data, results)
+          |> assign(:meta, meta)
+          |> assign(:realtime_symbols, extract_realtime_symbols(results))
+
+        {:noreply, socket}
 
       _ ->
         {:noreply, push_navigate(socket, to: ~p"/screener")}
@@ -358,6 +420,10 @@ defmodule LoinWeb.ScreenerLive do
       x when x < 0 -> "text-red-600"
       _ -> "text-gray-500"
     end
+  end
+
+  defp extract_realtime_symbols(securities) when is_list(securities) do
+    MapSet.new(securities, &Map.get(&1, :symbol))
   end
 
   defp trend_badge(%{trend: nil} = assigns) do
