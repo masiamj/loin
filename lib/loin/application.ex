@@ -42,7 +42,10 @@ defmodule Loin.Application do
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
       # Start the Oban jobs processor
-      {Oban, oban_config()}
+      {Oban, oban_config()},
+      # Start the real-time subsystem
+      {Loin.FMP.RealtimeQuotesBuffer, []},
+      {Loin.FMP.RealtimeQuotesClient, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -50,7 +53,7 @@ defmodule Loin.Application do
       Supervisor.start_link(children, strategy: :one_for_one, name: Loin.Supervisor)
 
     # Starts the real-time listener and publisher
-    maybe_start_realtime_subsystem()
+    # maybe_start_realtime_subsystem()
 
     main_supervisor_result
   end
@@ -67,27 +70,27 @@ defmodule Loin.Application do
     Application.fetch_env!(:loin, Oban)
   end
 
-  defp maybe_start_realtime_subsystem() do
-    # Conditionally starts a global singleton to publish real-time price updates to the system
-    Singleton.start_child(
-      ConditionalChild,
-      [
-        child: Loin.FMP.RealtimeQuotesBuffer,
-        start_if: &Loin.Features.is_realtime_quotes_enabled/0,
-        interval: :timer.seconds(25)
-      ],
-      :realtime_quotes_buffer
-    )
+  # defp maybe_start_realtime_subsystem() do
+  #   # Conditionally starts a global singleton to publish real-time price updates to the system
+  #   Singleton.start_child(
+  #     ConditionalChild,
+  #     [
+  #       child: Loin.FMP.RealtimeQuotesBuffer,
+  #       start_if: &Loin.Features.is_realtime_quotes_enabled/0,
+  #       interval: :timer.seconds(25)
+  #     ],
+  #     :realtime_quotes_buffer
+  #   )
 
-    # Conditionally starts a global singleton to listen for real-time price updates
-    Singleton.start_child(
-      ConditionalChild,
-      [
-        child: Loin.FMP.RealtimeQuotesClient,
-        start_if: &Loin.Features.is_realtime_quotes_enabled/0,
-        interval: :timer.seconds(30)
-      ],
-      :realtime_quotes_client
-    )
-  end
+  #   # Conditionally starts a global singleton to listen for real-time price updates
+  #   Singleton.start_child(
+  #     ConditionalChild,
+  #     [
+  #       child: Loin.FMP.RealtimeQuotesClient,
+  #       start_if: &Loin.Features.is_realtime_quotes_enabled/0,
+  #       interval: :timer.seconds(30)
+  #     ],
+  #     :realtime_quotes_client
+  #   )
+  # end
 end

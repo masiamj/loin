@@ -22,9 +22,16 @@ defmodule LoinWeb.SecurityLive do
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
         <div class="grid grid-cols-1 col-span-3 lg:max-h-[94vh]">
-          <LoinWeb.Securities.security_quote is_in_watchlist={@is_in_watchlist} security={@security} />
+          <LoinWeb.Securities.security_quote
+            is_in_watchlist={@is_in_watchlist}
+            realtime_update={Map.get(@realtime_updates, @symbol, %{})}
+            security={@security}
+          />
           <div class="lg:overflow-y-scroll">
-            <LoinWeb.Securities.quote_section security={@security} />
+            <LoinWeb.Securities.quote_section
+              realtime_update={Map.get(@realtime_updates, @symbol, %{})}
+              security={@security}
+            />
             <div class="hidden lg:block">
               <ul>
                 <%= for %{data: data, title: title} <- @sections do %>
@@ -35,7 +42,11 @@ defmodule LoinWeb.SecurityLive do
                     <ul>
                       <%= for item <- data do %>
                         <li class="border-b-[1px]">
-                          <LoinWeb.Securities.generic_security item={item} />
+                          <LoinWeb.Securities.generic_security
+                            id={item.symbol}
+                            item={item}
+                            realtime_update={Map.get(@realtime_updates, item.symbol, %{})}
+                          />
                         </li>
                       <% end %>
                     </ul>
@@ -64,7 +75,7 @@ defmodule LoinWeb.SecurityLive do
                 <ul>
                   <%= for item <- data do %>
                     <li class="border-b-[1px]">
-                      <LoinWeb.Securities.generic_security item={item} />
+                      <LoinWeb.Securities.generic_security id={item.symbol} item={item} />
                     </li>
                   <% end %>
                 </ul>
@@ -108,12 +119,48 @@ defmodule LoinWeb.SecurityLive do
   end
 
   @impl true
-  def handle_params(%{"symbol" => symbol}, _url, socket) do
-    mount_data = mount_impl(symbol, socket.assigns.current_identity)
-    {:noreply, assign(socket, mount_data)}
+  def handle_info(:setup_realtime_updates, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(
+        {:realtime_quote, {symbol, item}},
+        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
+      ) do
+    case MapSet.member?(realtime_symbols, symbol) do
+      true ->
+        socket =
+          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+
+        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+
+      false ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) do
+    socket = load_all_data(params, socket)
+    Process.send_after(self(), :setup_realtime_updates, 1000)
+    {:noreply, socket}
   end
 
   # Private
+
+  defp extract_realtime_symbols(pertinent_symbol, %{sections: sections} = _extra_information)
+       when is_binary(pertinent_symbol) and is_list(sections) do
+    sections
+    |> Enum.flat_map(&Map.get(&1, :data, %{}))
+    |> Enum.map(&Map.get(&1, :symbol))
+    |> Enum.concat([pertinent_symbol])
+    |> MapSet.new()
+  end
 
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do
     {:ok, etf_constituents} = ETFConstituentsCache.get_for_web(symbol)
@@ -140,24 +187,34 @@ defmodule LoinWeb.SecurityLive do
     end
   end
 
-  defp mount_impl(symbol, identity) do
+  defp load_all_data(%{"symbol" => symbol}, socket) do
     proper_symbol = String.upcase(symbol)
 
     with {:ok, %{^proper_symbol => security}} <- FMP.get_securities_by_symbols([proper_symbol]),
          {:ok, {^proper_symbol, chart_data}} <- TimeseriesCache.get_encoded(proper_symbol),
-         is_etf <- Map.get(security, :is_etf),
          {:ok, identity_security} <-
-           Accounts.get_identity_security_by_identity_and_symbol(identity, proper_symbol),
-         extra_information <- fetch_more_relevant_information(security) do
-      %{}
-      |> Map.put(:is_etf, is_etf)
-      |> Map.put(:is_in_watchlist, is_map(identity_security))
-      |> Map.put(:symbol, proper_symbol)
-      |> Map.put(:security, security)
-      |> Map.put(:timeseries_data, chart_data)
-      |> Map.merge(extra_information)
+           Accounts.get_identity_security_by_identity_and_symbol(
+             socket.assigns.current_identity,
+             proper_symbol
+           ),
+         is_etf <- Map.get(security, :is_etf),
+         extra_information <- fetch_more_relevant_information(security),
+         realtime_symbols <- extract_realtime_symbols(proper_symbol, extra_information) do
+      socket =
+        socket
+        |> assign(:is_etf, is_etf)
+        |> assign(:is_in_watchlist, is_map(identity_security))
+        |> assign(:symbol, proper_symbol)
+        |> assign(:security, security)
+        |> assign(:timeseries_data, chart_data)
+        |> assign(:realtime_symbols, realtime_symbols)
+        |> assign(:realtime_updates, %{})
+        |> assign(extra_information)
+
+      socket
     else
-      _ -> %{}
+      _ ->
+        socket
     end
   end
 end

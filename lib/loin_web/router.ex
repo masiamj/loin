@@ -103,4 +103,11 @@ defmodule LoinWeb.Router do
     #   live "/users/confirm", UserConfirmationInstructionsLive, :new
     # end
   end
+
+  ## Embeds
+  scope "/embed", LoinWeb do
+    pipe_through [:browser]
+
+    live "/:symbol/chart", Embeds.Chart
+  end
 end

@@ -27,7 +27,12 @@ defmodule LoinWeb.Securities do
   def generic_security(%{item: %{constituent: _constituent}} = assigns) do
     ~H"""
     <.link navigate={~p"/s/#{@item.symbol}"}>
-      <li class="bg-white hover:bg-gray-100 px-2" role="button">
+      <li
+        class="bg-white hover:bg-gray-100 px-2"
+        data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
+        id={@id}
+        role="button"
+      >
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
@@ -44,13 +49,15 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price value={@item.price} />
+              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent value={@item.change_percent} />
+              <.security_change_percent value={
+                Map.get(@realtime_update, :change_percent, @item.change_percent)
+              } />
             </span>
             <span class="hidden lg:block w-1/4">
-              <.security_change value={@item.change_value} />
+              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
@@ -82,13 +89,15 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price value={@item.price} />
+              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent value={@item.change_percent} />
+              <.security_change_percent value={
+                Map.get(@realtime_update, :change_percent, @item.change_percent)
+              } />
             </span>
             <span class="hidden lg:block w-1/4">
-              <.security_change value={@item.change_value} />
+              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
@@ -103,7 +112,12 @@ defmodule LoinWeb.Securities do
   def generic_security(%{item: %{exposure: _exposure}} = assigns) do
     ~H"""
     <.link navigate={~p"/s/#{@item.symbol}"}>
-      <li class="bg-white hover:bg-gray-100 px-2" role="button">
+      <li
+        class="bg-white hover:bg-gray-100 px-2"
+        data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
+        id={@id}
+        role="button"
+      >
         <div class="flex flex-row items-center justify-between space-x-2 h-11">
           <div class="flex flex-col w-2/5">
             <div class="flex flex-row items-center gap-1">
@@ -120,13 +134,15 @@ defmodule LoinWeb.Securities do
           </div>
           <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
             <span class="w-1/2">
-              <.security_price value={@item.price} />
+              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
             </span>
             <span class="w-1/4">
-              <.security_change_percent value={@item.change_percent} />
+              <.security_change_percent value={
+                Map.get(@realtime_update, :change_percent, @item.change_percent)
+              } />
             </span>
             <span class="hidden lg:block w-1/4">
-              <.security_change value={@item.change_value} />
+              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
             </span>
           </div>
           <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
@@ -159,13 +175,15 @@ defmodule LoinWeb.Securities do
         </div>
         <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
           <span class="w-1/2">
-            <.security_price value={@item.price} />
+            <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
           </span>
           <span class="w-1/4">
-            <.security_change_percent value={@item.change_percent} />
+            <.security_change_percent value={
+              Map.get(@realtime_update, :change_percent, @item.change_percent)
+            } />
           </span>
           <span class="hidden lg:block w-1/4">
-            <.security_change value={@item.change_value} />
+            <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
           </span>
         </div>
         <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
@@ -219,6 +237,7 @@ defmodule LoinWeb.Securities do
   @doc """
   Renders a quote section for a specific security.
   """
+  attr :realtime_update, :map, required: true
   attr :security, :map, required: true
 
   def quote_section(assigns) do
@@ -337,11 +356,18 @@ defmodule LoinWeb.Securities do
   Renders a quote section for a specific security.
   """
   attr :is_in_watchlist, :boolean, required: true
+  attr :realtime_update, :map, required: true
   attr :security, :map, required: true
 
   def security_quote(assigns) do
     ~H"""
-    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
+    <div
+      class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm"
+      id={@security.symbol}
+      data-animate={
+        JS.transition(%JS{}, "animate-flash-as-new", to: "##{@security.symbol}", time: 500)
+      }
+    >
       <div class="flex flex-row items-start justify-between space-x-4">
         <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
         <button
@@ -360,9 +386,11 @@ defmodule LoinWeb.Securities do
         </button>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
-        <.security_price value={@security.price} />
-        <.security_change_percent value={@security.change_percent} />
-        <.security_change value={@security.change_value} />
+        <.security_price value={Map.get(@realtime_update, :price, @security.price)} />
+        <.security_change_percent value={
+          Map.get(@realtime_update, :change_percent, @security.change_percent)
+        } />
+        <.security_change value={Map.get(@realtime_update, :change_value, @security.change_value)} />
         <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>
@@ -373,6 +401,7 @@ defmodule LoinWeb.Securities do
   @doc """
   Renders a quote section for a specific security.
   """
+  attr :realtime_update, :map, required: true
   attr :security, :map, required: true
 
   def watchlist_security_quote(assigns) do
@@ -388,9 +417,11 @@ defmodule LoinWeb.Securities do
         </.link>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
-        <.security_price value={@security.price} />
-        <.security_change_percent value={@security.change_percent} />
-        <.security_change value={@security.change_value} />
+        <.security_price value={Map.get(@realtime_update, :price, @security.price)} />
+        <.security_change_percent value={
+          Map.get(@realtime_update, :change_percent, @security.change_percent)
+        } />
+        <.security_change value={Map.get(@realtime_update, :change_value, @security.change_value)} />
         <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>

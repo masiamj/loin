@@ -1,5 +1,6 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
+import update from 'lodash/update'
 
 const getColorForItem = (item) => {
   switch (get(item, ['trend'], null)) {
@@ -11,6 +12,8 @@ const getColorForItem = (item) => {
       return '#dc2626'
     case 'neutral':
       return '#ca8a04'
+    case 'now':
+      return '#6d28d9'
   }
 }
 
@@ -36,19 +39,22 @@ export const TimeseriesChart = {
       timeScale: {
         borderVisible: false
       },
-      // watermark: {
-      //   visible: true,
-      //   fontSize: 18,
-      //   horzAlign: 'top',
-      //   vertAlign: 'left',
-      //   color: 'rgba(58,130,246,0.5)',
-      //   text: 'TrendFlares',
-      // },
     })
   },
   getTimeseriesData() {
+    this.hasRealtimeUpdate = false
     const serializedData = this.el.dataset.timeseries || '[]'
-    const deserializedData = JSON.parse(serializedData)
+    let deserializedData = JSON.parse(serializedData)
+
+    const serializedRealtimeUpdate = this.el.dataset['realtimeUpdate'] || '{}'
+    const deserializedRealtimeUpdate = JSON.parse(serializedRealtimeUpdate)
+
+    if (get(deserializedRealtimeUpdate, 'price', false)) {
+      this.hasRealtimeUpdate = true
+      // const dateString = (new Date()).toISOString().split('T')[0]
+      return update(deserializedData, deserializedData.length - 1, (value = {}) => ({ ...value, close: deserializedRealtimeUpdate.price, trend: 'now' }))
+    }
+
     return deserializedData
   },
   mounted() {
@@ -67,7 +73,6 @@ export const TimeseriesChart = {
       value: close
     }))
 
-
     /**
     * Handle changing chart data (clear and reset)
     */
@@ -79,16 +84,20 @@ export const TimeseriesChart = {
     /**
      * Creates series on persistent chart instance
      */
-    this.lineSeries = this.chartInstance.addLineSeries();
+    this.lineSeries = this.chartInstance.addLineSeries({
+      lastPriceAnimation: 2
+    });
     this.lineSeries.setData(chartData);
 
     /**
      * Scale to constraints
      */
-    this.chartInstance.timeScale().setVisibleRange({
-      from: (new Date("2021/09/01")).getTime() / 1000,
-      to: (new Date()).getTime() / 1000,
-    })
+    if (!this.hasRealtimeUpdate) {
+      this.chartInstance.timeScale().setVisibleRange({
+        from: (new Date("2021/09/01")).getTime() / 1000,
+        to: (new Date()).getTime() / 1000,
+      })
+    }
   },
   updated() {
     this.renderChart()
