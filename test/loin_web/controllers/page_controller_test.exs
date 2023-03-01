@@ -3,6 +3,6 @@ defmodule LoinWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Trenderloin"
+    assert html_response(conn, 200) =~ "How it works"
   end
 end

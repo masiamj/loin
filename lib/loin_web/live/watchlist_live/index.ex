@@ -83,10 +83,12 @@ defmodule LoinWeb.WatchlistLive do
             <ul>
               <%= for {symbol, item} <- @securities do %>
                 <li class="border-b-[1px]">
-                  <LoinWeb.Securities.generic_security
-                    id={item.symbol}
+                  <LoinWeb.Securities.security_list_item
+                    class="border-b-[0.25px]"
+                    id={symbol}
                     item={item}
-                    watchlist
+                    phx-click="select-security"
+                    phx-value-symbol={symbol}
                     realtime_update={Map.get(@realtime_updates, symbol, %{})}
                   />
                 </li>
@@ -110,10 +112,12 @@ defmodule LoinWeb.WatchlistLive do
           <ul>
             <%= for {symbol, item} <- @securities do %>
               <li class="border-b-[1px]">
-                <LoinWeb.Securities.generic_security
-                  id={item.symbol}
+                <LoinWeb.Securities.security_list_item
+                  class="border-b-[0.25px]"
+                  id={symbol}
                   item={item}
-                  watchlist
+                  phx-click="select-security"
+                  phx-value-symbol={symbol}
                   realtime_update={Map.get(@realtime_updates, symbol, %{})}
                 />
               </li>

@@ -42,20 +42,18 @@ export const TimeseriesChart = {
     })
   },
   getTimeseriesData() {
-    this.hasRealtimeUpdate = false
     const serializedData = this.el.dataset.timeseries || '[]'
-    let deserializedData = JSON.parse(serializedData)
+    this.chartSourceData = JSON.parse(serializedData)
 
     const serializedRealtimeUpdate = this.el.dataset['realtimeUpdate'] || '{}'
     const deserializedRealtimeUpdate = JSON.parse(serializedRealtimeUpdate)
+    this.isValidRealtimeUpdate = get(deserializedRealtimeUpdate, 'price', false)
 
-    if (get(deserializedRealtimeUpdate, 'price', false)) {
-      this.hasRealtimeUpdate = true
-      // const dateString = (new Date()).toISOString().split('T')[0]
-      return update(deserializedData, deserializedData.length - 1, (value = {}) => ({ ...value, close: deserializedRealtimeUpdate.price, trend: 'now' }))
+    if (this.isValidRealtimeUpdate) {
+      this.chartSourceData = update(this.chartSourceData, this.chartSourceData.length - 1, (value = {}) => ({ ...value, close: deserializedRealtimeUpdate.price, trend: 'now' }))
     }
 
-    return deserializedData
+    return this.chartSourceData
   },
   mounted() {
     this.createChart()
@@ -92,7 +90,7 @@ export const TimeseriesChart = {
     /**
      * Scale to constraints
      */
-    if (!this.hasRealtimeUpdate) {
+    if (!this.isValidRealtimeUpdate) {
       this.chartInstance.timeScale().setVisibleRange({
         from: (new Date("2021/09/01")).getTime() / 1000,
         to: (new Date()).getTime() / 1000,

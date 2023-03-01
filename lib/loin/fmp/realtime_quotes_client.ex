@@ -35,7 +35,13 @@ defmodule Loin.FMP.RealtimeQuotesClient do
       "RealtimeQuotesClient disconnected from FMP... with status #{status} reconnecting..."
     )
 
-    {:reconnect, state}
+    case Loin.Features.is_realtime_quotes_enabled() do
+      true ->
+        {:reconnect, state}
+
+      false ->
+        {:ok, state}
+    end
   end
 
   def handle_frame({:text, message}, state) do
@@ -59,6 +65,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
 
   defp handle_frame_content(%{"lp" => latest_price, "s" => symbol, "type" => "T"} = _trade, state) do
     proper_symbol = String.upcase(symbol)
+    Logger.info("Processing #{proper_symbol}")
     Loin.FMP.RealtimeQuotesBuffer.put({proper_symbol, latest_price})
     {:ok, state}
   end

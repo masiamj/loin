@@ -26,7 +26,7 @@ defmodule LoinWeb.HeaderComponents do
       <div class="w-full h-[6vh] bg-gray-50 lg:border-b border-gray-100 shadow-sm">
         <div class="flex items-center justify-between h-full lg:justify-start px-4">
           <.link href={~p"/"} class="font-bold lg:w-1/3">
-            Trenderloin
+            <img alt="TrendFlares logo" class="h-12" src="/images/trendflares_logo_black.png" />
           </.link>
           <div class="lg:hidden">
             <button
@@ -75,7 +75,7 @@ defmodule LoinWeb.HeaderComponents do
               Watchlist
             </.link>
             <.link
-              navigate={~p"/auth"}
+              href="https://blog.trendflares.com"
               class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
             >
               How it works
@@ -111,7 +111,7 @@ defmodule LoinWeb.HeaderComponents do
           <div class="px-5 pt-5 pb-6">
             <div class="flex items-center justify-between">
               <.link navigate={~p"/"} class="font-bold">
-                Trenderloin
+                <img alt="TrendFlares logo" class="h-12" src="/images/trendflares_logo_black.png" />
               </.link>
               <button
                 type="button"
@@ -137,7 +137,10 @@ defmodule LoinWeb.HeaderComponents do
                 <.link navigate={~p"/watchlist"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Watchlist
                 </.link>
-                <.link navigate={~p"/auth"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link
+                  href="https://blog.trendflares.com/"
+                  class="rounded-md px-3 py-2 hover:bg-gray-100"
+                >
                   How it works
                 </.link>
                 <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">
@@ -172,7 +175,7 @@ defmodule LoinWeb.HeaderComponents do
       <div class="w-full h-[6vh] bg-gray-50 lg:border-b border-gray-100 shadow-sm">
         <div class="flex items-center justify-between h-full lg:justify-start px-4">
           <.link href={~p"/"} class="font-bold lg:w-1/3">
-            Trenderloin
+            <img alt="TrendFlares logo" class="h-12" src="/images/trendflares_logo_black.png" />
           </.link>
           <div class="lg:hidden">
             <button
@@ -217,7 +220,10 @@ defmodule LoinWeb.HeaderComponents do
             </div>
           </div>
           <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
-            <.link navigate={~p"/auth"} class="relative px-2 py-1 text-gray-500 hover:text-black">
+            <.link
+              href="https://blog.trendflares.com/"
+              class="relative px-2 py-1 text-gray-500 hover:text-black"
+            >
               How it works
             </.link>
             <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
@@ -255,7 +261,7 @@ defmodule LoinWeb.HeaderComponents do
           <div class="px-5 pt-5 pb-6">
             <div class="flex items-center justify-between">
               <.link navigate={~p"/"} class="font-bold">
-                Trenderloin
+                <img alt="TrendFlares logo" class="h-12" src="/images/trendflares_logo_black.png" />
               </.link>
               <button
                 type="button"
@@ -278,7 +284,10 @@ defmodule LoinWeb.HeaderComponents do
             </div>
             <div class="mt-4">
               <nav class="grid gap-y-1">
-                <.link navigate={~p"/auth"} class="rounded-md px-3 py-2 hover:bg-gray-100">
+                <.link
+                  href="https://blog.trendflares.com/"
+                  class="rounded-md px-3 py-2 hover:bg-gray-100"
+                >
                   How it works
                 </.link>
                 <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">

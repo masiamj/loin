@@ -159,6 +159,7 @@ defmodule LoinWeb.ScreenerLive do
                 value={i.value}
                 field={{i.form, i.field}}
                 {i.rest}
+                phx-debounce="250"
               />
             </Flop.Phoenix.filter_fields>
           </.form>
@@ -179,7 +180,7 @@ defmodule LoinWeb.ScreenerLive do
             path={~p"/screener"}
           >
             <:col :let={item} col_style="min-width:200px;" label="Name" field={:name}>
-              <.link patch={~p"/s/#{item.fmp_securities_symbol}"}>
+              <.link navigate={~p"/s/#{item.fmp_securities_symbol}"}>
                 <div
                   class="flex flex-col py-0.5 -ml-2 pl-2"
                   data-animate={

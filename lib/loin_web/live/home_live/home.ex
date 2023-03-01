@@ -67,7 +67,9 @@ defmodule LoinWeb.HomeLive do
           title="Uptrends"
         >
           <%= for {symbol, item} <- @uptrends do %>
-            <LoinWeb.Securities.generic_security
+            <LoinWeb.Securities.security_list_item
+              class="border-b-[0.25px]"
+              href={~p"/s/#{symbol}"}
               id={symbol}
               item={item}
               realtime_update={Map.get(@realtime_updates, symbol, %{})}
@@ -80,7 +82,9 @@ defmodule LoinWeb.HomeLive do
         >
           <ul>
             <%= for {symbol, item} <- @downtrends do %>
-              <LoinWeb.Securities.generic_security
+              <LoinWeb.Securities.security_list_item
+                class="border-b-[0.25px]"
+                href={~p"/s/#{symbol}"}
                 id={symbol}
                 item={item}
                 realtime_update={Map.get(@realtime_updates, symbol, %{})}
@@ -94,7 +98,9 @@ defmodule LoinWeb.HomeLive do
         >
           <ul>
             <%= for {symbol, item} <- @trend_changes do %>
-              <LoinWeb.Securities.generic_security
+              <LoinWeb.Securities.security_list_item
+                class="border-b-[0.25px]"
+                href={~p"/s/#{symbol}"}
                 id={symbol}
                 item={item}
                 realtime_update={Map.get(@realtime_updates, symbol, %{})}

@@ -16,228 +16,106 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  @doc """
-  Renders an ETF constituent.
-  """
+  attr :class, :string, required: false
+  attr :href, :string, required: false
   attr :id, :string, default: ""
   attr :item, :map, required: true
   attr :realtime_update, :map, default: %{}
   attr :watchlist, :boolean, default: false
+  attr :rest, :global
 
-  def generic_security(%{item: %{constituent: _constituent}} = assigns) do
+  def security_list_item(%{href: _href} = assigns) do
     ~H"""
-    <.link navigate={~p"/s/#{@item.symbol}"}>
-      <li
-        class="bg-white hover:bg-gray-100 px-2"
-        data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
-        id={@id}
-        role="button"
-      >
-        <div class="flex flex-row items-center justify-between space-x-2 h-11">
-          <div class="flex flex-col w-2/5">
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= @item.name %>
-              </p>
-            </div>
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs font-medium"><%= @item.symbol %></p>
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(@item.constituent, :weight_percentage) %>%
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
-            <span class="w-1/2">
-              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
-            </span>
-            <span class="w-1/4">
-              <.security_change_percent value={
-                Map.get(@realtime_update, :change_percent, @item.change_percent)
-              } />
-            </span>
-            <span class="hidden lg:block w-1/4">
-              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
-            </span>
-          </div>
-          <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge value={@item.trend} />
-          </div>
-        </div>
-      </li>
+    <.link class={[@class]} navigate={@href || ~p"/s/#{@item.symbol}"}>
+      <.security_list_item_body id={@id} item={@item} realtime_update={@realtime_update} />
     </.link>
     """
   end
 
-  def generic_security(%{item: %{sector_weight: _sector_weight}} = assigns) do
+  def security_list_item(assigns) do
     ~H"""
-    <.link navigate={~p"/s/#{@item.symbol}"}>
-      <div class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200">
-        <div class="flex flex-row items-center justify-between space-x-2 h-11">
-          <div class="flex flex-col w-2/5">
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= @item.symbol %>
-              </p>
-            </div>
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-sm font-medium line-clamp-1 w-[75%]"><%= @item.name %></p>
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(@item.sector_weight, :weight_percentage) %>
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
-            <span class="w-1/2">
-              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
-            </span>
-            <span class="w-1/4">
-              <.security_change_percent value={
-                Map.get(@realtime_update, :change_percent, @item.change_percent)
-              } />
-            </span>
-            <span class="hidden lg:block w-1/4">
-              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
-            </span>
-          </div>
-          <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge value={@item.trend} />
-          </div>
-        </div>
+    <div class={["cursor-pointer", @class]} {@rest}>
+      <.security_list_item_body id={@id} item={@item} realtime_update={@realtime_update} />
+    </div>
+    """
+  end
+
+  attr :constituent, :map, required: false
+  attr :exposure, :map, required: false
+  attr :label, :string, required: true
+  attr :sector_weight, :map, required: false
+  attr :symbol, :string, required: true
+
+  def context_specific_label(%{constituent: %{weight_percentage: _}} = assigns) do
+    ~H"""
+    <div class="flex flex-col w-2/5">
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @label %>
+        </p>
       </div>
-    </.link>
-    """
-  end
-
-  def generic_security(%{item: %{exposure: _exposure}} = assigns) do
-    ~H"""
-    <.link navigate={~p"/s/#{@item.symbol}"}>
-      <li
-        class="bg-white hover:bg-gray-100 px-2"
-        data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
-        id={@id}
-        role="button"
-      >
-        <div class="flex flex-row items-center justify-between space-x-2 h-11">
-          <div class="flex flex-col w-2/5">
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= @item.name %>
-              </p>
-            </div>
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs font-medium"><%= @item.symbol %></p>
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(@item.exposure, :etf_weight_percentage) %>%
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
-            <span class="w-1/2">
-              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
-            </span>
-            <span class="w-1/4">
-              <.security_change_percent value={
-                Map.get(@realtime_update, :change_percent, @item.change_percent)
-              } />
-            </span>
-            <span class="hidden lg:block w-1/4">
-              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
-            </span>
-          </div>
-          <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge value={@item.trend} />
-          </div>
-        </div>
-      </li>
-    </.link>
-    """
-  end
-
-  def generic_security(%{watchlist: true} = assigns) do
-    ~H"""
-    <div
-      class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200"
-      data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
-      id={@id}
-      role="button"
-      phx-click="select-security"
-      phx-value-symbol={Map.get(@item, :symbol)}
-    >
-      <div class="flex flex-row items-center justify-between space-x-2 h-11">
-        <div class="flex flex-col w-2/5">
-          <div class="flex flex-row items-center gap-1">
-            <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-              <%= Map.get(@item, :name) %>
-            </p>
-          </div>
-          <p class="text-xs font-medium"><%= Map.get(@item, :symbol) %></p>
-        </div>
-        <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
-          <span class="w-1/2">
-            <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
-          </span>
-          <span class="w-1/4">
-            <.security_change_percent value={
-              Map.get(@realtime_update, :change_percent, @item.change_percent)
-            } />
-          </span>
-          <span class="hidden lg:block w-1/4">
-            <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
-          </span>
-        </div>
-        <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-          <.trend_badge value={@item.trend} />
-        </div>
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs font-medium"><%= @symbol %></p>
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @constituent.weight_percentage %>%
+        </p>
       </div>
     </div>
     """
   end
 
-  def generic_security(assigns) do
+  def context_specific_label(%{exposure: %{etf_weight_percentage: _}} = assigns) do
     ~H"""
-    <.link patch={~p"/s/#{@item.symbol}"}>
-      <div
-        class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200"
-        data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 500)}
-        id={@id}
-        role="button"
-      >
-        <div class="flex flex-row items-center justify-between space-x-2 h-11">
-          <div class="flex flex-col w-2/5">
-            <div class="flex flex-row items-center gap-1">
-              <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
-                <%= Map.get(@item, :name) %>
-              </p>
-            </div>
-            <p class="text-xs font-medium"><%= Map.get(@item, :symbol) %></p>
-          </div>
-          <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
-            <span class="w-1/2">
-              <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
-            </span>
-            <span class="w-1/4">
-              <.security_change_percent value={
-                Map.get(@realtime_update, :change_percent, @item.change_percent)
-              } />
-            </span>
-            <span class="hidden lg:block w-1/4">
-              <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
-            </span>
-          </div>
-          <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
-            <.trend_badge value={@item.trend} />
-          </div>
-        </div>
+    <div class="flex flex-col w-2/5">
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @label %>
+        </p>
       </div>
-    </.link>
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs font-medium"><%= @symbol %></p>
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @exposure.etf_weight_percentage %>%
+        </p>
+      </div>
+    </div>
+    """
+  end
+
+  def context_specific_label(%{sector_weight: %{weight_percentage: _}} = assigns) do
+    ~H"""
+    <div class="flex flex-col w-2/5">
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @label %>
+        </p>
+      </div>
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-sm font-medium line-clamp-1"><%= @symbol %></p>
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @sector_weight.weight_percentage %>
+        </p>
+      </div>
+    </div>
+    """
+  end
+
+  def context_specific_label(assigns) do
+    ~H"""
+    <div class="flex flex-col w-2/5">
+      <div class="flex flex-row items-center gap-1">
+        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+          <%= @label %>
+        </p>
+      </div>
+      <p class="text-xs font-medium"><%= @symbol %></p>
+    </div>
     """
   end
 
   @doc """
   Renders a quote section for a specific security.
   """
-  attr :realtime_update, :map, required: true
   attr :security, :map, required: true
 
   def quote_section(assigns) do
@@ -352,24 +230,70 @@ defmodule LoinWeb.Securities do
     """
   end
 
+  attr :id, :string, default: ""
+  attr :item, :map, required: true
+  attr :realtime_update, :map, default: %{}
+  attr :watchlist, :boolean, default: false
+
+  def security_list_item_body(assigns) do
+    ~H"""
+    <div
+      class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200"
+      data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 300)}
+      id={@id}
+    >
+      <div class="flex flex-row items-center justify-between space-x-2 h-11">
+        <.context_specific_label
+          constituent={Map.get(@item, :constituent, nil)}
+          exposure={Map.get(@item, :exposure, nil)}
+          label={@item.name}
+          sector_weight={Map.get(@item, :sector_weight, nil)}
+          symbol={@item.symbol}
+        />
+        <div class="flex flex-row items-center justify-between w-2/5 space-x-3 text-xs">
+          <span class="w-1/2">
+            <.security_price value={Map.get(@realtime_update, :price, @item.price)} />
+          </span>
+          <span class="w-1/4">
+            <.security_change_percent value={
+              Map.get(@realtime_update, :change_percent, @item.change_percent)
+            } />
+          </span>
+          <span class="hidden lg:block w-1/4">
+            <.security_change value={Map.get(@realtime_update, :change_value, @item.change_value)} />
+          </span>
+        </div>
+        <div class="flex flex-row items-center justify-end space-x-1 w-1/5">
+          <.trend_badge value={@item.trend} />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   @doc """
   Renders a quote section for a specific security.
   """
   attr :is_in_watchlist, :boolean, required: true
+  attr :original_symbol, :string, required: false
   attr :realtime_update, :map, required: true
   attr :security, :map, required: true
 
   def security_quote(assigns) do
     ~H"""
-    <div
-      class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm"
-      id={@security.symbol}
-      data-animate={
-        JS.transition(%JS{}, "animate-flash-as-new", to: "##{@security.symbol}", time: 500)
-      }
-    >
+    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
       <div class="flex flex-row items-start justify-between space-x-4">
-        <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        <div class="flex flex-col">
+          <p
+            :if={@original_symbol != @security.symbol}
+            class="text-blue-500 px-1 text-xs mb-1 cursor-pointer flex flex-row"
+            phx-click="select-security"
+            phx-value-symbol={@original_symbol}
+          >
+            <Heroicons.arrow_left mini class="h-4 w-4 mr-1" /> Back to <%= @original_symbol %>
+          </p>
+          <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        </div>
         <button
           :if={!@is_in_watchlist}
           class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
