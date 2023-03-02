@@ -276,7 +276,7 @@ defmodule LoinWeb.Securities do
   """
   attr :is_in_watchlist, :boolean, required: true
   attr :original_symbol, :string, required: false
-  attr :realtime_update, :map, required: true
+  attr :realtime_update, :map, default: %{}
   attr :security, :map, required: true
 
   def security_quote(assigns) do
@@ -286,7 +286,7 @@ defmodule LoinWeb.Securities do
         <div class="flex flex-col">
           <p
             :if={@original_symbol != @security.symbol}
-            class="text-blue-500 px-1 text-xs mb-1 cursor-pointer flex flex-row"
+            class="text-blue-600 px-1 text-xs mb-1 cursor-pointer flex flex-row"
             phx-click="select-security"
             phx-value-symbol={@original_symbol}
           >
@@ -294,20 +294,30 @@ defmodule LoinWeb.Securities do
           </p>
           <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
         </div>
-        <button
-          :if={!@is_in_watchlist}
-          class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
-          phx-click="toggle-identity-security"
-        >
-          Follow
-        </button>
-        <button
-          :if={@is_in_watchlist}
-          class="bg-rose-700 hover:bg-rose-800 rounded-md shadow-sm px-2 py-1 text-xs text-white"
-          phx-click="toggle-identity-security"
-        >
-          Unfollow
-        </button>
+        <div class="flex flex-row gap-2">
+          <button
+            :if={!@is_in_watchlist}
+            class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
+            phx-click="toggle-identity-security"
+          >
+            Follow
+          </button>
+          <button
+            :if={@is_in_watchlist}
+            class="bg-rose-700 hover:bg-rose-800 rounded-md shadow-sm px-2 py-1 text-xs text-white"
+            phx-click="toggle-identity-security"
+          >
+            Unfollow
+          </button>
+          <.link
+            :if={@original_symbol != @security.symbol}
+            class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs flex flex-row items-center"
+            navigate={~p"/s/#{@security.symbol}"}
+          >
+            <%= @security.symbol %>
+            <Heroicons.arrow_top_right_on_square mini class="h-4 w-4 ml-1" />
+          </.link>
+        </div>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
         <.security_price value={Map.get(@realtime_update, :price, @security.price)} />
@@ -325,7 +335,7 @@ defmodule LoinWeb.Securities do
   @doc """
   Renders a quote section for a specific security.
   """
-  attr :realtime_update, :map, required: true
+  attr :realtime_update, :map, default: %{}
   attr :security, :map, required: true
 
   def watchlist_security_quote(assigns) do
@@ -337,7 +347,7 @@ defmodule LoinWeb.Securities do
           navigate={~p"/s/#{@security.symbol}"}
           class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
         >
-          See more
+          View
         </.link>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">

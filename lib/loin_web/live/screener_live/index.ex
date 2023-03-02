@@ -186,7 +186,7 @@ defmodule LoinWeb.ScreenerLive do
                   data-animate={
                     JS.transition(%JS{}, "animate-flash-as-new",
                       to: "##{item.fmp_securities_symbol}",
-                      time: 500
+                      time: 300
                     )
                   }
                   id={item.fmp_securities_symbol}
