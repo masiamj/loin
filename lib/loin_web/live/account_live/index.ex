@@ -59,6 +59,7 @@ defmodule LoinWeb.AccountLive do
         </div>
       </div>
     </div>
+    <LoinWeb.FooterComponents.footer />
     """
   end
 

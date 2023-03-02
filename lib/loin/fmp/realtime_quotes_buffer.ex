@@ -29,14 +29,15 @@ defmodule Loin.FMP.RealtimeQuotesBuffer do
   def handle_info(:flush, %{buffer: buffer} = _state) do
     {:ok, securities_map} = get_securities_map(buffer)
 
-    result_map = buffer
-    |> Flow.from_enumerable()
-    |> Flow.partition()
-    |> Flow.map(fn {symbol, price} ->
-      {symbol, compute_derived_price_information(Map.get(securities_map, symbol, nil), price)}
-    end)
-    |> Flow.filter(fn {_symbol, result} -> is_map(result) end)
-    |> Enum.into(%{})
+    result_map =
+      buffer
+      |> Flow.from_enumerable()
+      |> Flow.partition()
+      |> Flow.map(fn {symbol, price} ->
+        {symbol, compute_derived_price_information(Map.get(securities_map, symbol, nil), price)}
+      end)
+      |> Flow.filter(fn {_symbol, result} -> is_map(result) end)
+      |> Enum.into(%{})
 
     Phoenix.PubSub.broadcast(Loin.PubSub, "realtime_quotes", {:realtime_quotes, result_map})
 

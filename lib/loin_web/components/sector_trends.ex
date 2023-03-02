@@ -12,7 +12,7 @@ defmodule LoinWeb.SectorTrends do
     "XLI" => "Industrials",
     "XLK" => "Tech",
     "XLP" => "Staples",
-    "XLRE" => "Real Estate",
+    "XLRE" => "Real Est",
     "XLU" => "Utilities",
     "XLV" => "Healthcare",
     "XLY" => "Cyclical",

@@ -72,9 +72,7 @@ defmodule LoinWeb.WatchlistLive do
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
         <div class="col-span-3">
-          <LoinWeb.Securities.watchlist_security_quote
-            security={@security}
-          />
+          <LoinWeb.Securities.watchlist_security_quote security={@security} />
           <div class="hidden lg:block lg:overflow-y-scroll">
             <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
               Your watchlist (<%= length(Map.keys(@securities)) %>)
@@ -158,9 +156,12 @@ defmodule LoinWeb.WatchlistLive do
     # Updates securities in the main list with their new values
     socket =
       socket
-      |> update(:securities, &Map.merge(&1, pertinent_results, fn _key, existing, new -> Map.merge(existing, new) end))
+      |> update(
+        :securities,
+        &Map.merge(&1, pertinent_results, fn _key, existing, new -> Map.merge(existing, new) end)
+      )
       |> update(:security, &Map.merge(&1, Map.get(pertinent_results, socket.assigns.symbol, %{})))
 
-    {:noreply, push_event(socket, "flash-as-new-many", %{ids: Map.keys(pertinent_results) })}
+    {:noreply, push_event(socket, "flash-as-new-many", %{ids: Map.keys(pertinent_results)})}
   end
 end
