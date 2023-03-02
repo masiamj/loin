@@ -31,14 +31,15 @@ defmodule LoinWeb.WatchlistLive do
 
         socket =
           socket
+          |> assign(:realtime_symbols, Map.keys(securities))
           |> assign(:symbol, security.symbol)
           |> assign(:security, security)
           |> assign(:securities, securities)
           |> assign(:timeseries_data, chart_data)
-          |> assign(:realtime_symbols, extract_realtime_symbols(securities))
-          |> assign(:realtime_updates, %{})
 
-        Process.send_after(self(), :setup_realtime_updates, 3000)
+        if connected?(socket) do
+          Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+        end
 
         {:ok, socket}
     end
@@ -71,12 +72,8 @@ defmodule LoinWeb.WatchlistLive do
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
         <div class="col-span-3">
-          <LoinWeb.Securities.watchlist_security_quote
-            realtime_update={Map.get(@realtime_updates, @symbol, %{})}
-            security={@security}
-          />
+          <LoinWeb.Securities.watchlist_security_quote security={@security} />
           <div class="hidden lg:block lg:overflow-y-scroll">
-            <%!-- <LoinWeb.Securities.quote_section security={@security} /> --%>
             <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
               Your watchlist (<%= length(Map.keys(@securities)) %>)
             </p>
@@ -89,7 +86,6 @@ defmodule LoinWeb.WatchlistLive do
                     item={item}
                     phx-click="select-security"
                     phx-value-symbol={symbol}
-                    realtime_update={Map.get(@realtime_updates, symbol, %{})}
                   />
                 </li>
               <% end %>
@@ -118,7 +114,6 @@ defmodule LoinWeb.WatchlistLive do
                   item={item}
                   phx-click="select-security"
                   phx-value-symbol={symbol}
-                  realtime_update={Map.get(@realtime_updates, symbol, %{})}
                 />
               </li>
             <% end %>
@@ -154,34 +149,19 @@ defmodule LoinWeb.WatchlistLive do
   end
 
   @impl true
-  def handle_info(:setup_realtime_updates, socket) do
-    if connected?(socket) do
-      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
-    end
+  def handle_info({:realtime_quotes, result_map}, socket) do
+    # Extracts the securities that are actually important from the newly published quotes
+    pertinent_results = Map.take(result_map, socket.assigns.realtime_symbols)
 
-    {:noreply, socket}
-  end
+    # Updates securities in the main list with their new values
+    socket =
+      socket
+      |> update(
+        :securities,
+        &Map.merge(&1, pertinent_results, fn _key, existing, new -> Map.merge(existing, new) end)
+      )
+      |> update(:security, &Map.merge(&1, Map.get(pertinent_results, socket.assigns.symbol, %{})))
 
-  @impl true
-  def handle_info(
-        {:realtime_quote, {symbol, item}},
-        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
-      ) do
-    case MapSet.member?(realtime_symbols, symbol) do
-      true ->
-        socket =
-          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
-
-        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
-
-      false ->
-        {:noreply, socket}
-    end
-  end
-
-  defp extract_realtime_symbols(securities) when is_map(securities) do
-    securities
-    |> Map.keys()
-    |> MapSet.new()
+    {:noreply, push_event(socket, "flash-as-new-many", %{ids: Map.keys(pertinent_results)})}
   end
 end

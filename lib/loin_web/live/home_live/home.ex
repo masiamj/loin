@@ -5,31 +5,31 @@ defmodule LoinWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    with {:ok, chart_data} <- TimeseriesCache.get_many_encoded(["SPY", "QQQ"]),
-         {:ok, downtrends} <- FMP.get_securities_via_trend("down", 10),
-         {:ok, sectors} <- FMP.get_sector_etfs(),
-         {:ok, trend_changes} <- FMP.get_securities_with_trend_change(10),
-         {:ok, uptrends} <- FMP.get_securities_via_trend("up", 10),
-         realtime_symbols <-
-           extract_realtime_symbols([downtrends, sectors, trend_changes, uptrends]) do
-      socket =
-        socket
-        |> assign(:chart_data, chart_data)
-        |> assign(:downtrends, downtrends)
-        |> assign(:sectors, sectors)
-        |> assign(:trend_changes, trend_changes)
-        |> assign(:uptrends, uptrends)
-        |> assign(:page_title, "Stock market trends, sector trends")
-        |> assign(:realtime_symbols, realtime_symbols)
-        |> assign(:realtime_updates, %{})
+    {:ok, chart_data} = TimeseriesCache.get_many_encoded(["SPY", "QQQ"])
+    {:ok, downtrends} = FMP.get_securities_via_trend("down", 10)
+    {:ok, sectors} = FMP.get_sector_etfs()
+    {:ok, trend_changes} = FMP.get_securities_with_trend_change(10)
+    {:ok, uptrends} = FMP.get_securities_via_trend("up", 10)
 
-      Process.send_after(self(), :setup_realtime_updates, 3000)
+    socket =
+      socket
+      |> assign(:chart_data, chart_data)
+      |> assign(:downtrends_realtime_symbols, Map.keys(downtrends))
+      |> assign(:downtrends, downtrends)
+      |> assign(:page_title, "Stock market trends, sector trends")
+      |> assign(:qqq_realtime_update, nil)
+      |> assign(:sectors, sectors)
+      |> assign(:spy_realtime_update, nil)
+      |> assign(:trend_changes_realtime_symbols, Map.keys(trend_changes))
+      |> assign(:trend_changes, trend_changes)
+      |> assign(:uptrends_realtime_symbols, Map.keys(uptrends))
+      |> assign(:uptrends, uptrends)
 
-      {:ok, socket}
-    else
-      _result ->
-        {:ok, socket}
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
     end
+
+    {:ok, socket}
   end
 
   @impl true
@@ -44,7 +44,7 @@ defmodule LoinWeb.HomeLive do
             data-timeseries={Map.get(@chart_data, "SPY", [])}
             phx-hook="TimeseriesChart"
             phx-update="ignore"
-            data-realtime-update={Map.get(@realtime_updates, "SPY", %{}) |> Jason.encode!()}
+            data-realtime-update={@spy_realtime_update}
           >
           </div>
         </LoinWeb.Cards.generic>
@@ -55,7 +55,7 @@ defmodule LoinWeb.HomeLive do
             data-timeseries={Map.get(@chart_data, "QQQ", [])}
             phx-hook="TimeseriesChart"
             phx-update="ignore"
-            data-realtime-update={Map.get(@realtime_updates, "QQQ", %{}) |> Jason.encode!()}
+            data-realtime-update={@qqq_realtime_update}
           >
           </div>
         </LoinWeb.Cards.generic>
@@ -72,7 +72,6 @@ defmodule LoinWeb.HomeLive do
               href={~p"/s/#{symbol}"}
               id={symbol}
               item={item}
-              realtime_update={Map.get(@realtime_updates, symbol, %{})}
             />
           <% end %>
         </LoinWeb.Cards.generic>
@@ -87,7 +86,6 @@ defmodule LoinWeb.HomeLive do
                 href={~p"/s/#{symbol}"}
                 id={symbol}
                 item={item}
-                realtime_update={Map.get(@realtime_updates, symbol, %{})}
               />
             <% end %>
           </ul>
@@ -103,13 +101,13 @@ defmodule LoinWeb.HomeLive do
                 href={~p"/s/#{symbol}"}
                 id={symbol}
                 item={item}
-                realtime_update={Map.get(@realtime_updates, symbol, %{})}
               />
             <% end %>
           </ul>
         </LoinWeb.Cards.generic>
       </div>
     </div>
+    <LoinWeb.FooterComponents.footer />
     """
   end
 
@@ -123,28 +121,57 @@ defmodule LoinWeb.HomeLive do
   end
 
   @impl true
-  def handle_info(
-        {:realtime_quote, {symbol, item}},
-        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
-      ) do
-    case MapSet.member?(realtime_symbols, symbol) do
-      true ->
-        socket =
-          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+  def handle_info({:realtime_quotes, result_map}, socket) do
+    # Extracts the securities that are actually important from the newly published quotes
+    downtrends_results = Map.take(result_map, socket.assigns.downtrends_realtime_symbols)
+    trend_changes_results = Map.take(result_map, socket.assigns.trend_changes_realtime_symbols)
+    uptrends_results = Map.take(result_map, socket.assigns.uptrends_realtime_symbols)
 
-        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+    # Collect all IDs to trigger events on
+    all_pertinent_results_symbols =
+      Enum.concat([
+        Map.keys(downtrends_results),
+        Map.keys(trend_changes_results),
+        Map.keys(uptrends_results)
+      ])
 
-      false ->
-        {:noreply, socket}
-    end
+    # Updates securities with their new values
+    socket =
+      socket
+      |> update(
+        :downtrends,
+        &Map.merge(&1, downtrends_results, fn _key, existing, new -> Map.merge(existing, new) end)
+      )
+      |> update(
+        :trend_changes,
+        &Map.merge(&1, trend_changes_results, fn _key, existing, new ->
+          Map.merge(existing, new)
+        end)
+      )
+      |> update(
+        :uptrends,
+        &Map.merge(&1, uptrends_results, fn _key, existing, new -> Map.merge(existing, new) end)
+      )
+      |> assign(get_chart_realtime_updates(result_map, socket))
+
+    {:noreply, push_event(socket, "flash-as-new-many", %{ids: all_pertinent_results_symbols})}
   end
 
   # Private
 
-  defp extract_realtime_symbols(lists) when is_list(lists) do
-    lists
-    |> Enum.flat_map(&Map.keys/1)
-    |> Enum.concat(["SPY", "QQQ"])
-    |> MapSet.new()
+  defp get_chart_realtime_updates(result_map, socket) do
+    spy_realtime_update =
+      case Map.get(result_map, "SPY") do
+        nil -> socket.assigns.spy_realtime_update
+        result when is_map(result) -> Jason.encode!(result)
+      end
+
+    qqq_realtime_update =
+      case Map.get(result_map, "QQQ") do
+        nil -> socket.assigns.qqq_realtime_update
+        result when is_map(result) -> Jason.encode!(result)
+      end
+
+    %{spy_realtime_update: spy_realtime_update, qqq_realtime_update: qqq_realtime_update}
   end
 end

@@ -52,3 +52,15 @@ window.addEventListener(`phx:flash-as-new`, (e) => {
     }
   }
 })
+
+window.addEventListener('phx:flash-as-new-many', e => {
+  e.detail.ids.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) {
+      const animationFn = el.getAttribute('data-animate')
+      if (animationFn) {
+        liveSocket.execJS(el, animationFn)
+      }
+    }
+  })
+})

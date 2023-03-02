@@ -122,9 +122,10 @@ defmodule LoinWeb.ScreenerLive do
       |> assign(:meta, %{})
       |> assign(:form_fields, @fields)
       |> assign(:realtime_symbols, [])
-      |> assign(:realtime_updates, %{})
 
-    Process.send_after(self(), :setup_realtime_updates, 3000)
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
+    end
 
     {:ok, socket}
   end
@@ -186,7 +187,7 @@ defmodule LoinWeb.ScreenerLive do
                   data-animate={
                     JS.transition(%JS{}, "animate-flash-as-new",
                       to: "##{item.fmp_securities_symbol}",
-                      time: 500
+                      time: 300
                     )
                   }
                   id={item.fmp_securities_symbol}
@@ -200,30 +201,16 @@ defmodule LoinWeb.ScreenerLive do
               </.link>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Price/share" field={:price}>
-              <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
-              |> Map.get(:price)
-              |> Intl.format_money_decimal() %>
+              <%= Intl.format_money_decimal(item.price) %>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Change" field={:change_value}>
-              <span class={
-                Map.get(@realtime_updates, item.fmp_securities_symbol, item)
-                |> Map.get(:change_value)
-                |> class_for_value()
-              }>
-                <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
-                |> Map.get(:change_value)
-                |> Intl.format_money_decimal() %>
+              <span class={class_for_value(item.change_value)}>
+                <%= Intl.format_money_decimal(item.change_value) %>
               </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Change %" field={:change_percent}>
-              <span class={
-                Map.get(@realtime_updates, item.fmp_securities_symbol, item)
-                |> Map.get(:change_percent)
-                |> class_for_value()
-              }>
-                <%= Map.get(@realtime_updates, item.fmp_securities_symbol, item)
-                |> Map.get(:change_percent)
-                |> Intl.format_percent() %>
+              <span class={class_for_value(item.change_percent)}>
+                <%= Intl.format_percent(item.change_percent) %>
               </span>
             </:col>
             <:col :let={item} col_style="min-width:100px;" label="Market cap" field={:market_cap}>
@@ -371,29 +358,25 @@ defmodule LoinWeb.ScreenerLive do
   end
 
   @impl true
-  def handle_info(:setup_realtime_updates, socket) do
-    if connected?(socket) do
-      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
-    end
+  def handle_info({:realtime_quotes, result_map}, socket) do
+    # Extracts the securities that are actually important from the newly published quotes
+    pertinent_results = Map.take(result_map, socket.assigns.realtime_symbols)
 
-    {:noreply, socket}
-  end
+    new_filtered_data =
+      socket.assigns.filtered_data
+      |> Enum.map(fn item ->
+        Map.merge(item, Map.get(pertinent_results, item.fmp_securities_symbol, %{}))
+      end)
 
-  @impl true
-  def handle_info(
-        {:realtime_quote, {symbol, item}},
-        %{assigns: %{realtime_symbols: realtime_symbols}} = socket
-      ) do
-    case MapSet.member?(realtime_symbols, symbol) do
-      true ->
-        socket =
-          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+    # Updates securities in the main list with their new values
+    socket =
+      socket
+      |> assign(
+        :filtered_data,
+        new_filtered_data
+      )
 
-        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
-
-      false ->
-        {:noreply, socket}
-    end
+    {:noreply, push_event(socket, "flash-as-new-many", %{ids: Map.keys(pertinent_results)})}
   end
 
   @impl Phoenix.LiveView
@@ -424,7 +407,7 @@ defmodule LoinWeb.ScreenerLive do
   end
 
   defp extract_realtime_symbols(securities) when is_list(securities) do
-    MapSet.new(securities, &Map.get(&1, :symbol))
+    Enum.map(securities, &Map.get(&1, :symbol))
   end
 
   defp trend_badge(%{trend: nil} = assigns) do

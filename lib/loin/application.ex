@@ -42,10 +42,10 @@ defmodule Loin.Application do
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
       # Start the Oban jobs processor
-      {Oban, oban_config()}
+      {Oban, oban_config()},
       # Start the real-time subsystem
-      # {Loin.FMP.RealtimeQuotesBuffer, []},
-      # {Loin.FMP.RealtimeQuotesClient, []}
+      {Loin.FMP.RealtimeQuotesBuffer, []},
+      {Loin.FMP.RealtimeQuotesClient, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

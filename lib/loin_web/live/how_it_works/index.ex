@@ -57,6 +57,7 @@ defmodule LoinWeb.HowItWorksLive do
         </p>
       </article>
     </div>
+    <LoinWeb.FooterComponents.footer />
     """
   end
 

@@ -27,22 +27,25 @@ defmodule LoinWeb.SecurityV2Live do
       Accounts.get_identity_security_by_identity_and_symbol(identity, proper_symbol)
 
     # Fetches ETF or Common stock-specific information
-    extra_information = fetch_more_relevant_information(security)
+    %{page_title: page_title, sections: sections} = fetch_more_relevant_information(security)
 
-    # Extracts real-time symbols to track
-    realtime_symbols = extract_realtime_symbols(proper_symbol, extra_information)
+    # Extracts realtime_symbols for each section
+    [section_1_realtime_symbols, section_2_realtime_symbols] =
+      Enum.map(sections, fn %{data: data} -> Enum.map(data, &Map.get(&1, :symbol)) end)
 
     # Assigns values to socket
     socket =
       socket
       |> assign(:is_in_watchlist, is_map(identity_security))
-      |> assign(:symbol, proper_symbol)
       |> assign(:original_symbol, proper_symbol)
+      |> assign(:page_title, page_title)
+      |> assign(:section_1_realtime_symbols, section_1_realtime_symbols)
+      |> assign(:section_2_realtime_symbols, section_2_realtime_symbols)
+      |> assign(:sections, sections)
       |> assign(:security, security)
+      |> assign(:symbol, proper_symbol)
       |> assign(:timeseries_data, chart_data)
-      |> assign(:realtime_symbols, realtime_symbols)
-      |> assign(:realtime_updates, %{})
-      |> assign(extra_information)
+      |> assign(:timeseries_realtime_update, nil)
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
@@ -60,7 +63,6 @@ defmodule LoinWeb.SecurityV2Live do
           <LoinWeb.Securities.security_quote
             is_in_watchlist={@is_in_watchlist}
             original_symbol={@original_symbol}
-            realtime_update={Map.get(@realtime_updates, @symbol, %{})}
             security={@security}
           />
           <div class="lg:overflow-y-scroll">
@@ -80,7 +82,6 @@ defmodule LoinWeb.SecurityV2Live do
                     item={item}
                     phx-click="select-security"
                     phx-value-symbol={item.symbol}
-                    realtime_update={Map.get(@realtime_updates, item.symbol, %{})}
                   />
                 <% end %>
               <% end %>
@@ -93,6 +94,7 @@ defmodule LoinWeb.SecurityV2Live do
           id="timeseries_chart"
           phx-hook="TimeseriesChart"
           phx-update="ignore"
+          data-realtime-update={@timeseries_realtime_update}
         >
         </div>
         <div class="block lg:hidden">
@@ -110,7 +112,6 @@ defmodule LoinWeb.SecurityV2Live do
                 item={item}
                 phx-click="select-security"
                 phx-value-symbol={item.symbol}
-                realtime_update={Map.get(@realtime_updates, item.symbol, %{})}
               />
             <% end %>
           <% end %>
@@ -142,6 +143,7 @@ defmodule LoinWeb.SecurityV2Live do
       |> assign(:symbol, proper_symbol)
       |> assign(:security, security)
       |> assign(:timeseries_data, chart_data)
+      |> assign(:timeseries_realtime_update, nil)
 
     {:noreply, socket}
   end
@@ -183,29 +185,40 @@ defmodule LoinWeb.SecurityV2Live do
   end
 
   @impl true
-  def handle_info({:realtime_quote, {symbol, item}}, socket) do
-    case MapSet.member?(socket.assigns.realtime_symbols, symbol) do
-      true ->
-        socket =
-          update(socket, :realtime_updates, fn updates -> Map.put(updates, symbol, item) end)
+  def handle_info({:realtime_quotes, result_map}, socket) do
+    # Extracts the securities that are actually important from the newly published quotes
+    section_1_results = Map.take(result_map, socket.assigns.section_1_realtime_symbols)
+    section_2_results = Map.take(result_map, socket.assigns.section_2_realtime_symbols)
 
-        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+    # Collect all IDs to trigger events on
+    all_pertinent_results_symbols =
+      Enum.concat([
+        Map.keys(section_1_results),
+        Map.keys(section_2_results)
+      ])
 
-      false ->
-        {:noreply, socket}
-    end
+    # Updates securities in the main list with their new values
+    socket =
+      socket
+      |> update(
+        :sections,
+        fn [section_1, section_2] ->
+          [
+            update_section(section_1, section_1_results),
+            update_section(section_2, section_2_results)
+          ]
+        end
+      )
+      |> assign(
+        :security,
+        Map.merge(socket.assigns.security, Map.get(result_map, socket.assigns.symbol, %{}))
+      )
+      |> assign(:timeseries_realtime_update, get_chart_realtime_updates(result_map, socket))
+
+    {:noreply, push_event(socket, "flash-as-new-many", %{ids: all_pertinent_results_symbols})}
   end
 
   # Private
-
-  defp extract_realtime_symbols(pertinent_symbol, %{sections: sections} = _extra_information)
-       when is_binary(pertinent_symbol) and is_list(sections) do
-    sections
-    |> Enum.flat_map(&Map.get(&1, :data, %{}))
-    |> Enum.map(&Map.get(&1, :symbol))
-    |> Enum.concat([pertinent_symbol])
-    |> MapSet.new()
-  end
 
   defp fetch_more_relevant_information(%{is_etf: true, symbol: symbol}) do
     {:ok, etf_constituents} = ETFConstituentsCache.get_for_web(symbol)
@@ -230,5 +243,18 @@ defmodule LoinWeb.SecurityV2Live do
         ]
       }
     end
+  end
+
+  defp get_chart_realtime_updates(result_map, socket) do
+    case Map.get(result_map, socket.assigns.symbol) do
+      nil -> socket.assigns.timeseries_realtime_update
+      result when is_map(result) -> Jason.encode!(result)
+    end
+  end
+
+  defp update_section(section, updates) do
+    Map.update!(section, :data, fn data ->
+      Enum.map(data, fn item -> Map.merge(item, Map.get(updates, item.symbol, %{})) end)
+    end)
   end
 end
