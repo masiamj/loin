@@ -48,7 +48,7 @@ defmodule LoinWeb.UserActivityLive do
     ~H"""
     <.link class="p-3 bg-white hover:bg-gray-50" id={@activity.id} navigate={@activity.href}>
       <p class="text-sm">
-        <%= Map.get(@activity, :identity, %{}) |> Map.get(:first_name, "A user") %> viewed
+        <%= get_first_name(@activity) %> viewed
         <span class="text-blue-600"><%= @activity.symbol %></span>
       </p>
       <p class="text-xs text-gray-500"><%= Timex.from_now(@activity.time, "Etc/UTC") %></p>
@@ -64,7 +64,7 @@ defmodule LoinWeb.UserActivityLive do
       navigate={~p"/screener?#{@activity.params}"}
     >
       <p class="text-sm">
-        <%= Map.get(@activity, :identity, %{}) |> Map.get(:first_name, "A user") %> ran a screener
+        <%= get_first_name(@activity) %> ran a screener
         <span class="text-blue-600">
           <%= Map.get(@activity, :params) |> format_screener_params() %>
         </span>
@@ -89,6 +89,13 @@ defmodule LoinWeb.UserActivityLive do
     |> Enum.map_join(" and ", fn {field_name, operator, value} ->
       "#{field_name} #{operator} #{value}"
     end)
+  end
+
+  defp get_first_name(%{identity: identity}) do
+    case identity do
+      nil -> "A user"
+      user when is_map(user) -> Map.get(user, :first_name)
+    end
   end
 
   defp humanize_field(field_name) when is_binary(field_name) do
