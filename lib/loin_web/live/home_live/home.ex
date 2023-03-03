@@ -16,6 +16,7 @@ defmodule LoinWeb.HomeLive do
       socket
       |> assign(:chart_data, chart_data)
       |> assign(:chart_securities, chart_securities)
+      |> assign(:chart_securities_realtime_symbols, Map.keys(chart_securities))
       |> assign(:downtrends_realtime_symbols, Map.keys(downtrends))
       |> assign(:downtrends, downtrends)
       |> assign(:page_title, "Stock market trends, sector trends")
@@ -134,6 +135,9 @@ defmodule LoinWeb.HomeLive do
   @impl true
   def handle_info({:realtime_quotes, result_map}, socket) do
     # Extracts the securities that are actually important from the newly published quotes
+    chart_securities_results =
+      Map.take(result_map, socket.assigns.chart_securities_realtime_symbols)
+
     downtrends_results = Map.take(result_map, socket.assigns.downtrends_realtime_symbols)
     sectors_results = Map.take(result_map, socket.assigns.sectors_realtime_symbols)
     trend_changes_results = Map.take(result_map, socket.assigns.trend_changes_realtime_symbols)
@@ -142,6 +146,7 @@ defmodule LoinWeb.HomeLive do
     # Collect all IDs to trigger events on
     all_pertinent_results_symbols =
       Enum.concat([
+        Map.keys(chart_securities_results),
         Map.keys(downtrends_results),
         Map.keys(sectors_results),
         Map.keys(trend_changes_results),
@@ -151,6 +156,12 @@ defmodule LoinWeb.HomeLive do
     # Updates securities with their new values
     socket =
       socket
+      |> update(
+        :chart_securities,
+        &Map.merge(&1, chart_securities_results, fn _key, existing, new ->
+          Map.merge(existing, new)
+        end)
+      )
       |> update(
         :downtrends,
         &Map.merge(&1, downtrends_results, fn _key, existing, new -> Map.merge(existing, new) end)

@@ -58,7 +58,7 @@ defmodule LoinWeb.SecurityV2Live do
   def render(assigns) do
     ~H"""
     <div>
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
+      <div class="grid grid-cols-1 lg:grid-cols-10 divide-x lg:h-[94vh]">
         <div class="grid grid-cols-1 col-span-3 lg:max-h-[94vh]">
           <LoinWeb.Securities.security_quote
             is_in_watchlist={@is_in_watchlist}
@@ -88,14 +88,21 @@ defmodule LoinWeb.SecurityV2Live do
             </div>
           </div>
         </div>
-        <div
-          class="h-[40vh] lg:h-[94vh] w-full col-span-7 relative"
-          data-timeseries={@timeseries_data}
-          id="timeseries_chart"
-          phx-hook="TimeseriesChart"
-          phx-update="ignore"
-          data-realtime-update={@timeseries_realtime_update}
-        >
+        <div class="col-span-7 relative">
+          <div
+            class="h-[40vh] lg:h-[94vh] w-full relative"
+            data-timeseries={@timeseries_data}
+            id="timeseries_chart"
+            phx-hook="TimeseriesChart"
+            phx-update="ignore"
+            data-realtime-update={@timeseries_realtime_update}
+          >
+          </div>
+          <div class="absolute top-0 right-0 z-50 text-sm" id="chart-trend-badge">
+            <.link href={~p"/screener?filters[8][field]=trend&filters[8][value]=#{@security.trend}"}>
+              <LoinWeb.Embeds.Chart.trend_badge value={@security.trend} />
+            </.link>
+          </div>
         </div>
         <div class="block lg:hidden">
           <%= for %{data: data, title: title} <- @sections do %>

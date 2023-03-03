@@ -12,14 +12,13 @@ defmodule LoinWeb.Embeds.Chart do
   def mount(%{"symbol" => symbol}, _session, socket) do
     proper_symbol = String.upcase(symbol)
     {:ok, {^proper_symbol, chart_data}} = TimeseriesCache.get_encoded(proper_symbol)
+    {:ok, %{^proper_symbol => security}} = Loin.FMP.get_securities_by_symbols([proper_symbol])
 
     socket =
       socket
+      |> assign(:security, security)
       |> assign(:symbol, proper_symbol)
       |> assign(:timeseries_data, chart_data)
-      |> assign(:realtime_update, nil)
-
-    Process.send_after(self(), :setup_realtime_updates, 2000)
 
     {:ok, socket, layout: {LoinWeb.Layouts, :root}}
   end
@@ -34,43 +33,50 @@ defmodule LoinWeb.Embeds.Chart do
         id="timeseries_chart"
         phx-hook="TimeseriesChart"
         phx-update="ignore"
-        data-realtime-update={@realtime_update}
       >
       </div>
-      <div class="absolute top-0 right-0 bg-white p-3 border border-gray-200 z-50">
+      <div class="absolute bottom-0 left-0 bg-white p-3 border border-gray-200 z-50">
         <p class="text-sm">
           <%= @symbol %> trend powered by
           <.link navigate={~p"/s/#{@symbol}"} class="text-blue-500">TrendFlares</.link>
         </p>
       </div>
+      <div class="absolute top-0 right-0 z-50 text-sm">
+        <.link href={~p"/screener?filters[8][field]=trend&filters[8][value]=#{@security.trend}"}>
+          <.trend_badge value={@security.trend} />
+        </.link>
+      </div>
     </div>
     """
   end
 
-  @impl true
-  def handle_info(:setup_realtime_updates, socket) do
-    if connected?(socket) do
-      Phoenix.PubSub.subscribe(Loin.PubSub, "realtime_quotes")
-    end
+  def trend_badge(%{value: nil} = assigns) do
+    ~H"""
 
-    {:noreply, socket}
+    """
   end
 
-  @impl true
-  def handle_info(
-        {:realtime_quote, {symbol, item}},
-        %{assigns: %{symbol: proper_symbol}} = socket
-      ) do
-    case proper_symbol == symbol do
-      true ->
-        socket =
-          socket
-          |> assign(:realtime_update, Jason.encode!(item))
+  def trend_badge(%{value: "up"} = assigns) do
+    ~H"""
+    <div class="text-white font-medium flex items-center justify-center bg-green-500 px-2 py-1">
+      <span>Uptrend</span>
+    </div>
+    """
+  end
 
-        {:noreply, push_event(socket, "flash-as-new", %{id: symbol})}
+  def trend_badge(%{value: "down"} = assigns) do
+    ~H"""
+    <div class="text-white font-medium flex items-center justify-center bg-red-500 px-2 py-1">
+      <span>Downtrend</span>
+    </div>
+    """
+  end
 
-      false ->
-        {:noreply, socket}
-    end
+  def trend_badge(%{value: "neutral"} = assigns) do
+    ~H"""
+    <div class="text-white font-medium flex items-center justify-center bg-gray-500 px-2 py-1">
+      <span>Neutral</span>
+    </div>
+    """
   end
 end

@@ -70,7 +70,7 @@ defmodule LoinWeb.WatchlistLive do
   def render(assigns) do
     ~H"""
     <div>
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-y-0 divide-x lg:h-[94vh]">
+      <div class="grid grid-cols-1 lg:grid-cols-10 divide-x lg:h-[94vh]">
         <div class="col-span-3">
           <LoinWeb.Securities.watchlist_security_quote security={@security} />
           <div class="hidden lg:block lg:overflow-y-scroll">
@@ -92,14 +92,20 @@ defmodule LoinWeb.WatchlistLive do
             </ul>
           </div>
         </div>
-
-        <div
-          class="h-[40vh] lg:h-[94vh] w-full col-span-7 relative"
-          data-timeseries={@timeseries_data}
-          id="timeseries_chart"
-          phx-hook="TimeseriesChart"
-          phx-update="ignore"
-        >
+        <div class="col-span-7 relative">
+          <div
+            class="h-[40vh] lg:h-[94vh] w-full relative"
+            data-timeseries={@timeseries_data}
+            id="timeseries_chart"
+            phx-hook="TimeseriesChart"
+            phx-update="ignore"
+          >
+          </div>
+          <div class="absolute top-0 right-0 z-50 text-sm" id="chart-trend-badge">
+            <.link href={~p"/screener?filters[8][field]=trend&filters[8][value]=#{@security.trend}"}>
+              <LoinWeb.Embeds.Chart.trend_badge value={@security.trend} />
+            </.link>
+          </div>
         </div>
         <div class="block lg:hidden">
           <p class="py-2 px-3 bg-blue-50 text-xs font-medium sticky top-0 text-blue-500">
