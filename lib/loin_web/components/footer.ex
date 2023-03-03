@@ -26,12 +26,6 @@ defmodule LoinWeb.FooterComponents do
           <img alt="TrendFlares logo" class="h-8" src="/images/trendflares_logo_black.png" />
         </.link>
         <.link
-          navigate={~p"/how-it-works"}
-          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
-        >
-          How it works
-        </.link>
-        <.link
           href="https://blog.trendflares.com"
           class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
         >
@@ -48,6 +42,12 @@ defmodule LoinWeb.FooterComponents do
           class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
         >
           Terms of use
+        </.link>
+        <.link
+          navigate={~p"/user-activity"}
+          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
+        >
+          User activity
         </.link>
       </div>
       <p class="text-gray-500 text-center text-xs w-2/3 mx-auto">

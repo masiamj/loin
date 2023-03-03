@@ -38,12 +38,11 @@ defmodule LoinWeb.SectorTrends do
   def heatmap(assigns) do
     ~H"""
     <div class="grid grid-cols-3 lg:grid-cols-3 gap-0.5">
-      <%= for {symbol, %{change_percent: change_percent, price: price, trend: trend, trend_change: trend_change}} <- @trends do %>
+      <%= for {symbol, %{change_percent: change_percent, trend: trend, trend_change: trend_change}} <- @trends do %>
         <.link navigate={~p"/s/#{symbol}"}>
           <div class={"p-2.5 #{background_color(trend)} rounded-sm"} role="button">
             <div class="flex flex-row gap-2 text-xs text-gray-100">
               <p class="text-gray-100 text-xs"><%= symbol %></p>
-              <.security_price value={price} />
               <.security_change_percent value={change_percent} />
             </div>
             <div class="flex items-center justify-between space-x-2">

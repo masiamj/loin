@@ -16,6 +16,9 @@ defmodule LoinWeb.SecurityV2Live do
     # Right-cases symbol from params
     proper_symbol = String.upcase(symbol)
 
+    # Tracks page view
+    Loin.UserActivityCache.page_view(:security, %{identity: identity, symbol: proper_symbol})
+
     # Fetches the original security
     {:ok, %{^proper_symbol => security}} = FMP.get_securities_by_symbols([proper_symbol])
 
@@ -135,6 +138,9 @@ defmodule LoinWeb.SecurityV2Live do
       ) do
     # Fetches the newly selected security
     {:ok, %{^proper_symbol => security}} = FMP.get_securities_by_symbols([proper_symbol])
+
+    # Tracks page view
+    Loin.UserActivityCache.page_view(:security, %{identity: identity, symbol: proper_symbol})
 
     # Fetches the timeseries chart data
     {:ok, {^proper_symbol, chart_data}} = TimeseriesCache.get_encoded(proper_symbol)

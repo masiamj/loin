@@ -39,13 +39,14 @@ defmodule Loin.Application do
       Supervisor.child_spec({Cachex, [name: :timeseries_cache, stats: true, warmers: []]},
         id: :timeseries_cache
       ),
+      {Loin.UserActivityCache, []},
       # Start the Endpoint (http/https)
       LoinWeb.Endpoint,
       # Start the Oban jobs processor
       {Oban, oban_config()},
       # Start the real-time subsystem
-      {Loin.FMP.RealtimeQuotesBuffer, []},
-      {Loin.FMP.RealtimeQuotesClient, []}
+      {Loin.FMP.RealtimeQuotesBuffer, []}
+      # {Loin.FMP.RealtimeQuotesClient, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

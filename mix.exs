@@ -91,6 +91,7 @@ defmodule Loin.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:timex, "~> 3.0"},
+      {:uuid, "~> 1.1"},
       {:websockex, "~> 0.4.3"}
     ]
   end
