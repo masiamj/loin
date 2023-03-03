@@ -89,7 +89,7 @@ defmodule LoinWeb.SecurityV2Live do
           </div>
         </div>
         <div
-          class="h-[40vh] lg:h-[94vh] w-full col-span-7"
+          class="h-[40vh] lg:h-[94vh] w-full col-span-7 relative"
           data-timeseries={@timeseries_data}
           id="timeseries_chart"
           phx-hook="TimeseriesChart"

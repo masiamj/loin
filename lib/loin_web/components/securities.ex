@@ -286,13 +286,20 @@ defmodule LoinWeb.Securities do
         <div class="flex flex-col">
           <p
             :if={@original_symbol != @security.symbol}
-            class="text-blue-600 px-1 text-xs mb-1 cursor-pointer flex flex-row"
+            class="text-blue-600 px-1 text-xs mb-2 cursor-pointer flex flex-row"
             phx-click="select-security"
             phx-value-symbol={@original_symbol}
           >
             <Heroicons.arrow_left mini class="h-4 w-4 mr-1" /> Back to <%= @original_symbol %>
           </p>
-          <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+          <div class="flex flex-row items-center gap-2">
+            <img
+              :if={@security.image}
+              src={@security.image}
+              class="h-8 w-8 rounded-md object-contain"
+            />
+            <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+          </div>
         </div>
         <div class="flex flex-row gap-2">
           <button
@@ -342,7 +349,10 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
       <div class="flex flex-row items-start justify-between space-x-4">
-        <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        <div class="flex flex-row items-center gap-2">
+          <img :if={@security.image} src={@security.image} class="h-8 w-8 rounded-md object-contain" />
+          <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        </div>
         <.link
           navigate={~p"/s/#{@security.symbol}"}
           class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"

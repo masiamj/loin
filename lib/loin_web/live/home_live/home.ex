@@ -41,6 +41,7 @@ defmodule LoinWeb.HomeLive do
           <div
             class="h-56 w-full"
             id="sp500_chart"
+            data-hide-legend="true"
             data-timeseries={Map.get(@chart_data, "SPY", [])}
             phx-hook="TimeseriesChart"
             phx-update="ignore"
@@ -51,6 +52,7 @@ defmodule LoinWeb.HomeLive do
         <LoinWeb.Cards.generic more_link={~p"/s/QQQ"} title="Nasdaq trend">
           <div
             class="h-56 w-full"
+            data-hide-legend="true"
             id="nasdaq_chart"
             data-timeseries={Map.get(@chart_data, "QQQ", [])}
             phx-hook="TimeseriesChart"
