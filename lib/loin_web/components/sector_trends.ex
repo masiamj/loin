@@ -38,10 +38,14 @@ defmodule LoinWeb.SectorTrends do
   def heatmap(assigns) do
     ~H"""
     <div class="grid grid-cols-3 lg:grid-cols-3 gap-0.5">
-      <%= for {symbol, %{trend: trend, trend_change: trend_change}} <- @trends do %>
+      <%= for {symbol, %{change_percent: change_percent, price: price, trend: trend, trend_change: trend_change}} <- @trends do %>
         <.link navigate={~p"/s/#{symbol}"}>
           <div class={"p-2.5 #{background_color(trend)} rounded-sm"} role="button">
-            <p class="text-gray-100 text-xs"><%= symbol %></p>
+            <div class="flex flex-row gap-2 text-xs text-gray-100">
+              <p class="text-gray-100 text-xs"><%= symbol %></p>
+              <.security_price value={price} />
+              <.security_change_percent value={change_percent} />
+            </div>
             <div class="flex items-center justify-between space-x-2">
               <p class="text-white text-sm font-medium"><%= title_for_symbol(symbol) %></p>
               <p class="text-sm"><%= emoji_for_trend_change(trend_change) %></p>
@@ -75,6 +79,51 @@ defmodule LoinWeb.SectorTrends do
       "up_to_down" -> "⬇️"
       "up_to_neutral" -> "⬇️"
       nil -> ""
+    end
+  end
+
+  def security_price(assigns) do
+    with raw_value <- Map.get(assigns, :value, nil),
+         value <- Loin.Intl.format_money_decimal(raw_value) do
+      assigns =
+        assigns
+        |> assign(:value, value)
+
+      ~H"""
+      <span>
+        <%= @value %>
+      </span>
+      """
+    end
+  end
+
+  def security_change(assigns) do
+    with raw_value <- Map.get(assigns, :value, nil),
+         value <- Loin.Intl.format_money_decimal(raw_value) do
+      assigns =
+        assigns
+        |> assign(:value, value)
+
+      ~H"""
+      <span>
+        <%= @value %>
+      </span>
+      """
+    end
+  end
+
+  def security_change_percent(assigns) do
+    with raw_value <- Map.get(assigns, :value, nil),
+         value <- Loin.Intl.format_percent(raw_value) do
+      assigns =
+        assigns
+        |> assign(:value, value)
+
+      ~H"""
+      <span>
+        <%= @value %>
+      </span>
+      """
     end
   end
 

@@ -5,6 +5,7 @@ defmodule LoinWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    {:ok, chart_securities} = FMP.get_securities_by_symbols(["SPY", "QQQ"])
     {:ok, chart_data} = TimeseriesCache.get_many_encoded(["SPY", "QQQ"])
     {:ok, downtrends} = FMP.get_securities_via_trend("down", 10)
     {:ok, sectors} = FMP.get_sector_etfs()
@@ -14,11 +15,13 @@ defmodule LoinWeb.HomeLive do
     socket =
       socket
       |> assign(:chart_data, chart_data)
+      |> assign(:chart_securities, chart_securities)
       |> assign(:downtrends_realtime_symbols, Map.keys(downtrends))
       |> assign(:downtrends, downtrends)
       |> assign(:page_title, "Stock market trends, sector trends")
       |> assign(:qqq_realtime_update, nil)
       |> assign(:sectors, sectors)
+      |> assign(:sectors_realtime_symbols, Map.keys(sectors))
       |> assign(:spy_realtime_update, nil)
       |> assign(:trend_changes_realtime_symbols, Map.keys(trend_changes))
       |> assign(:trend_changes, trend_changes)
@@ -38,6 +41,9 @@ defmodule LoinWeb.HomeLive do
     <div class="px-4 py-8 lg:py-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <LoinWeb.Cards.generic more_link={~p"/s/SPY"} title="S&P 500 trend">
+          <:title_block>
+            <.chart_block security={Map.get(@chart_securities, "SPY")} />
+          </:title_block>
           <div
             class="h-56 w-full"
             id="sp500_chart"
@@ -50,6 +56,9 @@ defmodule LoinWeb.HomeLive do
           </div>
         </LoinWeb.Cards.generic>
         <LoinWeb.Cards.generic more_link={~p"/s/QQQ"} title="Nasdaq trend">
+          <:title_block>
+            <.chart_block security={Map.get(@chart_securities, "QQQ")} />
+          </:title_block>
           <div
             class="h-56 w-full"
             data-hide-legend="true"
@@ -126,6 +135,7 @@ defmodule LoinWeb.HomeLive do
   def handle_info({:realtime_quotes, result_map}, socket) do
     # Extracts the securities that are actually important from the newly published quotes
     downtrends_results = Map.take(result_map, socket.assigns.downtrends_realtime_symbols)
+    sectors_results = Map.take(result_map, socket.assigns.sectors_realtime_symbols)
     trend_changes_results = Map.take(result_map, socket.assigns.trend_changes_realtime_symbols)
     uptrends_results = Map.take(result_map, socket.assigns.uptrends_realtime_symbols)
 
@@ -133,6 +143,7 @@ defmodule LoinWeb.HomeLive do
     all_pertinent_results_symbols =
       Enum.concat([
         Map.keys(downtrends_results),
+        Map.keys(sectors_results),
         Map.keys(trend_changes_results),
         Map.keys(uptrends_results)
       ])
@@ -143,6 +154,10 @@ defmodule LoinWeb.HomeLive do
       |> update(
         :downtrends,
         &Map.merge(&1, downtrends_results, fn _key, existing, new -> Map.merge(existing, new) end)
+      )
+      |> update(
+        :sectors,
+        &Map.merge(&1, sectors_results, fn _key, existing, new -> Map.merge(existing, new) end)
       )
       |> update(
         :trend_changes,
@@ -175,5 +190,18 @@ defmodule LoinWeb.HomeLive do
       end
 
     %{spy_realtime_update: spy_realtime_update, qqq_realtime_update: qqq_realtime_update}
+  end
+
+  attr :security, :map, required: true
+
+  defp chart_block(assigns) do
+    ~H"""
+    <div class="flex flex-row overflow-x-scroll items-center gap-3 text-xs">
+      <LoinWeb.Securities.security_price value={@security.price} />
+      <LoinWeb.Securities.security_change_percent value={@security.change_percent} />
+      <LoinWeb.Securities.security_change value={@security.change_value} />
+      <LoinWeb.Securities.trend_badge value={@security.trend} />
+    </div>
+    """
   end
 end

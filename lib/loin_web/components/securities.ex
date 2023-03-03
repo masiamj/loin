@@ -361,11 +361,9 @@ defmodule LoinWeb.Securities do
         </.link>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
-        <.security_price value={Map.get(@realtime_update, :price, @security.price)} />
-        <.security_change_percent value={
-          Map.get(@realtime_update, :change_percent, @security.change_percent)
-        } />
-        <.security_change value={Map.get(@realtime_update, :change_value, @security.change_value)} />
+        <.security_price value={@security.price} />
+        <.security_change_percent value={@security.change_percent} />
+        <.security_change value={@security.change_value} />
         <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>
@@ -455,13 +453,13 @@ defmodule LoinWeb.Securities do
     end
   end
 
-  defp trend_badge(%{value: nil} = assigns) do
+  def trend_badge(%{value: nil} = assigns) do
     ~H"""
 
     """
   end
 
-  defp trend_badge(%{value: "up"} = assigns) do
+  def trend_badge(%{value: "up"} = assigns) do
     ~H"""
     <div class="text-green-500 text-xs font-medium flex items-center justify-center bg-green-100 px-2 py-0.5 rounded">
       <span>Uptrend</span>
@@ -469,7 +467,7 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  defp trend_badge(%{value: "down"} = assigns) do
+  def trend_badge(%{value: "down"} = assigns) do
     ~H"""
     <div class="text-red-500 text-xs font-medium flex items-center justify-center bg-red-100 px-2 py-0.5 rounded">
       <span>Downtrend</span>
@@ -477,7 +475,7 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  defp trend_badge(%{value: "neutral"} = assigns) do
+  def trend_badge(%{value: "neutral"} = assigns) do
     ~H"""
     <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
       <span>Neutral</span>
