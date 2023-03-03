@@ -205,6 +205,11 @@ defmodule LoinWeb.HomeLive do
 
   attr :security, :map, required: true
 
+  defp chart_block(%{security: nil} = assigns) do
+    ~H"""
+    """
+  end
+
   defp chart_block(assigns) do
     ~H"""
     <div class="flex flex-row overflow-x-scroll items-center gap-3 text-xs">
