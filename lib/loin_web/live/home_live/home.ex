@@ -41,7 +41,7 @@ defmodule LoinWeb.HomeLive do
     ~H"""
     <div class="px-4 py-8 lg:py-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <LoinWeb.Cards.generic more_link={~p"/s/SPY"} title="S&P 500 trend">
+        <LoinWeb.Cards.generic more_link={~p"/s/SPY"} title="S&P 500">
           <:title_block>
             <.chart_block security={Map.get(@chart_securities, "SPY")} />
           </:title_block>
@@ -56,7 +56,7 @@ defmodule LoinWeb.HomeLive do
           >
           </div>
         </LoinWeb.Cards.generic>
-        <LoinWeb.Cards.generic more_link={~p"/s/QQQ"} title="Nasdaq trend">
+        <LoinWeb.Cards.generic more_link={~p"/s/QQQ"} title="Nasdaq">
           <:title_block>
             <.chart_block security={Map.get(@chart_securities, "QQQ")} />
           </:title_block>
@@ -214,8 +214,34 @@ defmodule LoinWeb.HomeLive do
   defp chart_block(assigns) do
     ~H"""
     <div class="flex flex-row items-center gap-3 text-xs">
-      <LoinWeb.Securities.security_change_percent value={@security.change_percent} />
+      <.security_change_percent value={@security.change_percent} />
+      <LoinWeb.Securities.trend_badge value={@security.trend} />
     </div>
     """
+  end
+
+  def security_change_percent(assigns) do
+    with raw_value <- Map.get(assigns, :value, nil),
+         class <- class_for_value(raw_value),
+         value <- Loin.Intl.format_percent(raw_value) do
+      assigns =
+        assigns
+        |> assign(:class, class)
+        |> assign(:value, value)
+
+      ~H"""
+      <span class={["font-bold text-sm", @class]}>
+        <%= @value %>
+      </span>
+      """
+    end
+  end
+
+  defp class_for_value(value) do
+    case value do
+      0.0 -> "text-gray-500"
+      value when value > 0 -> "text-green-500"
+      value when value < 0 -> "text-red-500"
+    end
   end
 end
