@@ -44,8 +44,8 @@ defmodule Loin.Application do
       # Start the Oban jobs processor
       {Oban, oban_config()},
       # Start the real-time subsystem
-      {Loin.FMP.RealtimeQuotesBuffer, []}
-      # {Loin.FMP.RealtimeQuotesClient, []}
+      {Loin.FMP.RealtimeQuotesBuffer, []},
+      {Loin.FMP.RealtimeQuotesClient, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
