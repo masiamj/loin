@@ -36,8 +36,8 @@ defmodule LoinWeb.Embeds.Chart do
       >
       </div>
       <div class="absolute bottom-0 left-0 bg-white p-3 border border-gray-200 z-50">
-        <p class="text-sm">
-          <%= @symbol %> trend powered by
+        <p class="text-xs">
+          <%= @symbol %> trend by
           <.link navigate={~p"/s/#{@symbol}"} class="text-blue-500">TrendFlares</.link>
         </p>
       </div>
