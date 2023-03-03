@@ -286,13 +286,20 @@ defmodule LoinWeb.Securities do
         <div class="flex flex-col">
           <p
             :if={@original_symbol != @security.symbol}
-            class="text-blue-600 px-1 text-xs mb-1 cursor-pointer flex flex-row"
+            class="text-blue-600 px-1 text-xs mb-2 cursor-pointer flex flex-row"
             phx-click="select-security"
             phx-value-symbol={@original_symbol}
           >
             <Heroicons.arrow_left mini class="h-4 w-4 mr-1" /> Back to <%= @original_symbol %>
           </p>
-          <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+          <div class="flex flex-row items-center gap-2">
+            <img
+              :if={@security.image}
+              src={@security.image}
+              class="h-8 w-8 rounded-md object-contain"
+            />
+            <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+          </div>
         </div>
         <div class="flex flex-row gap-2">
           <button
@@ -342,7 +349,10 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
       <div class="flex flex-row items-start justify-between space-x-4">
-        <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        <div class="flex flex-row items-center gap-2">
+          <img :if={@security.image} src={@security.image} class="h-8 w-8 rounded-md object-contain" />
+          <h1 class="font-semibold"><%= @security.name %> (<%= @security.symbol %>)</h1>
+        </div>
         <.link
           navigate={~p"/s/#{@security.symbol}"}
           class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
@@ -351,11 +361,9 @@ defmodule LoinWeb.Securities do
         </.link>
       </div>
       <div class="flex flex-row overflow-x-scroll items-center gap-2 mt-2 text-sm">
-        <.security_price value={Map.get(@realtime_update, :price, @security.price)} />
-        <.security_change_percent value={
-          Map.get(@realtime_update, :change_percent, @security.change_percent)
-        } />
-        <.security_change value={Map.get(@realtime_update, :change_value, @security.change_value)} />
+        <.security_price value={@security.price} />
+        <.security_change_percent value={@security.change_percent} />
+        <.security_change value={@security.change_value} />
         <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>
@@ -445,13 +453,13 @@ defmodule LoinWeb.Securities do
     end
   end
 
-  defp trend_badge(%{value: nil} = assigns) do
+  def trend_badge(%{value: nil} = assigns) do
     ~H"""
 
     """
   end
 
-  defp trend_badge(%{value: "up"} = assigns) do
+  def trend_badge(%{value: "up"} = assigns) do
     ~H"""
     <div class="text-green-500 text-xs font-medium flex items-center justify-center bg-green-100 px-2 py-0.5 rounded">
       <span>Uptrend</span>
@@ -459,7 +467,7 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  defp trend_badge(%{value: "down"} = assigns) do
+  def trend_badge(%{value: "down"} = assigns) do
     ~H"""
     <div class="text-red-500 text-xs font-medium flex items-center justify-center bg-red-100 px-2 py-0.5 rounded">
       <span>Downtrend</span>
@@ -467,7 +475,7 @@ defmodule LoinWeb.Securities do
     """
   end
 
-  defp trend_badge(%{value: "neutral"} = assigns) do
+  def trend_badge(%{value: "neutral"} = assigns) do
     ~H"""
     <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
       <span>Neutral</span>

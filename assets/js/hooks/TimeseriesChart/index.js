@@ -65,18 +65,38 @@ export const TimeseriesChart = {
     /**
      * Data for price line
      */
-    const chartData = data.map(({ close, date, trend } = {}) => ({
-      color: getColorForItem({ trend }),
-      time: date,
-      value: close
-    }))
+    const { chartData, day200SMAs, day50SMAs } = data.reduce((acc, { close, date, day_200_sma, day_50_sma, trend }) => {
+      acc.chartData.push({
+        color: getColorForItem({ trend }),
+        time: date,
+        value: close
+      })
+
+      acc.day200SMAs.push({
+        color: '#10b981',
+        time: date,
+        value: day_200_sma
+      })
+
+      acc.day50SMAs.push({
+        color: '#0ea5e9',
+        time: date,
+        value: day_50_sma
+      })
+
+      return acc
+    }, { chartData: [], day200SMAs: [], day50SMAs: [] })
 
     /**
     * Handle changing chart data (clear and reset)
     */
     if (this.lineSeries) {
       this.chartInstance.removeSeries(this.lineSeries)
+      this.chartInstance.removeSeries(this.day200SMAsSeries)
+      this.chartInstance.removeSeries(this.day50SMAsSeries)
       this.lineSeries = null
+      this.day200SMAsSeries = null
+      this.day50SMAsSeries = null
     }
 
     /**
@@ -85,7 +105,32 @@ export const TimeseriesChart = {
     this.lineSeries = this.chartInstance.addLineSeries({
       lastPriceAnimation: 2
     });
+
     this.lineSeries.setData(chartData);
+
+    /**
+     * Creates SMA series
+     */
+    this.day200SMAsSeries = this.chartInstance.addLineSeries({
+      crosshairMarkerVisible: false,
+      lastValueVisible: false,
+      lineWidth: 0.5,
+      priceLineVisible: false,
+    })
+    this.day200SMAsSeries.setData(day200SMAs)
+
+    this.day50SMAsSeries = this.chartInstance.addLineSeries({
+      crosshairMarkerVisible: false,
+      lastValueVisible: false,
+      lineWidth: 0.5,
+      priceLineVisible: false,
+    })
+    this.day50SMAsSeries.setData(day50SMAs)
+
+    console.log(this.el.dataset)
+    if (!this.el.dataset.hideLegend) {
+      this.renderLegend()
+    }
 
     /**
      * Scale to constraints
@@ -96,6 +141,33 @@ export const TimeseriesChart = {
         to: (new Date()).getTime() / 1000,
       })
     }
+  },
+  renderLegend() {
+    document.body.style.position = 'relative';
+    const legendContainer = document.createElement('div')
+    legendContainer.classList.add('chart-legend');
+    this.el.appendChild(legendContainer);
+
+    const dateRow = document.createElement('div')
+    const priceRow = document.createElement('div')
+    const day50SMARow = document.createElement('div')
+    day50SMARow.style.color = '#0ea5e9'
+    const day200SMARow = document.createElement('div')
+    day200SMARow.style.color = '#10b981'
+
+    legendContainer.appendChild(dateRow)
+    legendContainer.appendChild(priceRow)
+    legendContainer.appendChild(day50SMARow)
+    legendContainer.appendChild(day200SMARow)
+
+    this.chartInstance.subscribeCrosshairMove((param) => {
+      if (param.time) {
+        dateRow.innerText = `${param.time.month}/${param.time.day}/${param.time.year}`
+        priceRow.innerText = `Close ${param.seriesPrices.get(this.lineSeries).toFixed(2)}`
+        day50SMARow.innerText = `50D SMA ${param.seriesPrices.get(this.day50SMAsSeries).toFixed(2)}`
+        day200SMARow.innerText = `200D SMA ${param.seriesPrices.get(this.day200SMAsSeries).toFixed(2)}`
+      }
+    });
   },
   updated() {
     this.renderChart()
