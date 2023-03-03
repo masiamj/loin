@@ -48,7 +48,7 @@ defmodule LoinWeb.UserActivityLive do
     ~H"""
     <.link class="p-3 bg-white hover:bg-gray-50" id={@activity.id} navigate={@activity.href}>
       <p class="text-sm">
-        <%= Map.get(@assigns, :identity, %{}) |> Map.get(:first_name, "A user") %> viewed
+        <%= Map.get(@activity, :identity, %{}) |> Map.get(:first_name, "A user") %> viewed
         <span class="text-blue-600"><%= @activity.symbol %></span>
       </p>
       <p class="text-xs text-gray-500"><%= Timex.from_now(@activity.time, "Etc/UTC") %></p>
@@ -64,7 +64,7 @@ defmodule LoinWeb.UserActivityLive do
       navigate={~p"/screener?#{@activity.params}"}
     >
       <p class="text-sm">
-        <%= Map.get(@assigns, :identity, %{}) |> Map.get(:first_name, "A user") %> ran a screener
+        <%= Map.get(@activity, :identity, %{}) |> Map.get(:first_name, "A user") %> ran a screener
         <span class="text-blue-600">
           <%= Map.get(@activity, :params) |> format_screener_params() %>
         </span>
