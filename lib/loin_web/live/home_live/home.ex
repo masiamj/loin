@@ -207,6 +207,7 @@ defmodule LoinWeb.HomeLive do
 
   defp chart_block(%{security: nil} = assigns) do
     ~H"""
+
     """
   end
 
