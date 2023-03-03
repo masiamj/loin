@@ -332,7 +332,6 @@ defmodule LoinWeb.Securities do
           Map.get(@realtime_update, :change_percent, @security.change_percent)
         } />
         <.security_change value={Map.get(@realtime_update, :change_value, @security.change_value)} />
-        <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>
     </div>
@@ -364,7 +363,6 @@ defmodule LoinWeb.Securities do
         <.security_price value={@security.price} />
         <.security_change_percent value={@security.change_percent} />
         <.security_change value={@security.change_value} />
-        <.trend_badge value={@security.trend} />
         <.sector_badge value={@security.sector} />
       </div>
     </div>

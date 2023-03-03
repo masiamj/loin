@@ -40,7 +40,7 @@ defmodule LoinWeb.Cards do
     ~H"""
     <div class={"relative bg-white p-3 rounded-md #{@class}"}>
       <div class="flex flex-row items-center justify-between space-x-2 mb-2">
-        <div class="flex flex-row items-center gap-4">
+        <div class="flex flex-row items-center gap-2">
           <p class="font-bold text-sm"><%= @title %></p>
           <%= render_slot(@title_block) %>
         </div>

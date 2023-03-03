@@ -214,10 +214,7 @@ defmodule LoinWeb.HomeLive do
   defp chart_block(assigns) do
     ~H"""
     <div class="flex flex-row items-center gap-3 text-xs">
-      <LoinWeb.Securities.security_price value={@security.price} />
       <LoinWeb.Securities.security_change_percent value={@security.change_percent} />
-      <LoinWeb.Securities.security_change value={@security.change_value} />
-      <LoinWeb.Securities.trend_badge value={@security.trend} />
     </div>
     """
   end
