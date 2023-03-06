@@ -1,6 +1,7 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
 import update from 'lodash/update'
+import isEmpty from 'lodash/isEmpty'
 
 const getColorForItem = (item) => {
   switch (get(item, ['trend'], null)) {
@@ -43,10 +44,19 @@ export const TimeseriesChart = {
   },
   getTimeseriesData() {
     const serializedData = this.el.dataset.timeseries || '[]'
-    this.chartSourceData = JSON.parse(serializedData)
+    const _chartSourceData = JSON.parse(serializedData)
+
+    /**
+     * If the new data is empty, take the existing chart data 
+     */
+    this.chartSourceData = isEmpty(_chartSourceData) ? this.chartSourceData : _chartSourceData
 
     const serializedRealtimeUpdate = this.el.dataset['realtimeUpdate'] || '{}'
     const deserializedRealtimeUpdate = JSON.parse(serializedRealtimeUpdate)
+
+    /**
+     * Checks if there's a real-time update
+     */
     this.isValidRealtimeUpdate = get(deserializedRealtimeUpdate, 'price', false)
 
     if (this.isValidRealtimeUpdate) {
@@ -127,7 +137,6 @@ export const TimeseriesChart = {
     })
     this.day50SMAsSeries.setData(day50SMAs)
 
-    console.log(this.el.dataset)
     if (!this.el.dataset.hideLegend) {
       this.renderLegend()
     }

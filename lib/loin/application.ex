@@ -45,8 +45,18 @@ defmodule Loin.Application do
       # Start the Oban jobs processor
       {Oban, oban_config()},
       # Start the real-time subsystem
-      {Loin.FMP.RealtimeQuotesBuffer, []},
-      {Loin.FMP.RealtimeQuotesClient, []}
+      {ConditionalChild,
+       [
+         child: Loin.FMP.RealtimeQuotesBuffer,
+         start_if: &Loin.Features.is_realtime_quotes_enabled/0,
+         interval: :timer.seconds(28)
+       ]},
+      {ConditionalChild,
+       [
+         child: Loin.FMP.RealtimeQuotesClient,
+         start_if: &Loin.Features.is_realtime_quotes_enabled/0,
+         interval: :timer.seconds(30)
+       ]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
