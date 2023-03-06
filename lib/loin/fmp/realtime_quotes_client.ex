@@ -35,13 +35,7 @@ defmodule Loin.FMP.RealtimeQuotesClient do
       "RealtimeQuotesClient disconnected from FMP... with status #{status} reconnecting..."
     )
 
-    case Loin.Features.is_realtime_quotes_enabled() do
-      true ->
-        {:reconnect, state}
-
-      false ->
-        {:ok, state}
-    end
+    {:reconnect, state}
   end
 
   def handle_frame({:text, message}, state) do
