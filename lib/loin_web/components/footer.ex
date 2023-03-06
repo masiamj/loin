@@ -43,12 +43,6 @@ defmodule LoinWeb.FooterComponents do
         >
           Terms of use
         </.link>
-        <.link
-          navigate={~p"/user-activity"}
-          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
-        >
-          User activity
-        </.link>
       </div>
       <p class="text-gray-500 text-center text-xs w-2/3 mx-auto">
         TrendFlares is an algorithm-based, historical stock price analysis system and trends identified do not guarantee future performance.<br />TrendFlares must not be construed as financial advice or investing advice.

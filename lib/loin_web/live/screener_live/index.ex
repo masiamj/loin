@@ -383,11 +383,6 @@ defmodule LoinWeb.ScreenerLive do
   def handle_params(params, _, socket) do
     case FMP.filter_screener(params) do
       {:ok, {results, meta}} ->
-        Loin.UserActivityCache.page_view(:screener, %{
-          identity: socket.assigns.current_identity,
-          params: params
-        })
-
         socket =
           socket
           |> assign(:filtered_data, results)

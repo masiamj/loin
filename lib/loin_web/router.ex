@@ -90,7 +90,6 @@ defmodule LoinWeb.Router do
     live_session :public,
       on_mount: [{LoinWeb.IdentityAuth, :mount_current_identity}] do
       live "/", HomeLive, :home
-      live "/user-activity", UserActivityLive, :index
       live "/how-it-works", HowItWorksLive, :index
       live "/s/:symbol", SecurityV2Live, :show
       live "/screener", ScreenerLive, :index
