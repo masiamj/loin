@@ -41,6 +41,8 @@ defmodule Loin.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:appsignal, "~> 2.5"},
+      {:appsignal_phoenix, "~> 2.3.1"},
       {:bcrypt_elixir, "~> 3.0"},
       {:cachex, "~> 3.4"},
       {:conditional_child, "~> 0.1.1"},

@@ -39,3 +39,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable Oban jobs in test mode
 config :loin, Oban, testing: :inline
+
+# Disable Appsignal in test mode
+config :appsignal, :config, active: false

@@ -10,6 +10,9 @@ defmodule Loin.Application do
     # Ensures proper environment validation
     Loin.Config.validate!()
 
+    # Attach to LiveView Telemetry handlers
+    Appsignal.Phoenix.LiveView.attach()
+
     children = [
       # Start the Telemetry supervisor
       LoinWeb.Telemetry,

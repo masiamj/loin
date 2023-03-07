@@ -4,6 +4,7 @@ defmodule Loin.Config do
   """
   require Logger
 
+  @appsignal_push_api_key "APPSIGNAL_PUSH_API_KEY"
   @fmp_api_key_env_var "FMP_API_KEY"
 
   @doc """
@@ -19,6 +20,7 @@ defmodule Loin.Config do
   def validate!() do
     missing_environment_vars =
       [
+        @appsignal_push_api_key,
         @fmp_api_key_env_var
       ]
       |> Enum.reduce([], fn key, acc ->
