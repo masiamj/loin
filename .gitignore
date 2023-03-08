@@ -34,3 +34,6 @@ npm-debug.log
 
 # docker-compose volumes
 _db_data_volume
+
+# Mac
+*.DS_Store
