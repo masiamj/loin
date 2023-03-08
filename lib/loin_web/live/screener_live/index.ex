@@ -121,6 +121,10 @@ defmodule LoinWeb.ScreenerLive do
       |> assign(:filtered_data, [])
       |> assign(:meta, %{})
       |> assign(:form_fields, @fields)
+      |> assign(
+        :page_title,
+        "TrendFlares stock screener: find your next investment opportunity with real-time trends and analysis"
+      )
       |> assign(:realtime_symbols, [])
 
     if connected?(socket) do

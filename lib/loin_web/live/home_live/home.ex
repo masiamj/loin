@@ -19,7 +19,10 @@ defmodule LoinWeb.HomeLive do
       |> assign(:chart_securities_realtime_symbols, Map.keys(chart_securities))
       |> assign(:downtrends_realtime_symbols, Map.keys(downtrends))
       |> assign(:downtrends, downtrends)
-      |> assign(:page_title, "Stock market trends, sector trends")
+      |> assign(
+        :page_title,
+        "Revolutionize your investment strategy with TrendFlares: real-time stock quotes, charts, and trend screening"
+      )
       |> assign(:qqq_realtime_update, nil)
       |> assign(:sectors, sectors)
       |> assign(:sectors_realtime_symbols, Map.keys(sectors))

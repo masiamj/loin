@@ -27,7 +27,7 @@ defmodule LoinWeb.SecurityV2Live do
       Accounts.get_identity_security_by_identity_and_symbol(identity, proper_symbol)
 
     # Fetches ETF or Common stock-specific information
-    %{page_title: page_title, sections: sections} = fetch_more_relevant_information(security)
+    %{sections: sections} = fetch_more_relevant_information(security)
 
     # Extracts realtime_symbols for each section
     [section_1_realtime_symbols, section_2_realtime_symbols] =
@@ -38,7 +38,10 @@ defmodule LoinWeb.SecurityV2Live do
       socket
       |> assign(:is_in_watchlist, is_map(identity_security))
       |> assign(:original_symbol, proper_symbol)
-      |> assign(:page_title, page_title)
+      |> assign(
+        :page_title,
+        "TrendFlares - real-time #{proper_symbol} stock quote, charts, and trend analysis"
+      )
       |> assign(:section_1_realtime_symbols, section_1_realtime_symbols)
       |> assign(:section_2_realtime_symbols, section_2_realtime_symbols)
       |> assign(:sections, sections)
@@ -232,7 +235,6 @@ defmodule LoinWeb.SecurityV2Live do
     {:ok, etf_sector_weights} = ETFSectorWeightCache.get_for_web(symbol)
 
     %{}
-    |> Map.put(:page_title, "#{symbol} ETF 60-day trend, sector exposure, and constituents")
     |> Map.put(:sections, [
       %{title: "Sector weights", data: etf_sector_weights},
       %{title: "ETF Constituents", data: etf_constituents}
@@ -243,7 +245,6 @@ defmodule LoinWeb.SecurityV2Live do
     with {:ok, peers} <- PeersCache.get_for_web(symbol),
          {:ok, etf_exposures} <- StockETFExposureCache.get_for_web(symbol) do
       %{
-        page_title: "#{symbol} 60-day trend, alternatives, and ETF exposures",
         sections: [
           %{title: "Similar stocks", data: peers},
           %{title: "ETF Exposure", data: etf_exposures}

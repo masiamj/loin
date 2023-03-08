@@ -3,6 +3,13 @@ defmodule LoinWeb.HowItWorksLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    socket =
+      socket
+      |> assign(
+        :page_title,
+        "How TrendFlares works: revolutionize your investment strategy with real-time trends and analysis"
+      )
+
     {:ok, socket}
   end
 
@@ -59,15 +66,5 @@ defmodule LoinWeb.HowItWorksLive do
     </div>
     <LoinWeb.FooterComponents.footer />
     """
-  end
-
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "How TrendFlares identifies stock trends")
   end
 end

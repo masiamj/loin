@@ -31,6 +31,10 @@ defmodule LoinWeb.WatchlistLive do
 
         socket =
           socket
+          |> assign(
+            :page_title,
+            "TrendFlares watchlist: keep track of your favorite stocks and trends in real-time"
+          )
           |> assign(:realtime_symbols, Map.keys(securities))
           |> assign(:symbol, security.symbol)
           |> assign(:security, security)
