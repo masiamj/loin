@@ -1,7 +1,8 @@
 import { createChart, CrosshairMode, LineStyle } from 'lightweight-charts';
 import get from 'lodash/get'
 import update from 'lodash/update'
-import isEmpty from 'lodash/isEmpty'
+import first from 'lodash/first'
+import isEqual from 'lodash/isEqual'
 
 const getColorForItem = (item) => {
   switch (get(item, ['trend'], null)) {
@@ -42,40 +43,19 @@ export const TimeseriesChart = {
       },
     })
   },
-  getTimeseriesData() {
-    const serializedData = this.el.dataset.timeseries || '[]'
-    const _chartSourceData = JSON.parse(serializedData)
-
-    /**
-     * If the new data is empty, take the existing chart data 
-     */
-    this.chartSourceData = isEmpty(_chartSourceData) ? this.chartSourceData : _chartSourceData
-
-    const serializedRealtimeUpdate = this.el.dataset['realtimeUpdate'] || '{}'
-    const deserializedRealtimeUpdate = JSON.parse(serializedRealtimeUpdate)
-
-    /**
-     * Checks if there's a real-time update
-     */
-    this.isValidRealtimeUpdate = get(deserializedRealtimeUpdate, 'price', false)
-
-    if (this.isValidRealtimeUpdate) {
-      this.chartSourceData = update(this.chartSourceData, this.chartSourceData.length - 1, (value = {}) => ({ ...value, close: deserializedRealtimeUpdate.price, trend: 'now' }))
-    }
-
-    return this.chartSourceData
-  },
   mounted() {
+    this.chartSourceData = []
+    this.isValidRealtimeUpdate = false
+
     this.createChart()
+    this.setTimeseriesData()
     this.renderChart()
   },
   renderChart() {
-    const data = this.getTimeseriesData()
-
     /**
      * Data for price line
      */
-    const { chartData, day200SMAs, day50SMAs } = data.reduce((acc, { close, date, day_200_sma, day_50_sma, trend }) => {
+    const { chartData, day200SMAs, day50SMAs } = this.chartSourceData.reduce((acc, { close, date, day_200_sma, day_50_sma, trend }) => {
       acc.chartData.push({
         color: getColorForItem({ trend }),
         time: date,
@@ -137,6 +117,9 @@ export const TimeseriesChart = {
     })
     this.day50SMAsSeries.setData(day50SMAs)
 
+    /**
+     * Manages legend
+     */
     if (!this.el.dataset.hideLegend) {
       this.renderLegend()
     }
@@ -178,7 +161,24 @@ export const TimeseriesChart = {
       }
     });
   },
+  setRealtimeDataPoint() {
+    const incomingRealtimeUpdate = JSON.parse(this.el.dataset.realtimeUpdate || '{}')
+    this.isValidRealtimeUpdate = get(incomingRealtimeUpdate, 'price', false)
+
+    if (this.isValidRealtimeUpdate) {
+      this.chartSourceData = update(this.chartSourceData, this.chartSourceData.length - 1, (value = {}) => ({ ...value, close: incomingRealtimeUpdate.price, trend: 'now' }))
+    }
+  },
+  setTimeseriesData() {
+    const incomingData = JSON.parse(this.el.dataset.timeseries || '[]')
+    if (!isEqual(first(incomingData), first(this.chartSourceData))) {
+      this.isValidRealtimeUpdate = false
+      this.chartSourceData = incomingData
+    }
+  },
   updated() {
+    this.setTimeseriesData()
+    this.setRealtimeDataPoint()
     this.renderChart()
   }
 }
