@@ -92,6 +92,7 @@ defmodule Loin.FMP.Transforms do
   """
   def profile(%{"Symbol" => symbol} = security) when is_map(security) do
     market_cap = Map.get(security, "MktCap") |> string_to_number(:integer)
+    raw_is_etf = Map.get(security, "isEtf")
 
     %{
       ceo: Map.get(security, "CEO"),
@@ -108,7 +109,7 @@ defmodule Loin.FMP.Transforms do
       industry: Map.get(security, "industry"),
       ipo_date: Map.get(security, "ipoDate"),
       is_active: is_profile_active(%{market_cap: market_cap, symbol: symbol}),
-      is_etf: Map.get(security, "isEtf") == "TRUE",
+      is_etf: raw_is_etf == "true" || raw_is_etf == true || raw_is_etf == "TRUE",
       last_dividend: Map.get(security, "lastDiv") |> string_to_number(:float),
       market_cap: market_cap,
       name: Map.get(security, "companyName"),

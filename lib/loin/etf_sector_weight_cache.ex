@@ -32,8 +32,8 @@ defmodule Loin.ETFSectorWeightCache do
     "XLRE" => "Real Estate",
     "XLU" => "Utilities",
     "XLV" => "Healthcare",
-    "XLY" => "Discretionary",
-    "VTI" => "Total Market"
+    "XLY" => "Discretionary"
+    # "VTI" => "Total Market"
   }
 
   @doc """

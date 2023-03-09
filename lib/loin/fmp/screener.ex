@@ -245,6 +245,7 @@ defmodule Loin.FMP.Screener do
     field :industry, :string
     field :fmp_securities_inserted_at, :utc_datetime_usec
     field :ipo_date, :string
+    field :is_active, :boolean, default: true
     field :is_etf, :boolean, default: false
     field :last_dividend, :float
     field :market_cap, :integer

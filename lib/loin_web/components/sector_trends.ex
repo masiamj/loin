@@ -15,8 +15,8 @@ defmodule LoinWeb.SectorTrends do
     "XLRE" => "Real Est",
     "XLU" => "Utilities",
     "XLV" => "Healthcare",
-    "XLY" => "Cyclical",
-    "VTI" => "Total Mkt"
+    "XLY" => "Cyclical"
+    # "VTI" => "Total Mkt"
   }
 
   @doc """
