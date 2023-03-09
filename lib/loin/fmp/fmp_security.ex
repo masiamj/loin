@@ -29,6 +29,7 @@ defmodule Loin.FMP.FMPSecurity do
     field :image, :string
     field :industry, :string
     field :ipo_date, :string
+    field :is_active, :boolean, default: true
     field :is_etf, :boolean, default: false
     field :last_dividend, :float
     field :market_cap, :integer

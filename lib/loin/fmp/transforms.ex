@@ -4,6 +4,8 @@ defmodule Loin.FMP.Transforms do
   """
   require Logger
 
+  @automatically_allowed_stocks ["BRK-A", "BRK-B"]
+
   @doc """
   Transforms a FMP ETF stock exposure to an application-level security.
   """
@@ -89,6 +91,8 @@ defmodule Loin.FMP.Transforms do
   Maps a raw Profile to an application-level security.
   """
   def profile(%{"Symbol" => symbol} = security) when is_map(security) do
+    market_cap = Map.get(security, "MktCap") |> string_to_number(:integer)
+
     %{
       ceo: Map.get(security, "CEO"),
       change: Map.get(security, "Changes") |> string_to_number(:float),
@@ -103,9 +107,10 @@ defmodule Loin.FMP.Transforms do
       image: Map.get(security, "image"),
       industry: Map.get(security, "industry"),
       ipo_date: Map.get(security, "ipoDate"),
+      is_active: is_profile_active(%{market_cap: market_cap, symbol: symbol}),
       is_etf: Map.get(security, "isEtf") == "TRUE",
       last_dividend: Map.get(security, "lastDiv") |> string_to_number(:float),
-      market_cap: Map.get(security, "MktCap") |> string_to_number(:integer),
+      market_cap: market_cap,
       name: Map.get(security, "companyName"),
       price: Map.get(security, "Price") |> string_to_number(:float),
       sector: Map.get(security, "sector"),
@@ -158,6 +163,14 @@ defmodule Loin.FMP.Transforms do
   end
 
   # Private
+
+  defp is_profile_active(%{symbol: symbol}) when symbol in @automatically_allowed_stocks, do: true
+
+  defp is_profile_active(%{market_cap: market_cap, symbol: symbol}) when is_binary(symbol) do
+    has_dash = String.contains?(symbol, "-")
+    has_dot = String.contains?(symbol, ".")
+    market_cap >= 100_000_000 && !has_dash && !has_dot
+  end
 
   defp string_to_number(nil, _any), do: nil
   defp string_to_number("", _any), do: nil
