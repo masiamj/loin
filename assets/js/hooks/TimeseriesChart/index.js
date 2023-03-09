@@ -153,11 +153,11 @@ export const TimeseriesChart = {
     legendContainer.appendChild(day200SMARow)
 
     this.chartInstance.subscribeCrosshairMove((param) => {
-      if (param.time) {
+      if (param.time && this.lineSeries && this.day50SMAsSeries && this.day200SMAsSeries) {
         dateRow.innerText = `${param.time.month}/${param.time.day}/${param.time.year}`
-        priceRow.innerText = `Close ${param.seriesPrices.get(this.lineSeries).toFixed(2)}`
-        day50SMARow.innerText = `50D SMA ${param.seriesPrices.get(this.day50SMAsSeries).toFixed(2)}`
-        day200SMARow.innerText = `200D SMA ${param.seriesPrices.get(this.day200SMAsSeries).toFixed(2)}`
+        priceRow.innerText = `Close ${param.seriesPrices.get(this.lineSeries)?.toFixed(2)}`
+        day50SMARow.innerText = `50D SMA ${param.seriesPrices.get(this.day50SMAsSeries)?.toFixed(2)}`
+        day200SMARow.innerText = `200D SMA ${param.seriesPrices.get(this.day200SMAsSeries)?.toFixed(2)}`
       }
     });
   },
