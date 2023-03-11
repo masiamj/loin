@@ -108,7 +108,7 @@ defmodule Loin.FMP.Transforms do
       image: Map.get(security, "image"),
       industry: Map.get(security, "industry"),
       ipo_date: Map.get(security, "ipoDate"),
-      is_active: is_profile_active(%{market_cap: market_cap, symbol: symbol}),
+      is_active: is_profile_active(%{symbol: symbol}),
       is_etf: raw_is_etf == "true" || raw_is_etf == true || raw_is_etf == "TRUE",
       last_dividend: Map.get(security, "lastDiv") |> string_to_number(:float),
       market_cap: market_cap,
@@ -167,10 +167,10 @@ defmodule Loin.FMP.Transforms do
 
   defp is_profile_active(%{symbol: symbol}) when symbol in @automatically_allowed_stocks, do: true
 
-  defp is_profile_active(%{market_cap: market_cap, symbol: symbol}) when is_binary(symbol) do
+  defp is_profile_active(%{symbol: symbol}) when is_binary(symbol) do
     has_dash = String.contains?(symbol, "-")
     has_dot = String.contains?(symbol, ".")
-    market_cap >= 100_000_000 && !has_dash && !has_dot
+    !has_dash && !has_dot
   end
 
   defp string_to_number(nil, _any), do: nil

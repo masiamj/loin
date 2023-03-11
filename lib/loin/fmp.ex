@@ -30,7 +30,7 @@ defmodule Loin.FMP do
   """
   def get_sector_etfs do
     get_securities_by_symbols([
-      # "VTI",
+      "VTI",
       "XLB",
       "XLC",
       "XLE",
