@@ -12,6 +12,10 @@
   @apply text-white !important;
 }
 
+.big-board-security {
+  min-width: 84px;
+}
+
 .screener-table-container {
   overflow-x: auto;
 }
