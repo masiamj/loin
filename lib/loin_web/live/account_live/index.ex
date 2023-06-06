@@ -15,7 +15,7 @@ defmodule LoinWeb.AccountLive do
           <.simple_form :let={f} id="email_form" for={@names_changeset}>
             <.input field={{f, :email}} type="email" label="Email" required disabled />
           </.simple_form>
-          <p class="text-xs text-gray-500 mt-2">
+          <p class="text-xs text-neutral-500 mt-2">
             If you need to change your email, please contact us as
             <a class="text-blue-500" href="mailto:support@trendflares.com">support@trendflares.com</a>
           </p>
@@ -49,7 +49,7 @@ defmodule LoinWeb.AccountLive do
             </.link>
           </div>
           <div class="mt-8">
-            <p class="text-xs text-gray-500">
+            <p class="text-xs text-neutral-500">
               If you need to delete your account, please contact us as
               <a class="text-blue-500" href="mailto:support@trendflares.com">
                 support@trendflares.com

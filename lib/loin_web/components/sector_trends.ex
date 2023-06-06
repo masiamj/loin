@@ -41,8 +41,8 @@ defmodule LoinWeb.SectorTrends do
       <%= for {symbol, %{change_percent: change_percent, trend: trend, trend_change: trend_change}} <- @trends do %>
         <.link navigate={~p"/s/#{symbol}"}>
           <div class={"p-2.5 #{background_color(trend)} rounded-sm"} role="button">
-            <div class="flex flex-row gap-2 text-xs text-gray-100">
-              <p class="text-gray-100 text-xs"><%= symbol %></p>
+            <div class="flex flex-row gap-2 text-xs text-neutral-100">
+              <p class="text-neutral-100 text-xs"><%= symbol %></p>
               <.security_change_percent value={change_percent} />
             </div>
             <div class="flex items-center justify-between space-x-2">
@@ -56,14 +56,14 @@ defmodule LoinWeb.SectorTrends do
     """
   end
 
-  defp background_color(nil), do: "bg-gray-800"
+  defp background_color(nil), do: "bg-neutral-800"
 
   defp background_color(trend) do
     case trend do
       "down" -> "bg-red-600"
       "neutral" -> "bg-yellow-600"
       "up" -> "bg-green-600"
-      nil -> "bg-gray-600"
+      nil -> "bg-neutral-600"
     end
   end
 

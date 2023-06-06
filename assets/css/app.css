@@ -4,7 +4,7 @@
 
 /* This file is for your main application CSS */
 .autocomplete>div:hover {
-  @apply bg-gray-100 !important;
+  @apply bg-neutral-100 !important;
 }
 
 .autocomplete>div.selected {
@@ -39,5 +39,5 @@ tr>td:first-child {
   position: absolute;
   top: 0;
   z-index: 100;
-  @apply text-gray-700;
+  @apply text-neutral-700;
 }

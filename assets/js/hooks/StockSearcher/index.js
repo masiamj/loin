@@ -51,7 +51,7 @@ export const StockSearcher = {
       },
       render: function (item) {
         const container = document.createElement("div");
-        container.className = 'flex flex-row items-center justify-between space-x-4 border-b border-gray-200'
+        container.className = 'flex flex-row items-center justify-between space-x-4 border-b border-orange-200'
         container.style = 'padding: 6px 8px 6px 8px;'
         const textContainer = container.appendChild(document.createElement('div'))
         textContainer.className = 'flex flex-row flex-wrap w-2/3 space-x-2'
@@ -65,7 +65,7 @@ export const StockSearcher = {
         name.style = 'font-size: 11px; font-weight: 500;'
         const sector = container.appendChild(document.createElement('p'))
         sector.innerHTML = item.sector
-        sector.className = 'bg-gray-100 text-gray-500 rounded-sm line-clamp-1'
+        sector.className = 'bg-neutral-100 text-orange-500 rounded-sm line-clamp-1'
         sector.style = 'padding: 0px 4px 0px 4px; font-size: 9px;'
         return container;
       }

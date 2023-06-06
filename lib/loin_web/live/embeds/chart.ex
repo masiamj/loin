@@ -35,7 +35,7 @@ defmodule LoinWeb.Embeds.Chart do
         phx-update="ignore"
       >
       </div>
-      <div class="absolute bottom-0 left-0 bg-white p-3 border border-gray-200 z-50">
+      <div class="absolute bottom-0 left-0 bg-white p-3 border border-neutral-200 z-50">
         <p class="text-xs">
           <%= @symbol %> trend by
           <.link navigate={~p"/s/#{@symbol}"} class="text-blue-500">TrendFlares</.link>
@@ -74,7 +74,7 @@ defmodule LoinWeb.Embeds.Chart do
 
   def trend_badge(%{value: "neutral"} = assigns) do
     ~H"""
-    <div class="text-white font-medium flex items-center justify-center bg-gray-500 px-2 py-1">
+    <div class="text-white font-medium flex items-center justify-center bg-neutral-500 px-2 py-1">
       <span>Neutral</span>
     </div>
     """

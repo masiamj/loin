@@ -27,24 +27,24 @@ defmodule LoinWeb.FooterComponents do
         </.link>
         <.link
           href="https://blog.trendflares.com"
-          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
+          class="relative px-2 py-1 text-neutral-500 hover:text-black line-clamp-1"
         >
           Blog
         </.link>
         <.link
           navigate="https://blog.trendflares.com/privacy"
-          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
+          class="relative px-2 py-1 text-neutral-500 hover:text-black line-clamp-1"
         >
           Privacy
         </.link>
         <.link
           navigate="https://blog.trendflares.com/terms"
-          class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
+          class="relative px-2 py-1 text-neutral-500 hover:text-black line-clamp-1"
         >
           Terms of use
         </.link>
       </div>
-      <p class="text-gray-500 text-center text-xs w-2/3 mx-auto">
+      <p class="text-neutral-500 text-center text-xs w-2/3 mx-auto">
         TrendFlares is an algorithm-based, historical stock price analysis system and trends identified do not guarantee future performance.<br />TrendFlares must not be construed as financial advice or investing advice.
       </p>
     </div>

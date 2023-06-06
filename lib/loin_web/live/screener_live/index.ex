@@ -140,10 +140,10 @@ defmodule LoinWeb.ScreenerLive do
     <div>
       <div class="flex flex-row flex-wrap">
         <div class="lg:h-[94vh] w-full lg:w-1/5 lg:overflow-y-scroll">
-          <div class="flex flex-row items-center justify-between bg-gray-50 sticky top-0 p-4">
-            <p class="text-gray-500 text-xs">Screener filters</p>
+          <div class="flex flex-row items-center justify-between bg-neutral-50 sticky top-0 p-4">
+            <p class="text-neutral-500 text-xs">Screener filters</p>
             <button
-              class="text-blue-500 text-xs px-2 py-1 bg-gray-50 hover:bg-blue-50 rounded"
+              class="text-blue-500 text-xs px-2 py-1 bg-neutral-50 hover:bg-blue-50 rounded"
               phx-click="reset-filter"
             >
               Reset filters
@@ -177,9 +177,9 @@ defmodule LoinWeb.ScreenerLive do
               container: true,
               container_attrs: [class: "w-full screener-table-container lg:h-[88vh]"],
               table_attrs: [class: "min-w-full border-separate", style: "border-spacing: 0"],
-              tbody_td_attrs: [class: "px-2 bg-white border-b border-gray-200 text-xs"],
+              tbody_td_attrs: [class: "px-2 bg-white border-b border-neutral-200 text-xs"],
               thead_th_attrs: [
-                class: "bg-gray-100 sticky top-0 px-2 py-2 text-left text-xs font-medium"
+                class: "bg-neutral-100 sticky top-0 px-2 py-2 text-left text-xs font-medium"
               ]
             ]}
             path={~p"/screener"}
@@ -197,7 +197,7 @@ defmodule LoinWeb.ScreenerLive do
                   id={item.fmp_securities_symbol}
                   role="button"
                 >
-                  <span class="text-gray-500 line-clamp-1" style="font-size:10px;">
+                  <span class="text-neutral-500 line-clamp-1" style="font-size:10px;">
                     <%= item.name %>
                   </span>
                   <span class="font-medium line-clamp-1"><%= item.fmp_securities_symbol %></span>
@@ -324,18 +324,18 @@ defmodule LoinWeb.ScreenerLive do
               current_link_attrs: [class: "text-white bg-blue-500 p-1 rounded text-xs"],
               next_link_attrs: [
                 class:
-                  "bg-gray-50 hover:bg-gray-100 p-1 rounded text-xs text-gray-500 hover:text-gray-800 order-last"
+                  "bg-neutral-50 hover:bg-neutral-100 p-1 rounded text-xs text-neutral-500 hover:text-neutral-800 order-last"
               ],
               next_link_content: "Next",
               page_links: {:ellipsis, 3},
               pagination_link_attrs: [
                 class:
-                  "bg-gray-50 hover:bg-gray-100 p-1 rounded text-xs text-gray-500 hover:text-gray-800"
+                  "bg-neutral-50 hover:bg-neutral-100 p-1 rounded text-xs text-neutral-500 hover:text-neutral-800"
               ],
               pagination_list_attrs: [class: "flex flex-row items-center gap-2"],
               previous_link_attrs: [
                 class:
-                  "order-first bg-gray-50 hover:bg-gray-100 p-1 rounded text-xs text-gray-500 hover:text-gray-800"
+                  "order-first bg-neutral-50 hover:bg-neutral-100 p-1 rounded text-xs text-neutral-500 hover:text-neutral-800"
               ],
               previous_link_content: "Previous",
               wrapper_attrs: [
@@ -406,7 +406,7 @@ defmodule LoinWeb.ScreenerLive do
     case value do
       x when x > 0 -> "text-green-600"
       x when x < 0 -> "text-red-600"
-      _ -> "text-gray-500"
+      _ -> "text-neutral-500"
     end
   end
 
@@ -438,7 +438,7 @@ defmodule LoinWeb.ScreenerLive do
 
   defp trend_badge(%{trend: "neutral"} = assigns) do
     ~H"""
-    <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
+    <div class="text-neutral-500 text-xs font-medium flex items-center justify-center bg-neutral-100 px-2 py-0.5 rounded">
       <span>Neutral</span>
     </div>
     """
@@ -471,7 +471,7 @@ defmodule LoinWeb.ScreenerLive do
   defp trend_change_badge(%{trend_change: trend_change} = assigns)
        when trend_change in ["up_to_neutral", "down_to_neutral"] do
     ~H"""
-    <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
+    <div class="text-neutral-500 text-xs font-medium flex items-center justify-center bg-neutral-100 px-2 py-0.5 rounded">
       <span>To Neutral</span>
     </div>
     """

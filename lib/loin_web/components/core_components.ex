@@ -303,7 +303,7 @@ defmodule LoinWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
+        class="mt-1 block w-full py-2 px-3 border border-neutral-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -373,7 +373,7 @@ defmodule LoinWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-xs font-medium text-gray-600">
+    <label for={@for} class="block text-xs font-medium text-neutral-600">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -550,7 +550,7 @@ defmodule LoinWeb.CoreComponents do
   def read_more(assigns) do
     ~H"""
     <div>
-      <p class="text-xs text-gray-500 line-clamp-2" id={"#{@id}-read-more-content"}>
+      <p class="text-xs text-neutral-500 line-clamp-2" id={"#{@id}-read-more-content"}>
         <%= @content %>
       </p>
       <button

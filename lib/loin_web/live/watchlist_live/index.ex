@@ -54,11 +54,11 @@ defmodule LoinWeb.WatchlistLive do
     ~H"""
     <div class="w-full lg:max-w-md mx-auto px-8 lg:px-0 py-16">
       <h1 class="text-3xl font-semibold text-center">Your watchlist is empty</h1>
-      <p class="text-center text-gray-500 mt-1">Try adding one of these popular stocks</p>
+      <p class="text-center text-neutral-500 mt-1">Try adding one of these popular stocks</p>
       <div class="flex flex-row flex-wrap items-center justify-center gap-x-2 gap-y-2 mt-8">
         <%= for symbol <- ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "V", "XOM", "SPY", "JPM"] do %>
           <button
-            class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
+            class="bg-white hover:bg-neutral-100 border border-neutral-300 rounded-md shadow-sm px-2 py-1 text-xs"
             phx-click="add-initial-security"
             phx-value-symbol={symbol}
           >

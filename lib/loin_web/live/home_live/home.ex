@@ -242,7 +242,7 @@ defmodule LoinWeb.HomeLive do
 
   defp class_for_value(value) do
     case value do
-      0.0 -> "text-gray-500"
+      0.0 -> "text-neutral-500"
       value when value > 0 -> "text-green-500"
       value when value < 0 -> "text-red-500"
     end

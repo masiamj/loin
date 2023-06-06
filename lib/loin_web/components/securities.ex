@@ -50,13 +50,13 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col w-2/5">
       <div class="flex flex-row items-center gap-1">
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @label %>
         </p>
       </div>
       <div class="flex flex-row items-center gap-1">
         <p class="text-xs font-medium"><%= @symbol %></p>
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @constituent.weight_percentage %>%
         </p>
       </div>
@@ -68,13 +68,13 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col w-2/5">
       <div class="flex flex-row items-center gap-1">
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @label %>
         </p>
       </div>
       <div class="flex flex-row items-center gap-1">
         <p class="text-xs font-medium"><%= @symbol %></p>
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @exposure.etf_weight_percentage %>%
         </p>
       </div>
@@ -86,13 +86,13 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col w-2/5">
       <div class="flex flex-row items-center gap-1">
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @label %>
         </p>
       </div>
       <div class="flex flex-row items-center gap-1">
         <p class="text-sm font-medium line-clamp-1"><%= @symbol %></p>
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @sector_weight.weight_percentage %>
         </p>
       </div>
@@ -104,7 +104,7 @@ defmodule LoinWeb.Securities do
     ~H"""
     <div class="flex flex-col w-2/5">
       <div class="flex flex-row items-center gap-1">
-        <p class="text-xs text-gray-500 line-clamp-1" style="font-size:10px;">
+        <p class="text-xs text-neutral-500 line-clamp-1" style="font-size:10px;">
           <%= @label %>
         </p>
       </div>
@@ -238,7 +238,7 @@ defmodule LoinWeb.Securities do
   def security_list_item_body(assigns) do
     ~H"""
     <div
-      class="bg-white hover:bg-gray-100 px-2 border-b border-gray-200"
+      class="bg-white hover:bg-neutral-100 px-2 border-b border-neutral-200"
       data-animate={JS.transition(%JS{}, "animate-flash-as-new", to: "##{@id}", time: 300)}
       id={@id}
     >
@@ -281,7 +281,7 @@ defmodule LoinWeb.Securities do
 
   def security_quote(assigns) do
     ~H"""
-    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
+    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-neutral-200 shadow-sm">
       <div class="flex flex-row items-start justify-between space-x-4">
         <div class="flex flex-col">
           <p
@@ -304,7 +304,7 @@ defmodule LoinWeb.Securities do
         <div class="flex flex-row gap-2">
           <button
             :if={!@is_in_watchlist}
-            class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
+            class="bg-white hover:bg-neutral-100 border border-neutral-300 rounded-md shadow-sm px-2 py-1 text-xs"
             phx-click="toggle-identity-security"
           >
             Follow
@@ -318,7 +318,7 @@ defmodule LoinWeb.Securities do
           </button>
           <.link
             :if={@original_symbol != @security.symbol}
-            class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs flex flex-row items-center"
+            class="bg-white hover:bg-neutral-100 border border-neutral-300 rounded-md shadow-sm px-2 py-1 text-xs flex flex-row items-center"
             navigate={~p"/s/#{@security.symbol}"}
           >
             <%= @security.symbol %>
@@ -346,7 +346,7 @@ defmodule LoinWeb.Securities do
 
   def watchlist_security_quote(assigns) do
     ~H"""
-    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-gray-200 shadow-sm">
+    <div class="flex flex-col sticky top-0 pt-2 pb-3 px-4 border border-b border-neutral-200 shadow-sm">
       <div class="flex flex-row items-start justify-between space-x-4">
         <div class="flex flex-row items-center gap-2">
           <img :if={@security.image} src={@security.image} class="h-8 w-8 rounded-md object-contain" />
@@ -354,7 +354,7 @@ defmodule LoinWeb.Securities do
         </div>
         <.link
           navigate={~p"/s/#{@security.symbol}"}
-          class="bg-white hover:bg-gray-100 border border-gray-300 rounded-md shadow-sm px-2 py-1 text-xs"
+          class="bg-white hover:bg-neutral-100 border border-neutral-300 rounded-md shadow-sm px-2 py-1 text-xs"
         >
           View
         </.link>
@@ -373,7 +373,7 @@ defmodule LoinWeb.Securities do
 
   defp class_for_value(value) do
     case value do
-      0.0 -> "text-gray-500"
+      0.0 -> "text-neutral-500"
       value when value > 0 -> "text-green-500"
       value when value < 0 -> "text-red-500"
     end
@@ -382,7 +382,7 @@ defmodule LoinWeb.Securities do
   defp labeled_data_item(assigns) do
     ~H"""
     <div>
-      <label class="text-xs text-gray-500"><%= @label %></label>
+      <label class="text-xs text-neutral-500"><%= @label %></label>
       <p class="text-sm"><%= @value %></p>
     </div>
     """
@@ -410,7 +410,7 @@ defmodule LoinWeb.Securities do
         |> assign(:value, value)
 
       ~H"""
-      <span class="font-medium text-gray-700">
+      <span class="font-medium text-neutral-700">
         <%= @value %>
       </span>
       """
@@ -475,7 +475,7 @@ defmodule LoinWeb.Securities do
 
   def trend_badge(%{value: "neutral"} = assigns) do
     ~H"""
-    <div class="text-gray-500 text-xs font-medium flex items-center justify-center bg-gray-100 px-2 py-0.5 rounded">
+    <div class="text-neutral-500 text-xs font-medium flex items-center justify-center bg-neutral-100 px-2 py-0.5 rounded">
       <span>Neutral</span>
     </div>
     """

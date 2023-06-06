@@ -47,7 +47,7 @@ defmodule LoinWeb.Cards do
         <.link
           :if={@more_link}
           navigate={@more_link}
-          class="px-2 py-1 bg-white hover:bg-gray-100 rounded-lg flex items-center justify-center text-blue-600 hover:text-blue-700 text-xs font-medium"
+          class="px-2 py-1 bg-white hover:bg-neutral-100 rounded-lg flex items-center justify-center text-blue-600 hover:text-blue-700 text-xs font-medium"
         >
           More <Heroicons.arrow_top_right_on_square class="h-3 w-3 ml-1 font-bold" />
         </.link>
