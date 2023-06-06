@@ -55,10 +55,39 @@ defmodule Loin.FMP.Transforms do
   end
 
   @doc """
+  Picks out if the stock market is open.
+  """
+  def is_the_market_open(results) do
+    %{
+      is_the_us_market_open: Map.get(results, "isTheStockMarketOpen")
+    }
+  end
+
+  @doc """
   Maps a raw peers entry to an application-level peers entry.
   """
   def peers(security) when is_map(security) do
     Map.get(security, "peersList", [])
+  end
+
+  @doc """
+  Maps a raw price change entry to an application-level price change entry.
+  """
+  def price_change(security) when is_map(security) do
+    %{
+      symbol: Map.get(security, "symbol"),
+      d1: Map.get(security, "1D"),
+      d5: Map.get(security, "5D"),
+      m1: Map.get(security, "1M"),
+      m3: Map.get(security, "3M"),
+      m6: Map.get(security, "6M"),
+      ytd: Map.get(security, "ytd"),
+      y1: Map.get(security, "1Y"),
+      y3: Map.get(security, "3Y"),
+      y5: Map.get(security, "5Y"),
+      y10: Map.get(security, "10Y"),
+      max: Map.get(security, "max")
+    }
   end
 
   @doc """

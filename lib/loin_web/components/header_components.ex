@@ -71,17 +71,11 @@ defmodule LoinWeb.HeaderComponents do
             </div>
           </div>
           <div class="hidden items-center justify-end lg:flex lg:flex-1 space-x-4 lg:w-0 text-sm">
-            <.link navigate={~p"/watchlist"} class="relative px-2 py-1 text-gray-500 hover:text-black">
-              Watchlist
-            </.link>
             <.link
               navigate={~p"/how-it-works"}
               class="relative px-2 py-1 text-gray-500 hover:text-black line-clamp-1"
             >
-              How it works
-            </.link>
-            <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
-              Screener
+              FAQ
             </.link>
             <.link navigate={~p"/account"} class="relative px-2 py-1 text-gray-500 hover:text-black">
               Account
@@ -134,14 +128,8 @@ defmodule LoinWeb.HeaderComponents do
             </div>
             <div class="mt-4">
               <nav class="grid gap-y-1">
-                <.link navigate={~p"/watchlist"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  Watchlist
-                </.link>
                 <.link navigate={~p"/how-it-works"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  How it works
-                </.link>
-                <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  Screener
+                  FAQ
                 </.link>
                 <.link navigate={~p"/account"} class="rounded-md px-3 py-2 hover:bg-gray-100">
                   Account
@@ -221,10 +209,7 @@ defmodule LoinWeb.HeaderComponents do
               navigate={~p"/how-it-works"}
               class="relative px-2 py-1 text-gray-500 hover:text-black"
             >
-              How it works
-            </.link>
-            <.link navigate={~p"/screener"} class="relative px-2 py-1 text-gray-500 hover:text-black">
-              Screener
+              FAQ
             </.link>
             <.link navigate={~p"/auth"} class="relative group">
               <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 group-hover:duration-200 animate-tilt">
@@ -282,10 +267,7 @@ defmodule LoinWeb.HeaderComponents do
             <div class="mt-4">
               <nav class="grid gap-y-1">
                 <.link navigate={~p"/how-it-works"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  How it works
-                </.link>
-                <.link navigate={~p"/screener"} class="rounded-md px-3 py-2 hover:bg-gray-100">
-                  Screener
+                  FAQ
                 </.link>
               </nav>
             </div>

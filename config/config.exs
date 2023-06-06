@@ -88,11 +88,11 @@ config :loin, Oban,
     {Oban.Plugins.Cron,
      crontab: [
        # 6:30PM Mon-Fri EST
-       {"30 23 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
+       #  {"30 23 * * MON-FRI", Loin.Workers.DailyTrendPrimer},
        # 12:30AM Mon-Fri EST
-       {"30 5 * * MON-FRI", Loin.Workers.DailyTrendPruner},
+       #  {"30 5 * * MON-FRI", Loin.Workers.DailyTrendPruner},
        # 1:30AM Mon-Fri EST
-       {"30 6 * * MON-FRI", Loin.Workers.TTMRatiosPrimer},
+       #  {"30 6 * * MON-FRI", Loin.Workers.TTMRatiosPrimer},
        # Every half hour between 6AM-6:30PM Mon-Fri EST
        {"*/30 11-23 * * MON-FRI", Loin.Workers.QuotesPrimer}
      ]}

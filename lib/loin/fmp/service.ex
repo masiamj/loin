@@ -98,6 +98,19 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches whether the stock market is open.
+  """
+  def market_status() do
+    Logger.info("Requesting Market status")
+
+    "/is-the-market-open"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Transforms.is_the_market_open()
+  end
+
+  @doc """
   Fetches the peers of a stock.
   """
   def peers(symbol) when is_binary(symbol) do
@@ -124,6 +137,25 @@ defmodule Loin.FMP.Service do
       |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
 
     Logger.info("Got batch quotes result map for symbols #{Map.keys(result) |> Enum.join(", ")}")
+
+    result
+  end
+
+  def batch_price_changes(symbols) when is_list(symbols) do
+    joined_symbols = Enum.map_join(symbols, ",", &String.upcase/1)
+    Logger.info("Batch requesting price changes for #{joined_symbols}")
+
+    result =
+      "/stock-price-change/#{joined_symbols}"
+      |> create_request()
+      |> Req.get!()
+      |> handle_response()
+      |> Utils.map(&Transforms.price_change/1)
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
+
+    Logger.info(
+      "Got batch stock price change result map for symbols #{Map.keys(result) |> Enum.join(", ")}"
+    )
 
     result
   end
