@@ -7,6 +7,35 @@ defmodule Loin.FMP.Transforms do
   @automatically_allowed_stocks ["BRK-A", "BRK-B"]
 
   @doc """
+  Transforms a raw Commodity quote to an application-level structure.
+  """
+  def commodity_quote(security) when is_map(security) do
+    %{
+      change_price: Map.get(security, "change") |> string_to_number(:float),
+      change_percent: Map.get(security, "changesPercentage") |> string_to_number(:float),
+      day_200_sma: Map.get(security, "priceAvg200") |> string_to_number(:float),
+      day_50_sma: Map.get(security, "priceAvg50") |> string_to_number(:float),
+      day_high: Map.get(security, "dayHigh") |> string_to_number(:float),
+      day_low: Map.get(security, "dayLow") |> string_to_number(:float),
+      eps: Map.get(security, "eps") |> string_to_number(:float),
+      exchange: Map.get(security, "exchange"),
+      market_cap: Map.get(security, "marketCap") |> string_to_number(:integer),
+      name: Map.get(security, "name"),
+      open: Map.get(security, "open") |> string_to_number(:float),
+      pe: Map.get(security, "pe") |> string_to_number(:float),
+      previous_close: Map.get(security, "previousClose") |> string_to_number(:float),
+      price: Map.get(security, "price") |> string_to_number(:float),
+      volume: Map.get(security, "volume") |> string_to_number(:integer),
+      volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
+      year_high: Map.get(security, "yearHigh") |> string_to_number(:float),
+      year_low: Map.get(security, "yearLow") |> string_to_number(:float),
+      shares_outstanding: Map.get(security, "sharesOutstanding") |> string_to_number(:integer),
+      symbol: Map.get(security, "symbol")
+    }
+    |> put_timestamps()
+  end
+
+  @doc """
   Transforms a FMP ETF stock exposure to an application-level security.
   """
   def etf_exposure(security) when is_map(security) do
@@ -36,6 +65,35 @@ defmodule Loin.FMP.Transforms do
       sector: Map.get(security, "sector"),
       weight_percentage: Map.get(security, "weightPercentage")
     }
+  end
+
+  @doc """
+  Transforms a raw Forex quote to an application-level structure.
+  """
+  def forex_quote(security) when is_map(security) do
+    %{
+      change_price: Map.get(security, "change") |> string_to_number(:float),
+      change_percent: Map.get(security, "changesPercentage") |> string_to_number(:float),
+      day_200_sma: Map.get(security, "priceAvg200") |> string_to_number(:float),
+      day_50_sma: Map.get(security, "priceAvg50") |> string_to_number(:float),
+      day_high: Map.get(security, "dayHigh") |> string_to_number(:float),
+      day_low: Map.get(security, "dayLow") |> string_to_number(:float),
+      eps: Map.get(security, "eps") |> string_to_number(:float),
+      exchange: Map.get(security, "exchange"),
+      market_cap: Map.get(security, "marketCap") |> string_to_number(:integer),
+      name: Map.get(security, "name"),
+      open: Map.get(security, "open") |> string_to_number(:float),
+      pe: Map.get(security, "pe") |> string_to_number(:float),
+      previous_close: Map.get(security, "previousClose") |> string_to_number(:float),
+      price: Map.get(security, "price") |> string_to_number(:float),
+      volume: Map.get(security, "volume") |> string_to_number(:integer),
+      volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
+      year_high: Map.get(security, "yearHigh") |> string_to_number(:float),
+      year_low: Map.get(security, "yearLow") |> string_to_number(:float),
+      shares_outstanding: Map.get(security, "sharesOutstanding") |> string_to_number(:integer),
+      symbol: Map.get(security, "symbol")
+    }
+    |> put_timestamps()
   end
 
   @doc """
@@ -112,7 +170,7 @@ defmodule Loin.FMP.Transforms do
       volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
       year_high: Map.get(security, "yearHigh") |> string_to_number(:float),
       year_low: Map.get(security, "yearLow") |> string_to_number(:float),
-      # shares_outstanding: Map.get(security, "sharesOutstanding") |> string_to_number(:integer),
+      shares_outstanding: Map.get(security, "sharesOutstanding") |> string_to_number(:integer),
       symbol: Map.get(security, "symbol")
     }
     |> put_timestamps()

@@ -59,6 +59,19 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches the Forex quotes in bulk.
+  """
+  def commodities_quotes() do
+    Logger.info("Requesting Commodity quotes")
+
+    "/quotes/commodity"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.commodity_quote/1)
+  end
+
+  @doc """
   Fetches the constituents of the Dow Jones
   """
   def dow_jones_constituents() do
@@ -111,16 +124,16 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches the constituents of the Nasdaq
+  Fetches the Forex quotes in bulk.
   """
-  def nasdaq_constituents() do
-    Logger.info("Requesting Nasdaq constituents")
+  def forex_quotes() do
+    Logger.info("Requesting Forex quotes")
 
-    "/nasdaq_constituent"
+    "/quotes/forex"
     |> create_request()
     |> Req.get!()
     |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
+    |> Utils.map(&Transforms.forex_quote/1)
   end
 
   @doc """
@@ -134,6 +147,19 @@ defmodule Loin.FMP.Service do
     |> Req.get!()
     |> handle_response()
     |> Transforms.is_the_market_open()
+  end
+
+  @doc """
+  Fetches the constituents of the Nasdaq
+  """
+  def nasdaq_constituents() do
+    Logger.info("Requesting Nasdaq constituents")
+
+    "/nasdaq_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
