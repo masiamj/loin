@@ -149,7 +149,7 @@ defmodule LoinWeb.HeaderComponents do
       <script>
         hotkeys('cmd+k', event => {
           event.preventDefault();
-          document.getElementById('unauthenticated-header-search').focus()
+          document.getElementById('header-search').focus()
         });
       </script>
     </div>

@@ -47,7 +47,7 @@ export const StockSearcher = {
       input: document.getElementById(this.el.id),
       minLength: 1,
       onSelect: function (item) {
-        self.pushEvent("unauthenticated-search-item-selected", { symbol: item.value })
+        self.pushEvent("search-item-selected", { symbol: item.value })
       },
       render: function (item) {
         const container = document.createElement("div");

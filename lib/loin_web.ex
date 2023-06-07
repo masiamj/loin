@@ -62,7 +62,7 @@ defmodule LoinWeb do
       Anywhere the unauthenticated search bar is rendered (app layout), we should
       automatically inject this event handler from the StockSearcher Phoenix hook.
       """
-      def handle_event("unauthenticated-search-item-selected", %{"symbol" => symbol}, socket) do
+      def handle_event("search-item-selected", %{"symbol" => symbol}, socket) do
         {:noreply, push_navigate(socket, to: ~p"/s/#{symbol}")}
       end
     end

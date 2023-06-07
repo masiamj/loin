@@ -7,19 +7,12 @@ defmodule Loin.FMP.Profiles do
 
   import Ecto.Query, warn: false
   alias Loin.Repo
-  alias Loin.FMP.{FMPSecurity, Service}
-
-  @doc """
-  Inserts all fmp_securities into the table (a priming function).
-  """
-  def process_all() do
-    process_many(20_000)
-  end
+  alias Loin.FMP.{SecurityWithPerformance, Service}
 
   @doc """
   Inserts many fmp_securities into the table (a priming function).
   """
-  def process_many(limit) when is_integer(limit) do
+  def process_many(limit \\ 100_000) when is_integer(limit) do
     Service.all_profiles_stream()
     |> Stream.take(limit)
     |> Stream.chunk_every(10)
@@ -28,11 +21,11 @@ defmodule Loin.FMP.Profiles do
       Logger.info("Inserting profiles for symbols: #{symbols}")
 
       {num_affected, nil} =
-        Repo.insert_all(FMPSecurity, entries,
+        Repo.insert_all(SecurityWithPerformance, entries,
           on_conflict:
             {:replace_all_except,
              [
-               :change,
+               :change_price,
                :change_percent,
                :eps,
                :id,

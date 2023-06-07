@@ -8,7 +8,7 @@
 }
 
 .autocomplete>div.selected {
-  @apply bg-blue-500 !important;
+  @apply bg-orange-500 !important;
   @apply text-white !important;
 }
 

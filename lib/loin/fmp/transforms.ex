@@ -76,18 +76,19 @@ defmodule Loin.FMP.Transforms do
   def price_change(security) when is_map(security) do
     %{
       symbol: Map.get(security, "symbol"),
-      d1: Map.get(security, "1D"),
-      d5: Map.get(security, "5D"),
-      m1: Map.get(security, "1M"),
-      m3: Map.get(security, "3M"),
-      m6: Map.get(security, "6M"),
-      ytd: Map.get(security, "ytd"),
-      y1: Map.get(security, "1Y"),
-      y3: Map.get(security, "3Y"),
-      y5: Map.get(security, "5Y"),
-      y10: Map.get(security, "10Y"),
-      max: Map.get(security, "max")
+      day_1_performance: Map.get(security, "1D") |> string_to_number(:float),
+      day_5_performance: Map.get(security, "5D") |> string_to_number(:float),
+      month_1_performance: Map.get(security, "1M") |> string_to_number(:float),
+      month_3_performance: Map.get(security, "3M") |> string_to_number(:float),
+      month_6_performance: Map.get(security, "6M") |> string_to_number(:float),
+      ytd_performance: Map.get(security, "ytd") |> string_to_number(:float),
+      year_1_performance: Map.get(security, "1Y") |> string_to_number(:float),
+      year_3_performance: Map.get(security, "3Y") |> string_to_number(:float),
+      year_5_performance: Map.get(security, "5Y") |> string_to_number(:float),
+      year_10_performance: Map.get(security, "10Y") |> string_to_number(:float),
+      max_performance: Map.get(security, "max") |> string_to_number(:float)
     }
+    |> put_timestamps()
   end
 
   @doc """
@@ -95,7 +96,7 @@ defmodule Loin.FMP.Transforms do
   """
   def quote(security) when is_map(security) do
     %{
-      change: Map.get(security, "change") |> string_to_number(:float),
+      change_price: Map.get(security, "change") |> string_to_number(:float),
       change_percent: Map.get(security, "changesPercentage") |> string_to_number(:float),
       day_200_sma: Map.get(security, "priceAvg200") |> string_to_number(:float),
       day_50_sma: Map.get(security, "priceAvg50") |> string_to_number(:float),
@@ -111,6 +112,7 @@ defmodule Loin.FMP.Transforms do
       volume_avg: Map.get(security, "avgVolume") |> string_to_number(:integer),
       year_high: Map.get(security, "yearHigh") |> string_to_number(:float),
       year_low: Map.get(security, "yearLow") |> string_to_number(:float),
+      # shares_outstanding: Map.get(security, "sharesOutstanding") |> string_to_number(:integer),
       symbol: Map.get(security, "symbol")
     }
     |> put_timestamps()
@@ -125,7 +127,8 @@ defmodule Loin.FMP.Transforms do
 
     %{
       ceo: Map.get(security, "CEO"),
-      change: Map.get(security, "Changes") |> string_to_number(:float),
+      # change: Map.get(security, "Changes") |> string_to_number(:float),
+      change_price: Map.get(security, "Changes") |> string_to_number(:float),
       cik: Map.get(security, "cik"),
       city: Map.get(security, "city"),
       country: Map.get(security, "country"),
@@ -137,7 +140,7 @@ defmodule Loin.FMP.Transforms do
       image: Map.get(security, "image"),
       industry: Map.get(security, "industry"),
       ipo_date: Map.get(security, "ipoDate"),
-      is_active: is_profile_active(%{symbol: symbol}),
+      # is_active: is_profile_active(%{symbol: symbol}),
       is_etf: raw_is_etf == "true" || raw_is_etf == true || raw_is_etf == "TRUE",
       last_dividend: Map.get(security, "lastDiv") |> string_to_number(:float),
       market_cap: market_cap,
@@ -188,6 +191,22 @@ defmodule Loin.FMP.Transforms do
       return_on_assets: Map.get(item, "returnOnAssetsTTM") |> string_to_number(:float),
       return_on_equity: Map.get(item, "returnOnEquityTTM") |> string_to_number(:float),
       symbol: symbol
+    }
+    |> put_timestamps()
+  end
+
+  @doc """
+  Maps a well-defined ETF constituent into a proper structure.
+  """
+  def well_defined_constituent(security) when is_map(security) do
+    %{
+      cik: Map.get(security, "cik"),
+      founded: Map.get(security, "founded"),
+      headquarters: Map.get(security, "headquarters"),
+      name: Map.get(security, "name"),
+      sector: Map.get(security, "sector"),
+      sub_sector: Map.get(security, "subSector"),
+      symbol: Map.get(security, "symbol")
     }
     |> put_timestamps()
   end

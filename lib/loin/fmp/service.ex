@@ -17,7 +17,7 @@ defmodule Loin.FMP.Service do
     (@bulk_api_base_url <> "profile/all" <> "?apikey=#{Loin.Config.fmp_api_key()}")
     |> RemoteFileStreamer.stream()
     |> CSV.decode!(escape_max_lines: 25, headers: true)
-    |> Stream.filter(&Utils.is_us_security/1)
+    # |> Stream.filter(&Utils.is_us_security/1)
     |> Stream.map(&Transforms.profile/1)
   end
 
@@ -59,6 +59,19 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
+  Fetches the constituents of the Dow Jones
+  """
+  def dow_jones_constituents() do
+    Logger.info("Requesting Dow Jones constituents")
+
+    "/dowjones_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
+  end
+
+  @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
@@ -95,6 +108,19 @@ defmodule Loin.FMP.Service do
     |> Req.get!()
     |> handle_response()
     |> Utils.map(&Transforms.etf_sector_weight/1)
+  end
+
+  @doc """
+  Fetches the constituents of the Nasdaq
+  """
+  def nasdaq_constituents() do
+    Logger.info("Requesting Nasdaq constituents")
+
+    "/nasdaq_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
@@ -158,6 +184,19 @@ defmodule Loin.FMP.Service do
     )
 
     result
+  end
+
+  @doc """
+  Fetches the constituents of the S&P 500
+  """
+  def sp500_constituents() do
+    Logger.info("Requesting S&P 500 constituents")
+
+    "/sp500_constituent"
+    |> create_request()
+    |> Req.get!()
+    |> handle_response()
+    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   # Private
