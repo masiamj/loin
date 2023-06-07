@@ -17,6 +17,9 @@ defmodule Loin.FMP.DailyTrend do
     field :day_50_sma, :float
     field :day_50_sma_above_day_200_sma, :boolean, default: false
     field :is_valid, :boolean, default: false
+    field :near_day_20_high, :boolean
+    field :near_day_50_high, :boolean
+    field :near_day_100_high, :boolean
     field :previous_close, :float
     field :previous_close_above_day_200_sma, :boolean, default: false
     field :previous_close_above_day_50_sma, :boolean, default: false

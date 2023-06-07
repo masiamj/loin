@@ -59,6 +59,7 @@ defmodule Loin.FMP.PriceChanges do
              :month_1_performance,
              :month_3_performance,
              :month_6_performance,
+             :updated_at,
              :ytd_performance,
              :year_1_performance,
              :year_3_performance,

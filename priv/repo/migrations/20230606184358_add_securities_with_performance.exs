@@ -27,9 +27,7 @@ defmodule Loin.Repo.Migrations.AddSecuritiesWithPerformance do
       add :eps, :float
       add :exchange_short_name, :string
       add :exchange, :string
-      add :founded, :string
       add :full_time_employees, :integer
-      add :headquarters, :string
       add :image, :string
       add :industry, :string
       add :ipo_date, :string
@@ -52,9 +50,7 @@ defmodule Loin.Repo.Migrations.AddSecuritiesWithPerformance do
       add :sector, :string
       add :shares_outstanding, :bigint
       add :state, :string
-      add :sub_sector, :string
       add :symbol, :string
-      add :type, :string
       add :volume_avg, :bigint
       add :volume, :bigint
       add :website, :string

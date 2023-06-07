@@ -59,32 +59,6 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches the Forex quotes in bulk.
-  """
-  def commodities_quotes() do
-    Logger.info("Requesting Commodity quotes")
-
-    "/quotes/commodity"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.commodity_quote/1)
-  end
-
-  @doc """
-  Fetches the constituents of the Dow Jones
-  """
-  def dow_jones_constituents() do
-    Logger.info("Requesting Dow Jones constituents")
-
-    "/dowjones_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
-  @doc """
   Fetches all the ETFs with exposure to a specific asset.
   """
   def etf_exposure_by_stock(symbol) when is_binary(symbol) do
@@ -124,19 +98,6 @@ defmodule Loin.FMP.Service do
   end
 
   @doc """
-  Fetches the Forex quotes in bulk.
-  """
-  def forex_quotes() do
-    Logger.info("Requesting Forex quotes")
-
-    "/quotes/forex"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.forex_quote/1)
-  end
-
-  @doc """
   Fetches whether the stock market is open.
   """
   def market_status() do
@@ -147,19 +108,6 @@ defmodule Loin.FMP.Service do
     |> Req.get!()
     |> handle_response()
     |> Transforms.is_the_market_open()
-  end
-
-  @doc """
-  Fetches the constituents of the Nasdaq
-  """
-  def nasdaq_constituents() do
-    Logger.info("Requesting Nasdaq constituents")
-
-    "/nasdaq_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
   end
 
   @doc """
@@ -212,20 +160,9 @@ defmodule Loin.FMP.Service do
     result
   end
 
-  @doc """
-  Fetches the constituents of the S&P 500
-  """
-  def sp500_constituents() do
-    Logger.info("Requesting S&P 500 constituents")
-
-    "/sp500_constituent"
-    |> create_request()
-    |> Req.get!()
-    |> handle_response()
-    |> Utils.map(&Transforms.well_defined_constituent/1)
-  end
-
+  ####################
   # Private
+  ####################
 
   defp create_request(path, params \\ %{}) do
     params = Map.put(params, "apikey", Loin.Config.fmp_api_key())

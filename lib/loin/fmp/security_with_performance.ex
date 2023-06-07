@@ -32,9 +32,7 @@ defmodule Loin.FMP.SecurityWithPerformance do
     field :eps, :float
     field :exchange_short_name, :string
     field :exchange, :string
-    field :founded, :string
     field :full_time_employees, :integer
-    field :headquarters, :string
     field :image, :string
     field :industry, :string
     field :ipo_date, :string
@@ -57,9 +55,7 @@ defmodule Loin.FMP.SecurityWithPerformance do
     field :sector, :string
     field :shares_outstanding, :integer
     field :state, :string
-    field :sub_sector, :string
     field :symbol, :string
-    field :type, :string
     field :volume_avg, :integer
     field :volume, :integer
     field :website, :string
@@ -101,9 +97,7 @@ defmodule Loin.FMP.SecurityWithPerformance do
       :eps,
       :exchange_short_name,
       :exchange,
-      :founded,
       :full_time_employees,
-      :headquarters,
       :image,
       :industry,
       :ipo_date,
@@ -126,9 +120,7 @@ defmodule Loin.FMP.SecurityWithPerformance do
       :sector,
       :shares_outstanding,
       :state,
-      :sub_sector,
       :symbol,
-      :type,
       :volume_avg,
       :volume,
       :website,

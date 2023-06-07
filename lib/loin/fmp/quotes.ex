@@ -67,6 +67,7 @@ defmodule Loin.FMP.Quotes do
              :previous_close,
              :price,
              :shares_outstanding,
+             :updated_at,
              :volume,
              :volume_avg,
              :year_high,
