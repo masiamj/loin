@@ -91,6 +91,7 @@ defmodule LoinWeb.Router do
       on_mount: [{LoinWeb.IdentityAuth, :mount_current_identity}] do
       # live "/", HomeLive, :home
       live "/", BigBoardLive, :index
+      live "/currencies", CurrenciesLive, :index
       live "/how-it-works", HowItWorksLive, :index
       # live "/s/:symbol", SecurityV2Live, :show
       # live "/screener", ScreenerLive, :index

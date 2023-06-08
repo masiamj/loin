@@ -177,7 +177,7 @@ defmodule LoinWeb.HeaderComponents do
       <.navigation_link href="~p/how-it-works" label="Sectors" />
       <.navigation_link href="~p/how-it-works" label="Strategies" />
       <.navigation_link href="~p/how-it-works" label="Countries" />
-      <.navigation_link href="~p/how-it-works" label="Currencies" />
+      <.navigation_link href="/currencies" label="Currencies" />
       <.navigation_link href="~p/how-it-works" label="Commodities" />
       <.navigation_link href="~p/how-it-works" label="Hedges" />
       <.navigation_link href="~p/how-it-works" label="Breakouts" />

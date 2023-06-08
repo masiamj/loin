@@ -7,7 +7,7 @@ defmodule Loin.FMP do
 
   import Ecto.Query, warn: false
   alias Loin.Repo
-  alias Loin.FMP.{Screener}
+  alias Loin.FMP.{PerformanceScreener, Screener}
 
   @doc """
   Queries against the screener view with dynamic params.
@@ -67,6 +67,27 @@ defmodule Loin.FMP do
   end
 
   @doc """
+  Gets many performance screener items via their symbols.
+
+  ## Examples
+
+      iex> get_performance_securities_by_symbols(["AAPL"])
+      {:ok, %{}}
+
+  """
+  def get_performance_securities_by_symbols([]), do: {:ok, %{}}
+
+  def get_performance_securities_by_symbols(symbols) do
+    items =
+      base_performance_screener_query()
+      |> where([s], s.symbol in ^symbols)
+      |> Repo.all()
+      |> Enum.into(%{}, fn %{symbol: symbol} = item -> {symbol, item} end)
+
+    {:ok, items}
+  end
+
+  @doc """
   Gets a list of combined fmp_securities and daily_trends.
 
   Filters by securities with a specific trend, and returns them sorted by market_cap desc.
@@ -116,6 +137,14 @@ defmodule Loin.FMP do
 
   defp base_screener_query do
     from(s in Screener,
+      where: not is_nil(s.market_cap),
+      where: s.market_cap > 0,
+      order_by: [desc: s.market_cap]
+    )
+  end
+
+  defp base_performance_screener_query do
+    from(s in PerformanceScreener,
       where: not is_nil(s.market_cap),
       where: s.market_cap > 0,
       order_by: [desc: s.market_cap]
