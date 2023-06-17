@@ -22,7 +22,7 @@ defmodule LoinWeb.HeaderComponents do
 
   def major(assigns) do
     ~H"""
-    <div class="relative bg-black w-full h-[5vh]" id={@id}>
+    <div class="relative bg-black w-full h-[5vh] z-[100]" id={@id}>
       <div class="w-full h-[5vh] bg-black">
         <div class="flex items-center justify-between h-full lg:justify-start px-4">
           <.link href={~p"/"} class="font-bold lg:w-1/3">
@@ -177,7 +177,7 @@ defmodule LoinWeb.HeaderComponents do
       <.navigation_link href="~p/how-it-works" label="Sectors" />
       <.navigation_link href="~p/how-it-works" label="Strategies" />
       <.navigation_link href="~p/how-it-works" label="Countries" />
-      <.navigation_link href="/currencies" label="Currencies" />
+      <.navigation_link class="text-yellow-500" href="/currencies" label="Currencies" />
       <.navigation_link href="~p/how-it-works" label="Commodities" />
       <.navigation_link href="~p/how-it-works" label="Hedges" />
       <.navigation_link href="~p/how-it-works" label="Breakouts" />
@@ -189,12 +189,13 @@ defmodule LoinWeb.HeaderComponents do
   # Private
   ####################
 
+  attr :class, :string, default: ""
   attr :href, :string, required: true
   attr :label, :string, required: true
 
   defp navigation_link(assigns) do
     ~H"""
-    <.link class="font-semibold text-white text-xs hover:text-orange-300" navigate={@href}>
+    <.link class={["font-semibold text-white text-xs hover:text-orange-300", @class]} navigate={@href}>
       <p style="min-width:0;overflow:hidden;white-space:nowrap;">
         <%= @label %>
       </p>

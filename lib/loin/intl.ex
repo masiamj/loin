@@ -24,6 +24,18 @@ defmodule Loin.Intl do
   end
 
   @doc """
+  Formats a date with time in EST.
+  """
+  def format_datetime_est(datetime_utc) do
+    est_value =
+      datetime_utc
+      |> DateTime.shift_zone!("America/New_York")
+      |> Timex.format!("%a. %b. %d, %Y %l:%M:%S", :strftime)
+
+    est_value <> " EST"
+  end
+
+  @doc """
   Formats money in decimal form. 13.2342342 -> 13.23
   """
   def format_decimal(value) do

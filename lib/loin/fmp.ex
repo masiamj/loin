@@ -19,6 +19,14 @@ defmodule Loin.FMP do
     |> Flop.validate_and_run(params, for: Screener)
   end
 
+  def filter_performance_screener(symbols, params \\ %{}) do
+    PerformanceScreener
+    |> where([ps], not is_nil(ps.market_cap))
+    |> where([ps], ps.market_cap > 0)
+    |> where([s], s.symbol in ^symbols)
+    |> Flop.validate_and_run(params, for: PerformanceScreener)
+  end
+
   @doc """
   Gets the most recent daily sector trends.
 

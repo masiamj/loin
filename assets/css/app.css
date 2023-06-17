@@ -24,13 +24,14 @@ tr>th:first-child,
 tr>td:first-child {
   position: sticky;
   left: 0;
-  z-index: 1000;
+  z-index: 40;
+  text-align: left;
 }
 
 tr>td:first-child {
   position: sticky;
   left: 0;
-  z-index: 900;
+  z-index: 30;
 }
 
 .chart-legend {
@@ -42,6 +43,6 @@ tr>td:first-child {
   padding: 4px;
   position: absolute;
   top: 0;
-  z-index: 100;
+  z-index: 40;
   @apply text-neutral-700;
 }

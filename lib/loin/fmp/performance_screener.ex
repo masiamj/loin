@@ -132,6 +132,7 @@ defmodule Loin.FMP.PerformanceScreener do
     field :securities_with_performance_open, :float
     field :securities_with_performance_previous_close, :float
     field :securities_with_performance_symbol, :string
+    field :securities_with_performance_updated_at, :utc_datetime_usec
     field :securities_with_performance_year_high, :float
     field :securities_with_performance_year_low, :float
     field :shares_outstanding, :integer
