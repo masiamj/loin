@@ -40,6 +40,7 @@ defmodule Loin.FMP.PerformanceScreener do
     sortable: [
       :change_percent,
       :change_price,
+      :daily_trends_symbol,
       :day_5_performance,
       :industry,
       :market_cap,
